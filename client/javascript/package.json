@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "start": "node client.js"
+  },
+  "dependencies": {
+    "ws": "^3.1.0"
+  }
+}
