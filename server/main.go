@@ -11,8 +11,6 @@ import (
 var (
 	addr     = flag.String("addr", ":3000", "server address")
 	upgrader = websocket.Upgrader{}
-
-	rooms = map[string]*Room{}
 )
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
@@ -25,6 +23,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	player := &Player{conn: conn}
 
 	go player.read()
+	go player.write()
 }
 
 func main() {
