@@ -1,34 +1,43 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"log"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
-var (
-	addr     = flag.String("addr", ":3000", "server address")
-	upgrader = websocket.Upgrader{}
-)
+type Message struct {
+	Event string
+	Data  json.RawMessage
+}
 
-func wsHandler(w http.ResponseWriter, r *http.Request) {
+var upgrader = websocket.Upgrader{}
+
+func handler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	player := &Player{conn: conn}
+	client := &Client{
+		id:     uuid.New(),
+		socket: conn,
+		send:   make(chan []byte),
+	}
 
-	go player.read()
-	go player.write()
+	go client.read()
+	go client.write()
 }
 
 func main() {
+	addr := flag.String("addr", ":3000", "server address")
 	flag.Parse()
 
-	http.HandleFunc("/ws", wsHandler)
+	http.HandleFunc("/", handler)
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
