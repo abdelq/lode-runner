@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"log"
 	"net/http"
@@ -9,11 +8,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
-
-type Message struct {
-	Event string
-	Data  json.RawMessage
-}
 
 var upgrader = websocket.Upgrader{}
 
