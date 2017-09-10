@@ -1,73 +1,57 @@
 package main
 
 import (
-	"encoding/json"
+	"bufio"
 	"log"
-
-	"github.com/google/uuid"
-	"github.com/gorilla/websocket"
+	"net"
 )
 
 type Client struct {
-	id     uuid.UUID
-	socket *websocket.Conn
-	room   *Room
-	send   chan []byte
+	conn net.Conn
+	out  chan string
+	room *Room
 }
 
-type Message struct {
-	Event string
-	Data  json.RawMessage
-}
+func newClient(conn net.Conn) *Client {
+	client := &Client{conn: conn, out: make(chan string)}
 
-func (c *Client) join(roomName string) {
-	room, ok := rooms[roomName]
-	if !ok {
-		room = newRoom(roomName)
-	}
+	go client.read()
+	go client.write()
 
-	// TODO Distinction: Player vs Spectator
-
-	c.room = room
-	room.join <- c
+	return client
 }
 
 func (c *Client) read() {
+	reader := bufio.NewReader(c.conn)
+
 	defer func() {
 		c.room.leave <- c
-		c.socket.Close()
+		close(c.out)
+		c.conn.Close()
 	}()
 
 	for {
-		msg := Message{}
-		err := c.socket.ReadJSON(&msg)
+		msg, err := reader.ReadString('\n')
 		if err != nil {
 			log.Println(err)
 			break
 		}
 
-		if msg.Event == "join" {
-			// TODO Proper unmarshalling
-			c.join(string(msg.Data))
-		}
-
-		// TODO Broadcast
+		// TODO Join a room
 	}
 }
 
 func (c *Client) write() {
-	defer c.socket.Close()
+	writer := bufio.NewWriter(c.conn)
 
-	for {
-		select {
-		case msg, ok := <-c.send:
-			if !ok {
-				// Channel closed by room
-				c.socket.WriteMessage(websocket.CloseMessage, []byte{})
-				return
-			}
+	defer c.conn.Close()
 
-			c.socket.WriteMessage(websocket.TextMessage, msg)
+	for msg := range c.out {
+		_, err := writer.WriteString(msg)
+		if err != nil {
+			log.Println(err)
+			break
 		}
+		writer.Flush()
 	}
 }
