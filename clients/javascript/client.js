@@ -1,19 +1,28 @@
-const WebSocket = require('ws');
+const { createConnection } = require('net');
+const { Transform } = require('stream');
 
-const ws = new WebSocket('http://localhost:3000'); // TODO address as CLI argument
+class LinerTransform extends Transform {
+    _transform(chunk, encoding, callback) {
+        chunk = chunk.toString()
+        if (this._lastLineData) chunk = this._lastLineData + chunk
 
-ws.on('open', function open() {
-    // TODO
-    ws.send(JSON.stringify({
-        event: 'join',
-        data: 'twado',
-    }));
+        var lines = chunk.split('\n')
+        this._lastLineData = lines.splice(lines.length-1,1)[0]
+
+        lines.forEach(this.push.bind(this))
+        callback()
+    }
+
+    _flush(callback) {
+        if (this._lastLineData) this.push(this._lastLineData)
+        this._lastLineData = null
+        callback()
+    }
+}
+
+const client = createConnection(1337, () => {
 });
 
-ws.on('message', function message(data) {
-    console.log('message: ' + data);
-});
-
-ws.on('close', function close() {
-    console.log('close');
+client.pipe(new LinerTransform()).on('data', (data) => {
+    console.log(data);
 });
