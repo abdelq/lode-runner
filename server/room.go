@@ -3,10 +3,9 @@ package main
 var rooms = map[string]*Room{}
 
 type Room struct {
-	join      chan *Client
-	leave     chan *Client
-	broadcast chan string
-	clients   map[*Client]bool
+	join, leave chan *Client
+	broadcast   chan string
+	clients     map[*Client]bool
 }
 
 func newRoom(name string) *Room {
