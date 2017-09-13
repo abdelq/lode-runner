@@ -6,6 +6,7 @@ type Room struct {
 	join, leave chan *Client
 	broadcast   chan string
 	clients     map[*Client]bool
+	game        *Game
 }
 
 func newRoom(name string) *Room {
@@ -27,9 +28,19 @@ func (r *Room) listen() {
 		select {
 		case client := <-r.join:
 			r.clients[client] = true
+
+			if len(r.clients) == 2 {
+				r.game = newGame(r.clients)
+			}
 		case client := <-r.leave:
 			if _, ok := r.clients[client]; ok {
 				delete(r.clients, client)
+			}
+
+			if r.game != nil {
+				if r.game.player == client || r.game.enemy == client {
+					r.game = nil
+				}
 			}
 		case msg := <-r.broadcast:
 			for client := range r.clients {
