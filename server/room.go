@@ -1,20 +1,21 @@
 package main
 
-var rooms = map[string]*Room{}
+import "log"
 
-type Room struct {
-	join, leave chan *Client
-	broadcast   chan string
-	clients     map[*Client]bool
-	game        *Game
+var rooms = make(map[string]*room)
+
+type room struct {
+	join, leave chan *client
+	broadcast   chan []byte
+	clients     map[*client]bool
 }
 
-func newRoom(name string) *Room {
-	room := &Room{
-		join:      make(chan *Client),
-		leave:     make(chan *Client),
-		broadcast: make(chan string),
-		clients:   make(map[*Client]bool),
+func newRoom(name string) *room {
+	room := &room{
+		join:      make(chan *client),
+		leave:     make(chan *client),
+		broadcast: make(chan []byte),
+		clients:   make(map[*client]bool),
 	}
 
 	go room.listen()
@@ -23,28 +24,26 @@ func newRoom(name string) *Room {
 	return room
 }
 
-func (r *Room) listen() {
+func (r *room) listen() {
 	for {
 		select {
 		case client := <-r.join:
 			r.clients[client] = true
 
-			if len(r.clients) == 2 {
-				r.game = newGame(r.clients)
-			}
-		case client := <-r.leave:
-			if _, ok := r.clients[client]; ok {
-				delete(r.clients, client)
-			}
+			log.Println(client.name, "joined", client.room)
+			// TODO Broadcast to clients
 
-			if r.game != nil {
-				if r.game.player == client || r.game.enemy == client {
-					r.game = nil
-				}
-			}
-		case msg := <-r.broadcast:
+			// TODO Start the game
+		case client := <-r.leave:
+			delete(r.clients, client)
+
+			log.Println(client.name, "left", client.room)
+			// TODO Broadcast to clients
+
+			// TODO Stop the game
+		case message := <-r.broadcast:
 			for client := range r.clients {
-				client.out <- msg
+				client.out <- message
 			}
 		}
 	}

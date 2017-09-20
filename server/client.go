@@ -1,80 +1,96 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"io"
 	"log"
 	"net"
+	"sync"
 )
 
-type Client struct {
+type client struct {
 	name, room string
 	conn       net.Conn
-	out        chan string
+	out        chan []byte
+	once       sync.Once
 }
 
-func newClient(conn net.Conn) *Client {
-	client := &Client{conn: conn, out: make(chan string)}
+func newClient(conn net.Conn) *client {
+	client := &client{
+		conn: conn,
+		out:  make(chan []byte),
+	}
 
+	// Listeners
 	go client.read()
 	go client.write()
 
 	return client
 }
 
-func (c *Client) read() {
-	reader := bufio.NewReader(c.conn)
-
-	defer func() {
-		if rooms[c.room] != nil {
-			rooms[c.room].leave <- c
+func (c *client) close() {
+	c.once.Do(func() {
+		if r := rooms[c.room]; r != nil {
+			r.leave <- c
 		}
+
 		close(c.out)
 		c.conn.Close()
-	}()
 
+		log.Printf("Closed connection from %s", c.conn.RemoteAddr())
+	})
+}
+
+func (c *client) read() {
+	defer c.close()
+
+	dec := json.NewDecoder(c.conn)
 	for {
-		data, err := reader.ReadBytes('\n')
-		if err != nil {
+		var msg message
+		if err := dec.Decode(&msg); err != nil {
 			if err != io.EOF {
 				log.Println(err)
 			}
 			break
 		}
-
-		msg := &Message{client: c}
-		if err := json.Unmarshal(data, msg); err != nil {
-			log.Println(err)
-			break
-		}
-		go msg.parse()
+		go msg.parse(c)
 	}
 }
 
-func (c *Client) write() {
-	writer := bufio.NewWriter(c.conn)
+func (c *client) write() {
+	defer c.close()
 
-	defer c.conn.Close()
-
+	// TODO Use JSON encoder
 	for msg := range c.out {
-		_, err := writer.WriteString(msg)
+		_, err := c.conn.Write(msg)
 		if err != nil {
 			log.Println(err)
 			break
 		}
-		writer.Flush()
 	}
 }
 
-func (c *Client) join(name, room string) {
+func (c *client) join(name, room string) {
 	if name == "" || room == "" {
+		// TODO Error message
+		//c.close()
 		return
 	}
 	c.name, c.room = name, room
 
-	if _, ok := rooms[room]; !ok {
-		newRoom(room)
+	r, ok := rooms[room]
+	if !ok {
+		newRoom(room).join <- c
+		return
 	}
-	rooms[room].join <- c
+
+	// Verify uniqueness of name in room
+	for client := range r.clients {
+		if client.name == name {
+			// TODO Error message
+			//c.close()
+			return
+		}
+	}
+	r.join <- c
 }

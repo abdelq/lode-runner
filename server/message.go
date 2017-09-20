@@ -3,27 +3,28 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"strings"
 )
 
-type Message struct {
-	client *Client
-	Event  string
-	Data   json.RawMessage
+type message struct {
+	Event string
+	Data  json.RawMessage
 }
 
-func (m *Message) parse() {
+func (m *message) parse(sender *client) {
 	switch m.Event {
 	case "join":
-		data := &struct {
-			Name string
-			Room string
-		}{}
-
-		if err := json.Unmarshal(m.Data, data); err != nil {
+		var data struct{ Name, Room string }
+		if err := json.Unmarshal(m.Data, &data); err != nil {
 			log.Println(err)
 			break
 		}
 
-		go m.client.join(data.Name, data.Room)
+		go sender.join(
+			strings.TrimSpace(data.Name),
+			strings.TrimSpace(data.Room),
+		)
+	default:
+		// TODO Error message
 	}
 }
