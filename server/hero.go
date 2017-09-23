@@ -1,4 +1,4 @@
-package game
+package main
 
 type hero struct {
 	pos struct{ x, y int }

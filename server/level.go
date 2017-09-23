@@ -1,4 +1,4 @@
-package game
+package main
 
 import (
 	"bytes"
@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 )
+
+// TODO enum w/ grid signification elements
 
 type level struct {
 	num  uint8
