@@ -1,11 +1,23 @@
 package game
 
-type game struct{}
-
-func newGame() *game {
-	return &game{}
+type game struct {
+	lvl     *level
+	players []player
 }
 
-func (g *game) start() {}
+type player interface {
+	move()
+}
 
-func (g *game) stop() {}
+func newGame() *game {
+	return &game{
+		lvl:     newLevel(1),
+		players: make([]player, 0, 2),
+	}
+}
+
+func (g *game) start() {
+}
+
+func (g *game) stop() {
+}
