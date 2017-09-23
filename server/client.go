@@ -73,7 +73,7 @@ func (c *client) write() {
 func (c *client) join(name, room string) {
 	if name == "" || room == "" {
 		// TODO Error message
-		//c.close()
+		c.close()
 		return
 	}
 	c.name, c.room = name, room
@@ -88,7 +88,7 @@ func (c *client) join(name, room string) {
 	for client := range r.clients {
 		if client.name == name {
 			// TODO Error message
-			//c.close()
+			c.close()
 			return
 		}
 	}
