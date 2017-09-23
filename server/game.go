@@ -1,10 +1,8 @@
 package main
 
-import "log"
-
 type game struct {
 	lvl     *level
-	players map[*client]*player
+	players map[*client]player
 }
 
 type player interface {
@@ -13,13 +11,13 @@ type player interface {
 
 func newGame() *game {
 	return &game{
-	//players: make([]player, 0, 2),
+		lvl:     &level{},
+		players: make(map[*client]player),
 	}
 }
 
 func (g *game) start() {
-	g.lvl = newLevel(1)
-	log.Println(g)
+	g.lvl.init(1)
 }
 
 func (g *game) stop() {
