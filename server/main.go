@@ -1,18 +1,25 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"log"
-	"net"
 )
 
 func main() {
 	// Command-line flags
-	addr := flag.String("addr", ":1337", "listener's network address")
+	addr := flag.String("addr", ":443", "listener's network address")
 	flag.Parse()
 
+	// Load public/private key pair
+	cert, err := tls.LoadX509KeyPair("cert.pem", "key.pem")
+	if err != nil {
+		log.Fatal(err)
+	}
+	conf := tls.Config{Certificates: []tls.Certificate{cert}}
+
 	// Listen on TCP
-	ln, err := net.Listen("tcp", *addr)
+	ln, err := tls.Listen("tcp", *addr, &conf)
 	if err != nil {
 		log.Fatal(err)
 	}
