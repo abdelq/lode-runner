@@ -6,7 +6,7 @@ var rooms = make(map[string]*room)
 
 type room struct {
 	join, leave chan *client
-	broadcast   chan []byte
+	broadcast   chan *message
 	clients     map[*client]bool
 }
 
@@ -14,7 +14,7 @@ func newRoom(name string) *room {
 	room := &room{
 		join:      make(chan *client),
 		leave:     make(chan *client),
-		broadcast: make(chan []byte),
+		broadcast: make(chan *message),
 		clients:   make(map[*client]bool),
 	}
 
@@ -47,4 +47,13 @@ func (r *room) listen() {
 			}
 		}
 	}
+}
+
+func (r *room) hasClient(name string) bool {
+	for client := range r.clients {
+		if client.name == name {
+			return true
+		}
+	}
+	return false
 }

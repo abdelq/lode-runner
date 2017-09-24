@@ -11,14 +11,14 @@ import (
 type client struct {
 	name, room string
 	conn       net.Conn
-	out        chan []byte
 	once       sync.Once
+	out        chan *message
 }
 
 func newClient(conn net.Conn) *client {
 	client := &client{
 		conn: conn,
-		out:  make(chan []byte),
+		out:  make(chan *message),
 	}
 
 	// Listeners
@@ -30,13 +30,12 @@ func newClient(conn net.Conn) *client {
 
 func (c *client) close() {
 	c.once.Do(func() {
-		if r := rooms[c.room]; r != nil {
-			r.leave <- c
+		if room := rooms[c.room]; room != nil {
+			room.leave <- c
 		}
 
 		close(c.out)
 		c.conn.Close()
-
 		log.Printf("Closed connection from %s", c.conn.RemoteAddr())
 	})
 }
@@ -60,37 +59,29 @@ func (c *client) read() {
 func (c *client) write() {
 	defer c.close()
 
-	// TODO Use JSON encoder
+	enc := json.NewEncoder(c.conn)
 	for msg := range c.out {
-		_, err := c.conn.Write(msg)
-		if err != nil {
+		if err := enc.Encode(msg); err != nil {
 			log.Println(err)
 			break
 		}
 	}
 }
 
-func (c *client) join(name, room string) {
-	if name == "" || room == "" {
-		// TODO Error message
+func (c *client) join(clientName, roomName string) {
+	if clientName == "" || roomName == "" {
 		c.close()
 		return
 	}
-	c.name, c.room = name, room
+	c.name, c.room = clientName, roomName
 
-	r, ok := rooms[room]
+	// TODO
+	room, ok := rooms[roomName]
 	if !ok {
-		newRoom(room).join <- c
+		room = newRoom(roomName)
+	} else if room.hasClient(clientName) {
+		c.close()
 		return
 	}
-
-	// Verify uniqueness of name in room
-	for client := range r.clients {
-		if client.name == name {
-			// TODO Error message
-			c.close()
-			return
-		}
-	}
-	r.join <- c
+	room.join <- c
 }
