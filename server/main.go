@@ -7,9 +7,10 @@ import (
 )
 
 func main() {
-	// Command-line flags
+	// Flags
 	addr := flag.String("addr", ":443", "listener's network address")
 	flag.Parse()
+	log.SetFlags(log.Ltime | log.Lshortfile)
 
 	// Load public/private key pair
 	cert, err := tls.LoadX509KeyPair("cert.pem", "key.pem")
