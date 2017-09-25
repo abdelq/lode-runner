@@ -11,6 +11,10 @@ type level struct {
 	grid [][]byte
 }
 
+const (
+	RUNNER = '@'
+)
+
 func (l *level) init(num uint8) error {
 	filename := fmt.Sprintf("levels/%03d.lvl", num)
 	content, err := ioutil.ReadFile(filename)
