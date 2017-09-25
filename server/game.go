@@ -2,7 +2,7 @@ package main
 
 type game struct {
 	lvl     *level
-	players map[*client]player
+	players []player
 }
 
 type player interface {
@@ -12,13 +12,14 @@ type player interface {
 
 func newGame() *game {
 	return &game{
-		lvl:     &level{},
-		players: make(map[*client]player),
+		players: make([]player, 0, 2),
 	}
 }
 
 func (g *game) start() {
+	g.lvl = &level{}
 	g.lvl.init(1)
+
 	for _, player := range g.players {
 		go player.init(g.lvl.grid)
 	}

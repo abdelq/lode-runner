@@ -7,7 +7,7 @@ var rooms = make(map[string]*room)
 type room struct {
 	join, leave chan *client
 	broadcast   chan *message
-	clients     map[*client]bool
+	clients     map[*client]player
 	game        *game
 }
 
@@ -16,7 +16,7 @@ func newRoom(name string) *room {
 		join:      make(chan *client),
 		leave:     make(chan *client),
 		broadcast: make(chan *message),
-		clients:   make(map[*client]bool),
+		clients:   make(map[*client]player),
 		game:      newGame(),
 	}
 
@@ -30,20 +30,16 @@ func (r *room) listen() {
 	for {
 		select {
 		case client := <-r.join:
-			r.clients[client] = true
+			r.clients[client] = nil
 			log.Println(client.name, "joined", client.room)
 			client.out <- &message{"join", json.RawMessage(`"` + client.name + " joined " + client.room + `"`)}
 
-			// TODO Improve this section
-			if r.game.lvl.num == 0 {
-				if len(r.game.players) == 0 {
-					r.game.players[client] = &runner{}
-				} else if len(r.game.players) == 1 {
-					r.game.players[client] = &guard{}
-				}
+			if r.game.lvl == nil {
+				r.clients[client] = &runner{} // TODO Runner or Guard
+				r.game.players = append(r.game.players, r.clients[client])
 
 				// Start the game
-				if len(r.game.players) == 2 {
+				if len(r.game.players) == cap(r.game.players) {
 					go r.game.start()
 				}
 			}
@@ -53,7 +49,7 @@ func (r *room) listen() {
 			client.out <- &message{"leave", json.RawMessage(`"` + client.name + " left " + client.room + `"`)}
 
 			// Stop the game
-			if _, ok := r.game.players[client]; ok {
+			if r.game.lvl != nil && r.clients[client] != nil {
 				go r.game.stop()
 			}
 		case message := <-r.broadcast:
