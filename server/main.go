@@ -13,7 +13,7 @@ func main() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 
 	// Load public/private key pair
-	cert, err := tls.LoadX509KeyPair("cert.pem", "key.pem")
+	cert, err := tls.LoadX509KeyPair("ssl/certs/cert.pem", "ssl/private/key.pem")
 	if err != nil {
 		log.Fatal(err)
 	}
