@@ -11,8 +11,18 @@ type level struct {
 	grid [][]byte
 }
 
+// TODO Order, name and content
 const (
-	RUNNER = '@'
+	SPACE        = ' '
+	RUNNER       = '@'
+	GUARD        = '&'
+	GOLD         = '$'
+	ROPE         = '-'
+	NORMAL_BRICK = '#'
+	//SOLID_BRICK   = '?'
+	//FAKE_BRICK    = 'X'
+	NORMAL_LADDER = 'H'
+	ESCAPE_LADDER = '|'
 )
 
 func (l *level) init(num int) error {
