@@ -7,7 +7,7 @@ import (
 )
 
 type level struct {
-	num  uint8
+	num  int
 	grid [][]byte
 }
 
@@ -15,7 +15,7 @@ const (
 	RUNNER = '@'
 )
 
-func (l *level) init(num uint8) error {
+func (l *level) init(num int) error {
 	filename := fmt.Sprintf("levels/%03d.lvl", num)
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
