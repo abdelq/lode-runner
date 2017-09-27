@@ -22,7 +22,7 @@ func join(conn *tls.Conn) {
 	data := fmt.Sprintf(`{"name": "%s", "room": "%s"}`, name, room)
 
 	msg := message{
-		Event: "join",
+		Event: "kek",
 		Data:  json.RawMessage(data),
 	}
 
@@ -34,7 +34,13 @@ func join(conn *tls.Conn) {
 	conn.Write(b)
 	conn.Write([]byte("\n"))
 
+	dec := json.NewDecoder(conn)
 	for {
+		var data message
+		if err := dec.Decode(&data); err != nil {
+			log.Println(err)
+		}
+		log.Println(data)
 	}
 }
 

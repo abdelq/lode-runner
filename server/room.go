@@ -31,14 +31,14 @@ func (r *room) listen() {
 			r.clients[client] = true
 
 			log.Println(client.name, "joined", client.room)
-			// TODO Broadcast to clients
+			client.out <- &message{"join", json.RawMessage(`"` + client.name + " joined " + client.room + `"`)}
 
 			// TODO Start the game
 		case client := <-r.leave:
 			delete(r.clients, client)
 
 			log.Println(client.name, "left", client.room)
-			// TODO Broadcast to clients
+			client.out <- &message{"leave", json.RawMessage(`"` + client.name + " left " + client.room + `"`)}
 
 			// TODO Stop the game
 		case message := <-r.broadcast:

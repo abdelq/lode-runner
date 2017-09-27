@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"strings"
 )
@@ -25,6 +26,8 @@ func (m *message) parse(sender *client) {
 			strings.TrimSpace(data.Room),
 		)
 	default:
-		// TODO Error message
+		err := fmt.Sprintf("%s is not a valid event", m.Event)
+		log.Println(err)
+		sender.out <- &message{"error", json.RawMessage(`"` + err + `"`)}
 	}
 }

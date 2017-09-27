@@ -75,7 +75,6 @@ func (c *client) join(clientName, roomName string) {
 	}
 	c.name, c.room = clientName, roomName
 
-	// TODO
 	room, ok := rooms[roomName]
 	if !ok {
 		room = newRoom(roomName)
