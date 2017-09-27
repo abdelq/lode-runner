@@ -38,7 +38,7 @@ func (r *room) listen() {
 			client.out <- &message{"join", json.RawMessage(`"` + client.name + " joined " + client.room + `"`)}
 
 			if r.game.lvl == nil {
-				r.clients[client] = &runner{} // TODO Runner or Guard
+				r.clients[client] = &runner{} // TODO
 				r.game.players = append(r.game.players, r.clients[client])
 
 				// Start the game

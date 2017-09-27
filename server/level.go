@@ -11,16 +11,15 @@ type level struct {
 	grid [][]byte
 }
 
-// TODO Order, name and content
 const (
-	SPACE        = ' '
-	RUNNER       = '@'
-	GUARD        = '&'
-	GOLD         = '$'
-	ROPE         = '-'
-	NORMAL_BRICK = '#'
-	//SOLID_BRICK   = '?'
-	//FAKE_BRICK    = 'X'
+	SPACE         = ' '
+	RUNNER        = '@'
+	GUARD         = '&'
+	GOLD          = '$'
+	ROPE          = '-'
+	NORMAL_BRICK  = '#'
+	SOLID_BRICK   = 'X'
+	FAKE_BRICK    = 'V'
 	NORMAL_LADDER = 'H'
 	ESCAPE_LADDER = '|'
 )
