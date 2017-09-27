@@ -1,6 +1,9 @@
 package main
 
-import "log"
+import (
+	"encoding/json"
+	"log"
+)
 
 var rooms = make(map[string]*room)
 
