@@ -15,7 +15,7 @@ func TestInit(t *testing.T) {
 			//continue
 		}
 		for _, row := range lvl.grid {
-			if len(row) != 26 {
+			if len(row) != 28 {
 				t.Fail()
 				//continue
 			}

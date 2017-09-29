@@ -1,16 +1,16 @@
-      |                  |
-      |      &           |
---- & |------#####H      |
-H##X### #######H$########H
-H##$### X$   H#H##   $ $ H
-H###### XXXXXHXH   ----- H
-H        ----H H   H     H
-##V###H        H   H  #  H
----   H###### #######H####
-$   H##     ----# HHHHHH--
-    H#  XXXH    #$HHHHHH $
-H####  #   XXXH #-HHHHHH -
-H     #  H####H #$HHHHHH  
-H   H#   H####H #-HHHHHH  
-H@  H#H  H# $#H #########H
-###############          H
+      S                    S
+      S      0             S
+--- 0 S------#####H    0   S
+H##@### #######H$##########H
+H##$### @$   H#H##   $   $ H
+H###### @@@@@H@H   ------- H
+H        ----H H   H       H
+##X###H        H   H  #    H
+---   H###### #######H######
+$   H##     ----# HHHHHHHH--
+    H#  @@@H    #$HHHHHHHH $
+H####  #   @@@H #-HHHHHHHH -
+H     #  H####H #$HHHHHHHH  
+H   H#   H####H #-HHHHHHHH  
+H&  H#H  H# $#H ###########H
+###############            H

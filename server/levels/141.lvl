@@ -1,16 +1,16 @@
----------        ---------
-H        ########        H
-H      ############      H
-H   & ############## &   H
-H XXX################XXX H
-H       ##########       H
-H XH       ####       HX H
-XXXH                  HXXX
-   H $  $  $  $  $  $ H   
-   H                  H   
-   H       ####       H   
-   H    ###VVVV###  @ H   
-   H ###VVVVVVVVVV### H   
-   H  VVVVVVVVVVVVVV  H   
-   H   VVVVVVVVVVVV   H   
-   H     VVVVVVVV     H   
+----------        ----------
+H         ########         H
+H       ############       H
+H   0  ##############  0   H
+H @@@@################@@@@ H
+H        ##########        H
+H @H        ####        H@ H
+@@@H                    H@@@
+   H  $  $  $  $  $  $  H   
+   H                    H   
+   H        ####        H   
+   H     ###XXXX###  &  H   
+   H  ###XXXXXXXXXX###  H   
+   H   XXXXXXXXXXXXXX   H   
+   H    XXXXXXXXXXXX    H   
+   H      XXXXXXXX      H   
