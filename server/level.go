@@ -13,15 +13,15 @@ type level struct {
 
 const (
 	SPACE         = ' '
-	RUNNER        = '@'
-	GUARD         = '&'
-	GOLD          = '$'
-	ROPE          = '-'
 	NORMAL_BRICK  = '#'
-	SOLID_BRICK   = 'X'
-	FAKE_BRICK    = 'V'
+	SOLID_BRICK   = '@'
 	NORMAL_LADDER = 'H'
-	ESCAPE_LADDER = '|'
+	ROPE          = '-'
+	FALSE_BRICK   = 'X'
+	ESCAPE_LADDER = 'S'
+	GOLD          = '$'
+	GUARD         = '0'
+	RUNNER        = '&'
 )
 
 func (l *level) init(num int) error {
