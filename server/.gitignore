@@ -1,5 +1,6 @@
 # Build
 server
 
-# Certs
-ssl/
+# TLS
+*.key
+*.crt

@@ -12,4 +12,4 @@ test:
 	$(GOTEST)
 
 certs:
-	openssl req -new -nodes -x509 -newkey rsa -keyout ssl/private/key.pem -out ssl/certs/cert.pem -subj "/"
+	openssl req -new -nodes -x509 -newkey rsa -keyout server.key -out server.crt -subj "/"
