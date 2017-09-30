@@ -13,3 +13,6 @@ test:
 
 certs:
 	openssl req -new -nodes -x509 -newkey rsa -keyout server.key -out server.crt -subj "/"
+
+clean:
+	$(RM) server*
