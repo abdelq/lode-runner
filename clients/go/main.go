@@ -22,7 +22,7 @@ func join(conn *tls.Conn) {
 	data := fmt.Sprintf(`{"name": "%s", "room": "%s"}`, name, room)
 
 	msg := message{
-		Event: "kek",
+		Event: "join",
 		Data:  json.RawMessage(data),
 	}
 
