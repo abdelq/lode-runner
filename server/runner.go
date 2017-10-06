@@ -1,22 +1,23 @@
 package main
 
-import (
-	"bytes"
-)
+import "bytes"
 
 type runner struct {
-	pos struct{ x, y int }
+	name string
+	pos  position
 }
 
 func (r *runner) init(grid [][]byte) {
-	for i, line := range grid {
-		if j := bytes.IndexRune(line, RUNNER); j != -1 {
-			r.pos.x = i
-			r.pos.y = j
+	for i, row := range grid {
+		if j := bytes.IndexRune(row, RUNNER); j != -1 {
+			r.pos.x, r.pos.y = j, i
 			return
 		}
 	}
 }
 
-func (r *runner) move() {
-}
+// TODO
+func (r *runner) move(direction string) {}
+
+// TODO
+func (r *runner) dig(direction string) {}

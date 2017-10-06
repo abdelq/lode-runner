@@ -13,11 +13,11 @@ func main() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 
 	// Load public/private key pair
-	cert, err := tls.LoadX509KeyPair("server.crt", "server.key")
+	crt, err := tls.LoadX509KeyPair("server.crt", "server.key")
 	if err != nil {
 		log.Fatal(err)
 	}
-	conf := tls.Config{Certificates: []tls.Certificate{cert}}
+	conf := tls.Config{Certificates: []tls.Certificate{crt}}
 
 	// Listen on TCP
 	ln, err := tls.Listen("tcp", *addr, &conf)
@@ -33,7 +33,6 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("New connection from %s", conn.RemoteAddr())
 
 		go newClient(conn)
 	}

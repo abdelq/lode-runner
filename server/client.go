@@ -9,29 +9,28 @@ import (
 )
 
 type client struct {
-	name, room string
-	conn       net.Conn
-	once       sync.Once
-	out        chan *message
+	conn   net.Conn
+	once   sync.Once
+	player *player
+	room   *room
+	out    chan *message
 }
 
 func newClient(conn net.Conn) *client {
-	client := &client{
-		conn: conn,
-		out:  make(chan *message),
-	}
+	client := &client{conn: conn, out: make(chan *message)}
 
 	// Listeners
 	go client.read()
 	go client.write()
 
+	log.Printf("New connection from %s", conn.RemoteAddr())
 	return client
 }
 
 func (c *client) close() {
 	c.once.Do(func() {
-		if room := rooms[c.room]; room != nil {
-			room.leave <- c
+		if c.room != nil {
+			c.room.leave <- c
 		}
 
 		close(c.out)
@@ -46,7 +45,7 @@ func (c *client) read() {
 	dec := json.NewDecoder(c.conn)
 	for {
 		var msg message
-		if err := dec.Decode(&msg); err != nil {
+		if err := dec.Decode(msg); err != nil {
 			if err != io.EOF {
 				log.Println(err)
 			}
@@ -66,21 +65,4 @@ func (c *client) write() {
 			break
 		}
 	}
-}
-
-func (c *client) join(clientName, roomName string) {
-	if clientName == "" || roomName == "" {
-		c.close()
-		return
-	}
-	c.name, c.room = clientName, roomName
-
-	room, ok := rooms[roomName]
-	if !ok {
-		room = newRoom(roomName)
-	} else if room.hasClient(clientName) {
-		c.close()
-		return
-	}
-	room.join <- c
 }
