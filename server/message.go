@@ -76,6 +76,7 @@ func (m *message) parse(sender *client) {
 	case "dig":
 		go parseDig(m.Data, sender.player.(*runner))
 	default:
-		//sender.out <- &message{"error", &json.RawMessage(`"invalid event"`)}
+		err := json.RawMessage(`"invalid event"`)
+		sender.out <- &message{"error", &err}
 	}
 }

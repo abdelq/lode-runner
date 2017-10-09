@@ -7,23 +7,21 @@ type game struct {
 
 type player interface {
 	init([][]byte)
-	move()
+	move(string)
 }
 
 func newGame() *game {
-	return &game{
-		players: make([]player, 0, 2),
-	}
+	return &game{players: make([]player, 0, 2)}
 }
 
+// TODO
 func (g *game) start() {
-	g.lvl = &level{}
-	g.lvl.init(1)
+	g.lvl = newLevel()
 
 	for _, player := range g.players {
 		go player.init(g.lvl.grid)
 	}
 }
 
-func (g *game) stop() {
-}
+// TODO
+func (g *game) stop() {}

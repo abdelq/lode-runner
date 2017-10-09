@@ -11,18 +11,27 @@ type level struct {
 	grid [][]byte
 }
 
+type position struct{ x, y int }
+
 const (
-	SPACE         = ' '
-	NORMAL_BRICK  = '#'
-	SOLID_BRICK   = '@'
-	NORMAL_LADDER = 'H'
-	ROPE          = '-'
-	FALSE_BRICK   = 'X'
-	ESCAPE_LADDER = 'S'
-	GOLD          = '$'
-	GUARD         = '0'
-	RUNNER        = '&'
+	//SPACE         = ' '
+	//NORMAL_BRICK  = '#'
+	//SOLID_BRICK   = '@'
+	//NORMAL_LADDER = 'H'
+	//ROPE          = '-'
+	//FALSE_BRICK   = 'X'
+	//ESCAPE_LADDER = 'S'
+	//GOLD          = '$'
+	GUARD  = '0'
+	RUNNER = '&'
 )
+
+// TODO
+func newLevel() *level {
+	level := &level{}
+	go level.init(1)
+	return level
+}
 
 func (l *level) init(num int) error {
 	filename := fmt.Sprintf("levels/%03d.lvl", num)
