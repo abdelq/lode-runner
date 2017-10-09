@@ -6,11 +6,14 @@ import (
 	"log"
 )
 
-func main() {
-	// Flags
-	addr := flag.String("addr", ":443", "listener's network address")
-	flag.Parse()
+func init() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
+}
+
+func main() {
+	// Command-line flags
+	addr := flag.String("addr", ":443", "network address")
+	flag.Parse()
 
 	// Load public/private key pair
 	crt, err := tls.LoadX509KeyPair("server.crt", "server.key")
