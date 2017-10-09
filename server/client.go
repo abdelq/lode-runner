@@ -9,10 +9,10 @@ import (
 )
 
 type client struct {
+	player player
+	room   *room
 	conn   net.Conn
 	once   sync.Once
-	player *player
-	room   *room
 	out    chan *message
 }
 
@@ -44,7 +44,7 @@ func (c *client) read() {
 
 	dec := json.NewDecoder(c.conn)
 	for {
-		var msg message
+		msg := &message{}
 		if err := dec.Decode(msg); err != nil {
 			if err != io.EOF {
 				log.Println(err)

@@ -1,11 +1,12 @@
 package main
 
 type guard struct {
-	pos struct{ x, y int }
+	name string
+	pos  position
 }
 
-func (g *guard) init(grid [][]byte) {
-}
+// TODO
+func (g *guard) init(grid [][]byte) {}
 
-func (g *guard) move() {
-}
+// TODO
+func (g *guard) move(direction string) {}
