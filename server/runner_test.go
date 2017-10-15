@@ -18,7 +18,7 @@ func TestRunnerInit(t *testing.T) {
 	for _, test := range initTests {
 		runner.init(newLevel(test.lvl).grid)
 		if runner.pos != test.pos {
-			t.Errorf("%+v, want %+v", runner.pos, test.pos) // TODO
+			t.Errorf("level %d: %+v, want %+v", test.lvl, runner.pos, test.pos)
 		}
 	}
 }
