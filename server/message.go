@@ -7,63 +7,75 @@ import (
 
 type message struct {
 	Event string
-	Data  *json.RawMessage
+	Data  json.RawMessage
 }
 
-func parseJoin(data *json.RawMessage, sender *client) {
-	var playerData struct {
+func parseJoin(data json.RawMessage, sender *client) {
+	var joinData struct {
 		Name, Room string
-		IsGuard    bool `json:",omitempty"`
+		Role       uint8
 	}
-	if err := json.Unmarshal(*data, &playerData); err != nil {
+	if err := json.Unmarshal(data, &joinData); err != nil {
 		log.Println(err)
 		return
 	}
 
-	// TODO verify duplicate names
-	if playerData.Name == "" {
-		//sender.out <- &message{"error", &json.RawMessage(`"invalid name"`)}
-		return
-	}
-	if playerData.Room == "" {
-		//sender.out <- &message{"error", &json.RawMessage(`"invalid room"`)}
+	if joinData.Name == "" || joinData.Room == "" {
+		sender.out <- &message{"error", json.RawMessage(`"invalid name or room"`)}
 		return
 	}
 
-	if playerData.IsGuard {
-		sender.player = &guard{name: playerData.Name}
-	} else {
-		sender.player = &runner{name: playerData.Name}
+	room, ok := rooms[joinData.Room]
+	if !ok {
+		room = newRoom(joinData.Room)
 	}
 
-	if room, ok := rooms[playerData.Room]; ok {
-		room.join <- sender
-	} else {
-		newRoom(playerData.Room).join <- sender
+	// Validation of name uniqueness
+	if room.hasPlayer(joinData.Name) {
+		sender.out <- &message{"error", json.RawMessage(`"name already used"`)}
+		return
+	}
+
+	if joinData.Role == 0 { // Runner
+		room.join <- &join{sender, &runner{name: joinData.Name}}
+	} else if joinData.Role == 1 { // Guard
+		room.join <- &join{sender, &guard{name: joinData.Name}}
+	} else { // Spectator
+		room.join <- &join{sender, nil}
 	}
 }
 
-func parseMove(data *json.RawMessage, player player) {
-	var direction string
-	if err := json.Unmarshal(*data, direction); err != nil {
+func parseMove(data json.RawMessage, sender *client) {
+	var moveData struct{ Direction, Room string }
+	if err := json.Unmarshal(data, &moveData); err != nil {
 		log.Println(err)
 		return
 	}
 
-	if player != nil {
-		go player.move(direction)
+	// TODO Find a room with client if none declared
+	if room, ok := rooms[moveData.Room]; ok {
+		if player := room.clients[sender]; player != nil {
+			go player.move(moveData.Direction)
+		} else {
+			sender.out <- &message{"error", json.RawMessage(`"not a player"`)}
+		}
 	}
 }
 
-func parseDig(data *json.RawMessage, runner *runner) {
-	var direction string
-	if err := json.Unmarshal(*data, direction); err != nil {
+func parseDig(data json.RawMessage, sender *client) {
+	var digData struct{ Direction, Room string }
+	if err := json.Unmarshal(data, &digData); err != nil {
 		log.Println(err)
 		return
 	}
 
-	if runner != nil {
-		go runner.dig(direction)
+	// TODO Find a room with client if none declared
+	if room, ok := rooms[digData.Room]; ok {
+		if runner, ok := room.clients[sender].(*runner); ok {
+			go runner.dig(digData.Direction)
+		} else {
+			sender.out <- &message{"error", json.RawMessage(`"not a runner"`)}
+		}
 	}
 }
 
@@ -72,11 +84,10 @@ func (m *message) parse(sender *client) {
 	case "join":
 		go parseJoin(m.Data, sender)
 	case "move":
-		go parseMove(m.Data, sender.player)
+		go parseMove(m.Data, sender)
 	case "dig":
-		go parseDig(m.Data, sender.player.(*runner))
+		go parseDig(m.Data, sender)
 	default:
-		err := json.RawMessage(`"invalid event"`)
-		sender.out <- &message{"error", &err}
+		sender.out <- &message{"error", json.RawMessage(`"invalid event"`)}
 	}
 }
