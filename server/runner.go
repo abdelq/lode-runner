@@ -8,8 +8,8 @@ type runner struct {
 }
 
 func (r *runner) init(grid [][]byte) {
-	for i, row := range grid {
-		if j := bytes.IndexRune(row, RUNNER); j != -1 {
+	for i := len(grid) - 1; i >= 0; i-- {
+		if j := bytes.IndexRune(grid[i], RUNNER); j != -1 {
 			r.pos.x, r.pos.y = j, i
 			return
 		}
