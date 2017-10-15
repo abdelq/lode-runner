@@ -9,11 +9,9 @@ import (
 )
 
 type client struct {
-	player player
-	room   *room
-	conn   net.Conn
-	once   sync.Once
-	out    chan *message
+	conn net.Conn
+	once sync.Once
+	out  chan *message
 }
 
 func newClient(conn net.Conn) *client {
@@ -24,17 +22,22 @@ func newClient(conn net.Conn) *client {
 	go client.write()
 
 	log.Printf("New connection from %s", conn.RemoteAddr())
+
 	return client
 }
 
 func (c *client) close() {
 	c.once.Do(func() {
-		if c.room != nil {
-			c.room.leave <- c
+		// Leave all joined rooms
+		for _, room := range rooms {
+			if _, ok := room.clients[c]; ok {
+				room.leave <- c
+			}
 		}
 
 		close(c.out)
 		c.conn.Close()
+
 		log.Printf("Closed connection from %s", c.conn.RemoteAddr())
 	})
 }
