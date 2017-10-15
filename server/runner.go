@@ -1,7 +1,5 @@
 package main
 
-import "bytes"
-
 type runner struct {
 	name string
 	pos  position
@@ -9,9 +7,11 @@ type runner struct {
 
 func (r *runner) init(grid [][]byte) {
 	for i := len(grid) - 1; i >= 0; i-- {
-		if j := bytes.IndexRune(grid[i], RUNNER); j != -1 {
-			r.pos.x, r.pos.y = j, i
-			return
+		for j := len(grid[i]) - 1; j >= 0; j-- {
+			if grid[i][j] == RUNNER {
+				r.pos.x, r.pos.y = j, i
+				return
+			}
 		}
 	}
 }
