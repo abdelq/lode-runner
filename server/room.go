@@ -1,22 +1,29 @@
 package main
 
-//import "log"
+import "encoding/json"
 
 var rooms = make(map[string]*room)
 
 type room struct {
-	join, leave chan *client
-	broadcast   chan *message
-	clients     []*client
-	game        *game
+	join      chan *join
+	leave     chan *leave
+	broadcast chan *message
+	clients   map[*client]player
+	game      *game
+}
+
+type leave = client
+type join struct {
+	client *client
+	player player
 }
 
 func newRoom(name string) *room {
 	room := &room{
-		join:      make(chan *client),
-		leave:     make(chan *client),
+		join:      make(chan *join),
+		leave:     make(chan *leave),
 		broadcast: make(chan *message),
-		clients:   make([]*client, 0, 2), // TODO Is it necessary, maybe add 0, 2
+		clients:   make(map[*client]player),
 		game:      newGame(),
 	}
 
@@ -29,53 +36,80 @@ func newRoom(name string) *room {
 func (r *room) listen() {
 	for {
 		select {
-		case client := <-r.join:
-			client.room = r
-			r.clients = append(r.clients, client)
-			// TODO Problematic bc specatator client etc. always a player by default fucks up the name...
-			//log.Println(client.player.name, "joined", client.room) // TODO client.room is no longer a string
-			//client.out <- &message{"join", &json.RawMessage(`"` + client.name + " joined " + client.room + `"`)}
+		case data := <-r.join:
+			client := data.client // TODO
 
-			if r.game.lvl == nil {
-				//r.clients[client] = &runner{} // TODO
-				r.game.players = append(r.game.players, client.player)
+			// Game started or spectator
+			if r.game.lvl != nil || data.player == nil {
+				r.clients[client] = nil
+				continue
+			}
 
-				// Start the game
-				if len(r.game.players) == cap(r.game.players) {
-					go r.game.start()
+			guards := r.game.guards // TODO
+			switch player := data.player.(type) {
+			case *runner:
+				if r.game.runner == nil {
+					r.game.runner = player
+					r.clients[client] = player
+					r.broadcast <- &message{"join", json.RawMessage(`"runner ` + player.name + ` joined"`)}
+				} else {
+					r.clients[client] = nil
+					client.out <- &message{"error", json.RawMessage(`""`)} // TODO
+				}
+			case *guard:
+				if len(guards) < cap(guards) {
+					guards = append(guards, player)
+					r.clients[client] = player
+					r.broadcast <- &message{"join", json.RawMessage(`"guard ` + player.name + ` joined"`)}
+				} else {
+					r.clients[client] = nil
+					client.out <- &message{"error", json.RawMessage(`""`)} // TODO
 				}
 			}
-		case client := <-r.leave:
-			//delete(r.clients, client)
-			// client.room = nil
-			// client.player = nil
-			//log.Println(client.name, "left", client.room)
-			//client.out <- &message{"leave", json.RawMessage(`"` + client.name + " left " + client.room + `"`)}
 
-			// Stop the game
-			if r.game.lvl != nil && client.player != nil {
-				go r.game.stop()
+			if r.game.runner != nil && len(guards) == cap(guards) {
+				go r.game.start()
+			}
+		case client := <-r.leave:
+			player := r.clients[client]
+			delete(r.clients, client)
+			if player == nil {
+				continue
+			}
+
+			switch p := player.(type) {
+			case *runner:
+				r.game.runner = nil
+				r.broadcast <- &message{"leave", json.RawMessage(`"runner ` + p.name + ` left"`)}
+			case *guard:
+				r.game.deleteGuard(p)
+				r.broadcast <- &message{"leave", json.RawMessage(`"guard ` + p.name + ` left"`)}
+			}
+
+			if r.game.lvl != nil { // Game in progress
+				if r.game.runner == nil || len(r.game.guards) == 0 {
+					go r.game.stop()
+				}
 			}
 		case message := <-r.broadcast:
-			for _, client := range r.clients {
+			for client := range r.clients {
 				client.out <- message
 			}
 		}
 	}
 }
 
+// TODO
 func (r *room) hasPlayer(name string) bool {
-	for _, client := range r.clients {
-		if client.player != nil {
-			switch p := client.player.(type) {
-			case *runner:
-				if p.name == name {
-					return true
-				}
-			case *guard:
-				if p.name == name {
-					return true
-				}
+	for _, player := range r.clients {
+		switch p := player.(type) {
+		case *runner:
+			if p.name == name {
+				return true
+			}
+		case *guard:
+			if p.name == name {
+				return true
 			}
 		}
 	}
