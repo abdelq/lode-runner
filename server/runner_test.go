@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-var initTests = []struct {
+var runnerInitTests = []struct {
 	lvl int
 	pos position
 }{
@@ -15,7 +15,7 @@ var initTests = []struct {
 
 func TestRunnerInit(t *testing.T) {
 	runner := &runner{}
-	for _, test := range initTests {
+	for _, test := range runnerInitTests {
 		runner.init(newLevel(test.lvl).grid)
 		if runner.pos != test.pos {
 			t.Errorf("level %d: %+v, want %+v", test.lvl, runner.pos, test.pos)
