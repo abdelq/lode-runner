@@ -47,7 +47,7 @@ func (c *client) read() {
 
 	dec := json.NewDecoder(c.conn)
 	for {
-		msg := &message{}
+		msg := new(message)
 		if err := dec.Decode(msg); err != nil {
 			if err != io.EOF {
 				log.Println(err)
