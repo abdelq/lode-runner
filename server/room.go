@@ -37,59 +37,60 @@ func (r *room) listen() {
 	for {
 		select {
 		case data := <-r.join:
-			client := data.client // TODO
+			client, player := data.client, data.player
+			r.clients[client] = nil
 
 			// Game started or spectator
-			if r.game.lvl != nil || data.player == nil {
-				r.clients[client] = nil
+			if r.game.lvl != nil || player == nil {
 				continue
 			}
 
-			guards := r.game.guards // TODO
-			switch player := data.player.(type) {
+			game := r.game
+			switch p := player.(type) {
 			case *runner:
-				if r.game.runner == nil {
-					r.game.runner = player
-					r.clients[client] = player
-					r.broadcast <- &message{"join", json.RawMessage(`"runner ` + player.name + ` joined"`)}
-				} else {
-					r.clients[client] = nil
+				if game.runner != nil {
 					client.out <- &message{"error", json.RawMessage(`""`)} // TODO
+					continue
 				}
+
+				r.clients[client] = p
+				game.runner = p
+				r.broadcast <- &message{"join", json.RawMessage(`"runner ` + p.name + ` joined"`)} // TODO
 			case *guard:
-				if len(guards) < cap(guards) {
-					guards = append(guards, player)
-					r.clients[client] = player
-					r.broadcast <- &message{"join", json.RawMessage(`"guard ` + player.name + ` joined"`)}
-				} else {
-					r.clients[client] = nil
+				if len(game.guards) == cap(game.guards) {
 					client.out <- &message{"error", json.RawMessage(`""`)} // TODO
+					continue
 				}
+
+				r.clients[client] = p
+				game.guards = append(game.guards, p)
+				r.broadcast <- &message{"join", json.RawMessage(`"guard ` + p.name + ` joined"`)} // TODO
 			}
 
-			if r.game.runner != nil && len(guards) == cap(guards) {
-				go r.game.start()
+			if game.runner != nil && len(game.guards) == cap(game.guards) {
+				go game.start()
 			}
 		case client := <-r.leave:
 			player := r.clients[client]
 			delete(r.clients, client)
+
 			if player == nil {
 				continue
 			}
 
+			game := r.game
 			switch p := player.(type) {
 			case *runner:
-				r.game.runner = nil
-				r.broadcast <- &message{"leave", json.RawMessage(`"runner ` + p.name + ` left"`)}
+				game.runner = nil
+				r.broadcast <- &message{"leave", json.RawMessage(`"runner ` + p.name + ` left"`)} // TODO
 			case *guard:
-				r.game.deleteGuard(p)
-				r.broadcast <- &message{"leave", json.RawMessage(`"guard ` + p.name + ` left"`)}
+				// TODO
+				game.deleteGuard(p)
+				r.broadcast <- &message{"leave", json.RawMessage(`"guard ` + p.name + ` left"`)} // TODO
 			}
 
-			if r.game.lvl != nil { // Game in progress
-				if r.game.runner == nil || len(r.game.guards) == 0 {
-					go r.game.stop()
-				}
+			if game.lvl != nil && (game.runner == nil || len(game.guards) == 0) {
+				go game.stop()
 			}
 		case message := <-r.broadcast:
 			for client := range r.clients {
@@ -99,18 +100,12 @@ func (r *room) listen() {
 	}
 }
 
-// TODO
 func (r *room) hasPlayer(name string) bool {
 	for _, player := range r.clients {
-		switch p := player.(type) {
-		case *runner:
-			if p.name == name {
-				return true
-			}
-		case *guard:
-			if p.name == name {
-				return true
-			}
+		if runner, ok := player.(*runner); ok && runner.name == name {
+			return true
+		} else if guard, ok := player.(*guard); ok && guard.name == name {
+			return true
 		}
 	}
 	return false

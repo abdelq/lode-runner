@@ -28,10 +28,7 @@ func parseJoin(data json.RawMessage, sender *client) {
 	room, ok := rooms[joinData.Room]
 	if !ok {
 		room = newRoom(joinData.Room)
-	}
-
-	// Validation of name uniqueness
-	if room.hasPlayer(joinData.Name) {
+	} else if room.hasPlayer(joinData.Name) {
 		sender.out <- &message{"error", json.RawMessage(`"name already used"`)}
 		return
 	}

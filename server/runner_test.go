@@ -14,9 +14,15 @@ var runnerInitTests = []struct {
 }
 
 func TestRunnerInit(t *testing.T) {
-	runner := &runner{}
+	runner := new(runner)
 	for _, test := range runnerInitTests {
-		runner.init(newLevel(test.lvl).grid)
+		lvl, err := newLevel(test.lvl)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		runner.init(lvl.grid)
+
 		if runner.pos != test.pos {
 			t.Errorf("level %d: %+v, want %+v", test.lvl, runner.pos, test.pos)
 		}
