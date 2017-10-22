@@ -20,6 +20,7 @@ func parseJoin(data json.RawMessage, sender *client) {
 		return
 	}
 
+	// Validate name and room
 	if joinData.Name == "" || joinData.Room == "" {
 		sender.out <- &message{"error", json.RawMessage(`"invalid name or room"`)}
 		return
@@ -28,16 +29,14 @@ func parseJoin(data json.RawMessage, sender *client) {
 	room, ok := rooms[joinData.Room]
 	if !ok {
 		room = newRoom(joinData.Room)
-	} else if room.hasPlayer(joinData.Name) {
-		sender.out <- &message{"error", json.RawMessage(`"name already used"`)}
-		return
 	}
 
-	if joinData.Role == 0 { // Runner
+	switch joinData.Role {
+	case 0: // Runner
 		room.join <- &join{sender, &runner{name: joinData.Name}}
-	} else if joinData.Role == 1 { // Guard
+	case 1: // Guard
 		room.join <- &join{sender, &guard{name: joinData.Name}}
-	} else { // Spectator
+	default: // Spectator
 		room.join <- &join{sender, nil}
 	}
 }
@@ -49,10 +48,16 @@ func parseMove(data json.RawMessage, sender *client) {
 		return
 	}
 
+	// Validate direction and room
+	if moveData.Direction == "" || moveData.Room == "" {
+		sender.out <- &message{"error", json.RawMessage(`"invalid direction or room"`)}
+		return
+	}
+
 	// TODO Find a room with client if none declared
 	if room, ok := rooms[moveData.Room]; ok {
 		if player := room.clients[sender]; player != nil {
-			go player.move(moveData.Direction)
+			go player.move(moveData.Direction, room.game)
 		} else {
 			sender.out <- &message{"error", json.RawMessage(`"not a player"`)}
 		}
@@ -66,10 +71,16 @@ func parseDig(data json.RawMessage, sender *client) {
 		return
 	}
 
+	// Validate direction and room
+	if digData.Direction == "" || digData.Room == "" {
+		sender.out <- &message{"error", json.RawMessage(`"invalid direction or room"`)}
+		return
+	}
+
 	// TODO Find a room with client if none declared
 	if room, ok := rooms[digData.Room]; ok {
 		if runner, ok := room.clients[sender].(*runner); ok {
-			go runner.dig(digData.Direction)
+			go runner.dig(digData.Direction, room.game)
 		} else {
 			sender.out <- &message{"error", json.RawMessage(`"not a runner"`)}
 		}

@@ -10,21 +10,12 @@ func TestClose(t *testing.T) {
 	conn, _ := net.Pipe()
 	client := newClient(conn)
 
-	room := newRoom("test")
-	room.join <- &join{client, nil}
-
 	client.close() // First
 	client.close() // Second
 
-	// Verify rooms are left
-	room.leave <- nil // TODO
-	if _, ok := room.clients[client]; ok {
-		t.Fail() // TODO
-	}
-
 	// Verify output channel is closed
 	if _, ok := <-client.out; ok {
-		t.Fail() // TODO
+		t.Error("channel not closed")
 	}
 
 	// Verify connection is closed
