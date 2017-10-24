@@ -22,7 +22,8 @@ func parseJoin(data json.RawMessage, sender *client) {
 
 	// Validate name and room
 	if joinData.Name == "" || joinData.Room == "" {
-		sender.out <- &message{"error", json.RawMessage(`"invalid name or room"`)}
+		sender.out <- &message{"error",
+			json.RawMessage(`"invalid name or room"`)}
 		return
 	}
 
@@ -50,7 +51,8 @@ func parseMove(data json.RawMessage, sender *client) {
 
 	// Validate direction and room
 	if moveData.Direction == "" || moveData.Room == "" {
-		sender.out <- &message{"error", json.RawMessage(`"invalid direction or room"`)}
+		sender.out <- &message{"error",
+			json.RawMessage(`"invalid direction or room"`)}
 		return
 	}
 
@@ -59,7 +61,8 @@ func parseMove(data json.RawMessage, sender *client) {
 		if player := room.clients[sender]; player != nil {
 			go player.move(moveData.Direction, room.game)
 		} else {
-			sender.out <- &message{"error", json.RawMessage(`"not a player"`)}
+			sender.out <- &message{"error",
+				json.RawMessage(`"not a player"`)}
 		}
 	}
 }
@@ -73,7 +76,8 @@ func parseDig(data json.RawMessage, sender *client) {
 
 	// Validate direction and room
 	if digData.Direction == "" || digData.Room == "" {
-		sender.out <- &message{"error", json.RawMessage(`"invalid direction or room"`)}
+		sender.out <- &message{"error",
+			json.RawMessage(`"invalid direction or room"`)}
 		return
 	}
 
@@ -82,7 +86,8 @@ func parseDig(data json.RawMessage, sender *client) {
 		if runner, ok := room.clients[sender].(*runner); ok {
 			go runner.dig(digData.Direction, room.game)
 		} else {
-			sender.out <- &message{"error", json.RawMessage(`"not a runner"`)}
+			sender.out <- &message{"error",
+				json.RawMessage(`"not a runner"`)}
 		}
 	}
 }
@@ -96,6 +101,7 @@ func (m *message) parse(sender *client) {
 	case "dig":
 		go parseDig(m.Data, sender)
 	default:
-		sender.out <- &message{"error", json.RawMessage(`"invalid event"`)}
+		sender.out <- &message{"error",
+			json.RawMessage(`"invalid event"`)}
 	}
 }

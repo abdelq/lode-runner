@@ -2,9 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"log"
-	"net"
 	"os"
 	"reflect"
 	"testing"
@@ -16,7 +16,7 @@ func TestMain(m *testing.M) {
 }
 
 // TODO Rename
-func testMessage(t *testing.T, conn net.Conn, expectedMsg message) {
+func testMessage(t *testing.T, conn io.Reader, expectedMsg message) {
 	t.Helper()
 
 	receivedMsg := message{}

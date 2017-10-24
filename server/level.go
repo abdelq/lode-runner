@@ -11,36 +11,38 @@ type level struct {
 	grid [][]byte
 }
 
-type position struct{ x, y int }
-
+// Tiles
 const (
-	//SPACE         = ' '
-	//NORMAL_BRICK  = '#'
-	//SOLID_BRICK   = '@'
-	//NORMAL_LADDER = 'H'
-	//ROPE          = '-'
-	//FALSE_BRICK   = 'X'
-	//ESCAPE_LADDER = 'S'
-	//GOLD          = '$'
-	GUARD  = '0'
-	RUNNER = '&'
+	// TODO Order/Rename
+	EMPTY        = ' '
+	RUNNER       = '&'
+	GUARD        = '0'
+	BRICK        = '#'
+	SOLIDBRICK   = '@'
+	FALSEBRICK   = 'X'
+	LADDER       = 'H'
+	ESCAPELADDER = 'S'
+	ROPE         = '-'
+	GOLD         = '$'
 )
 
-// TODO
-func newLevel() *level {
-	level := &level{}
-	go level.init(1)
-	return level
-}
-
-func (l *level) init(num int) error {
+func newLevel(num int) (*level, error) {
 	filename := fmt.Sprintf("levels/%03d.lvl", num)
+
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	l.num = num
-	l.grid = bytes.Split(content, []byte("\n"))
-	return nil
+	return &level{num, bytes.Split(content, []byte("\n"))}, nil
+}
+
+func (l *level) print() {
+	for _, row := range l.grid {
+		fmt.Println(string(row))
+	}
+}
+
+func (l *level) emptyBelow(pos position) bool {
+	return l.grid[pos.y+1][pos.x] == EMPTY
 }
