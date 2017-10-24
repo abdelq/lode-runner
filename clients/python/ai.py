@@ -1,2 +1,0 @@
-name = "player"
-room = "room"
