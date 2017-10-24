@@ -15,17 +15,16 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-// TODO Rename
-func testMessage(t *testing.T, conn io.Reader, expectedMsg message) {
+func testMessageReception(t *testing.T, conn io.Reader, expected message) {
 	t.Helper()
 
-	receivedMsg := message{}
-	if err := json.NewDecoder(conn).Decode(&receivedMsg); err != nil {
+	received := message{}
+	if err := json.NewDecoder(conn).Decode(&received); err != nil {
 		t.Error(err)
 		return
 	}
 
-	if !reflect.DeepEqual(expectedMsg, receivedMsg) {
-		t.Errorf("expected: %s, received: %s", expectedMsg, receivedMsg)
+	if !reflect.DeepEqual(expected, received) {
+		t.Errorf("expected: %s, received: %s", expected, received)
 	}
 }

@@ -13,9 +13,11 @@ func TestClose(t *testing.T) {
 	client.close() // First
 	client.close() // Second
 
+	// TODO Verify all rooms are left
+
 	// Verify output channel is closed
 	if _, ok := <-client.out; ok {
-		t.Error("channel not closed")
+		t.Error("output channel not closed")
 	}
 
 	// Verify connection is closed

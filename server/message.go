@@ -10,20 +10,30 @@ type message struct {
 	Data  json.RawMessage
 }
 
+// Errors
+var errorMsg = map[string]*message{ // TODO Variable name + Structure
+	"invalidEvent":     &message{"error", json.RawMessage(`"invalid event"`)},
+	"invalidName":      &message{"error", json.RawMessage(`"invalid name"`)},
+	"invalidDirection": &message{"error", json.RawMessage(`"invalid direction"`)},
+	"invalidRoom":      &message{"error", json.RawMessage(`"invalid room"`)},
+	"notAPlayer":       &message{"error", json.RawMessage(`"not a player"`)},
+	"notARunner":       &message{"error", json.RawMessage(`"not a runner"`)},
+}
+
 func parseJoin(data json.RawMessage, sender *client) {
-	var joinData struct {
-		Name, Room string
-		Role       uint8
-	}
+	var joinData struct{ Name, Room, Role string }
 	if err := json.Unmarshal(data, &joinData); err != nil {
 		log.Println(err)
 		return
 	}
+	// TODO Trim all + Downcase role
 
-	// Validate name and room
-	if joinData.Name == "" || joinData.Room == "" {
-		sender.out <- &message{"error",
-			json.RawMessage(`"invalid name or room"`)}
+	if joinData.Name == "" {
+		sender.out <- errorMsg["invalidName"]
+		return
+	}
+	if joinData.Room == "" {
+		sender.out <- errorMsg["invalidRoom"]
 		return
 	}
 
@@ -33,67 +43,74 @@ func parseJoin(data json.RawMessage, sender *client) {
 	}
 
 	switch joinData.Role {
-	case 0: // Runner
+	case "", "runner": // Runner
 		room.join <- &join{sender, &runner{name: joinData.Name}}
-	case 1: // Guard
+	case "guard": // Guard
 		room.join <- &join{sender, &guard{name: joinData.Name}}
 	default: // Spectator
 		room.join <- &join{sender, nil}
 	}
 }
 
+// TODO Move to game package
+// TODO Remove repetition with parseDig
 func parseMove(data json.RawMessage, sender *client) {
 	var moveData struct{ Direction, Room string }
 	if err := json.Unmarshal(data, &moveData); err != nil {
 		log.Println(err)
 		return
 	}
+	// TODO Trim all + Downcase direction
 
-	// Validate direction and room
-	if moveData.Direction == "" || moveData.Room == "" {
-		sender.out <- &message{"error",
-			json.RawMessage(`"invalid direction or room"`)}
+	if moveData.Direction == "" {
+		sender.out <- errorMsg["invalidDirection"]
+		return
+	}
+	if moveData.Room == "" { // TODO Find a room with client
+		sender.out <- errorMsg["invalidRoom"]
 		return
 	}
 
-	// TODO Find a room with client if none declared
 	if room, ok := rooms[moveData.Room]; ok {
 		if player := room.clients[sender]; player != nil {
 			go player.move(moveData.Direction, room.game)
 		} else {
-			sender.out <- &message{"error",
-				json.RawMessage(`"not a player"`)}
+			sender.out <- errorMsg["notAPlayer"]
 		}
 	}
 }
 
+// TODO Move to game package
+// TODO Remove repetition with parseMove
 func parseDig(data json.RawMessage, sender *client) {
 	var digData struct{ Direction, Room string }
 	if err := json.Unmarshal(data, &digData); err != nil {
 		log.Println(err)
 		return
 	}
+	// TODO Trim all + Downcase direction
 
-	// Validate direction and room
-	if digData.Direction == "" || digData.Room == "" {
-		sender.out <- &message{"error",
-			json.RawMessage(`"invalid direction or room"`)}
+	if digData.Direction == "" {
+		sender.out <- errorMsg["invalidDirection"]
+		return
+	}
+	if digData.Room == "" { // TODO Find a room with client
+		sender.out <- errorMsg["invalidRoom"]
 		return
 	}
 
-	// TODO Find a room with client if none declared
 	if room, ok := rooms[digData.Room]; ok {
 		if runner, ok := room.clients[sender].(*runner); ok {
 			go runner.dig(digData.Direction, room.game)
 		} else {
-			sender.out <- &message{"error",
-				json.RawMessage(`"not a runner"`)}
+			sender.out <- errorMsg["notARunner"]
 		}
 	}
 }
 
 func (m *message) parse(sender *client) {
-	switch m.Event {
+	// TODO Default should send to parser for game directly
+	switch m.Event { // TODO Trim + Downcase
 	case "join":
 		go parseJoin(m.Data, sender)
 	case "move":
@@ -101,7 +118,6 @@ func (m *message) parse(sender *client) {
 	case "dig":
 		go parseDig(m.Data, sender)
 	default:
-		sender.out <- &message{"error",
-			json.RawMessage(`"invalid event"`)}
+		sender.out <- errorMsg["invalidEvent"]
 	}
 }
