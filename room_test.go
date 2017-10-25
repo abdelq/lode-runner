@@ -3,6 +3,8 @@ package main
 import (
 	"net"
 	"testing"
+
+	"github.com/abdelq/lode-runner/game"
 )
 
 // TODO Uppercase
@@ -31,32 +33,32 @@ func testListen(t *testing.T) {
 		})
 
 		t.Run("runner", func(t *testing.T) {
-			room.join <- &join{clients["runner"], new(runner)}
+			room.join <- &join{clients["runner"], new(game.Runner)}
 
 			player, ok := room.clients[clients["runner"]]
 			if !ok {
 				t.Fail() // TODO
 			}
 
-			runner, ok := player.(*runner)
+			runner, ok := player.(*game.Runner)
 			if !ok {
 				t.Fail() // TODO
 			}
 
-			if room.game.runner != runner {
+			if room.game.Runner != runner {
 				t.Fail() // TODO
 			}
 		})
 
 		t.Run("guard", func(t *testing.T) {
-			room.join <- &join{clients["guard"], new(guard)}
+			room.join <- &join{clients["guard"], new(game.Guard)}
 
 			player, ok := room.clients[clients["guard"]]
 			if !ok {
 				t.Fail() // TODO
 			}
 
-			guard, ok := player.(*guard)
+			guard, ok := player.(*game.Guard)
 			if !ok {
 				t.Fail() // TODO
 			}
@@ -89,7 +91,7 @@ func testListen(t *testing.T) {
 		if _, ok := room.clients[clients["runner"]]; ok {
 			t.Fail() // TODO
 		}
-		if room.game.runner != nil {
+		if room.game.Runner != nil {
 			t.Fail()
 		}
 
@@ -109,12 +111,12 @@ func TestHasPlayer(t *testing.T) {
 		t.Fail() // TODO
 	}
 
-	room.clients[new(client)] = &runner{name: "runner"}
+	room.clients[new(client)] = &game.Runner{Name: "runner"}
 	if !room.hasPlayer("runner") {
 		t.Fail() // TODO
 	}
 
-	room.clients[new(client)] = &guard{name: "guard"}
+	room.clients[new(client)] = &game.Guard{Name: "guard"}
 	if !room.hasPlayer("guard") {
 		t.Fail() // TODO
 	}

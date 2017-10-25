@@ -1,8 +1,8 @@
-package main
+package game
 
-type player interface {
+type Player interface {
 	init([][]byte)
-	move(string, *game)
+	Move(string, *Game)
 }
 
 type position struct{ x, y int }

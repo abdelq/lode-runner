@@ -1,14 +1,14 @@
-package main
+package game
 
 import "math/rand"
 
-type guard struct {
-	name  string
+type Guard struct {
+	Name  string
 	pos   position
 	state state
 }
 
-func (g *guard) init(grid [][]byte) {
+func (g *Guard) init(grid [][]byte) {
 	// TODO Move to level to stop the repeated calls
 	var positions []position
 	for i, row := range grid {
@@ -24,6 +24,6 @@ func (g *guard) init(grid [][]byte) {
 	g.pos = positions[rand.Intn(len(positions))]
 }
 
-func (g *guard) move(direction string, game *game) {
+func (g *Guard) Move(direction string, game *Game) {
 	// TODO
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"log"
+
+	"github.com/abdelq/lode-runner/game"
 )
 
 type message struct {
@@ -44,9 +46,9 @@ func parseJoin(data json.RawMessage, sender *client) {
 
 	switch joinData.Role {
 	case "", "runner": // Runner
-		room.join <- &join{sender, &runner{name: joinData.Name}}
+		room.join <- &join{sender, &game.Runner{Name: joinData.Name}}
 	case "guard": // Guard
-		room.join <- &join{sender, &guard{name: joinData.Name}}
+		room.join <- &join{sender, &game.Guard{Name: joinData.Name}}
 	default: // Spectator
 		room.join <- &join{sender, nil}
 	}
@@ -73,7 +75,7 @@ func parseMove(data json.RawMessage, sender *client) {
 
 	if room, ok := rooms[moveData.Room]; ok {
 		if player := room.clients[sender]; player != nil {
-			go player.move(moveData.Direction, room.game)
+			go player.Move(moveData.Direction, room.game)
 		} else {
 			sender.out <- errorMsg["notAPlayer"]
 		}
@@ -100,8 +102,8 @@ func parseDig(data json.RawMessage, sender *client) {
 	}
 
 	if room, ok := rooms[digData.Room]; ok {
-		if runner, ok := room.clients[sender].(*runner); ok {
-			go runner.dig(digData.Direction, room.game)
+		if runner, ok := room.clients[sender].(*game.Runner); ok {
+			go runner.Dig(digData.Direction, room.game)
 		} else {
 			sender.out <- errorMsg["notARunner"]
 		}

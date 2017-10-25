@@ -1,12 +1,12 @@
-package main
+package game
 
-type runner struct {
-	name  string
+type Runner struct {
+	Name  string
 	pos   position
 	state state
 }
 
-func (r *runner) init(grid [][]byte) {
+func (r *Runner) init(grid [][]byte) {
 	for i := len(grid) - 1; i >= 0; i-- {
 		for j := len(grid[i]) - 1; j >= 0; j-- {
 			if grid[i][j] == RUNNER {
@@ -18,7 +18,7 @@ func (r *runner) init(grid [][]byte) {
 }
 
 // TODO
-func (r *runner) move(direction string, game *game) {
+func (r *Runner) Move(direction string, game *Game) {
 	// TODO Timeout ?
 	if r.state == DIGGING {
 		return
@@ -46,7 +46,7 @@ func (r *runner) move(direction string, game *game) {
 		r.pos.x++
 	}
 
-	if direction == "down" || game.lvl.emptyBelow(r.pos) {
+	if direction == "down" || game.Lvl.emptyBelow(r.pos) {
 		r.state = FALLING
 	}
 
@@ -55,7 +55,7 @@ func (r *runner) move(direction string, game *game) {
 }
 
 // TODO
-func (r *runner) dig(direction string, game *game) {
+func (r *Runner) Dig(direction string, game *Game) {
 	// TODO Timeout ?
 	/*var digPos *position
 	switch direction {

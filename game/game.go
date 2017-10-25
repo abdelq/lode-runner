@@ -1,18 +1,18 @@
-package main
+package game
 
-type game struct {
-	lvl    *level
-	runner *runner
-	guards []*guard
+type Game struct {
+	Lvl    *level
+	Runner *Runner
+	Guards []*Guard
 }
 
-func newGame() *game {
-	return &game{guards: make([]*guard, 0, 1)}
+func NewGame() *Game {
+	return &Game{Guards: make([]*Guard, 0, 1)}
 }
 
 // TODO
-func (g *game) start() {
-	g.lvl, _ = newLevel(1)
+func (g *Game) Start() {
+	g.Lvl, _ = newLevel(1)
 	/*if err != nil {
 		log.Println(err)
 		return
@@ -36,24 +36,24 @@ func (g *game) start() {
 }
 
 // TODO
-func (g *game) stop() {
+func (g *Game) Stop() {
 	// TODO Add argument to know if it's lost by runner or guards
 	// TODO Decide the winner
 	// TODO Call for a leave of everyone in room
 	// TODO Delete room with its game
 }
 
-func (g *game) deleteGuard(guard *guard) {
+func (g *Game) DeleteGuard(guard *Guard) {
 	// TODO Rename v
-	for i, v := range g.guards {
+	for i, v := range g.Guards {
 		if guard == v {
-			copy(g.guards[i:], g.guards[i+1:])
-			g.guards[len(g.guards)-1] = nil
-			g.guards = g.guards[:len(g.guards)-1]
+			copy(g.Guards[i:], g.Guards[i+1:])
+			g.Guards[len(g.Guards)-1] = nil
+			g.Guards = g.Guards[:len(g.Guards)-1]
 			return
 		}
 	}
 }
 
 // TODO
-func (g *game) checkCollisions() {}
+func (g *Game) checkCollisions() {}
