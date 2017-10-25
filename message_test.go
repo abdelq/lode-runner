@@ -8,11 +8,12 @@ import (
 
 // TODO Rename
 var errors = map[string]message{
-	"invalidEvent":      message{"error", json.RawMessage(`"invalid event"`)},
-	"invalidNameOrRoom": message{"error", json.RawMessage(`"invalid name or room"`)},
-	"invalidDirOrRoom":  message{"error", json.RawMessage(`"invalid direction or room"`)},
-	"notAPlayer":        message{"error", json.RawMessage(`"not a player"`)},
-	"notARunner":        message{"error", json.RawMessage(`"not a runner"`)},
+	"invalidEvent":     message{"error", json.RawMessage(`"invalid event"`)},
+	"invalidName":      message{"error", json.RawMessage(`"invalid name"`)},
+	"invalidDirection": message{"error", json.RawMessage(`"invalid direction"`)},
+	"invalidRoom":      message{"error", json.RawMessage(`"invalid room"`)},
+	"notAPlayer":       message{"error", json.RawMessage(`"not a player"`)},
+	"notARunner":       message{"error", json.RawMessage(`"not a runner"`)},
 }
 
 func TestParse(t *testing.T) {
@@ -34,11 +35,11 @@ func TestParseJoin(t *testing.T) {
 
 	// No name
 	parseJoin(json.RawMessage(`{"name": "", "room": "test"}`), clients["spectator"])
-	testMessageReception(t, clientConn, errors["invalidNameOrRoom"])
+	testMessageReception(t, clientConn, errors["invalidName"])
 
 	// No room
 	parseJoin(json.RawMessage(`{"name": "test", "room": ""}`), clients["spectator"])
-	testMessageReception(t, clientConn, errors["invalidNameOrRoom"])
+	testMessageReception(t, clientConn, errors["invalidRoom"])
 
 	// TODO
 	/*parseJoin(json.RawMessage(`{"name": "test", "room": "test"}`), client)
@@ -80,10 +81,10 @@ func TestParseMove(t *testing.T) {
 	newRoom("test")
 
 	parseMove(json.RawMessage(`{"direction": "", "room": "test"}`), client)
-	testMessageReception(t, clientConn, errors["invalidDirOrRoom"])
+	testMessageReception(t, clientConn, errors["invalidDirection"])
 
 	parseMove(json.RawMessage(`{"direction": "up", "room": ""}`), client)
-	testMessageReception(t, clientConn, errors["invalidDirOrRoom"])
+	testMessageReception(t, clientConn, errors["invalidRoom"])
 
 	parseMove(json.RawMessage(`{"direction": "up", "room": "test"}`), client)
 	testMessageReception(t, clientConn, errors["notAPlayer"])
@@ -99,10 +100,10 @@ func TestParseDig(t *testing.T) {
 	newRoom("test")
 
 	parseDig(json.RawMessage(`{"direction": "", "room": "test"}`), client)
-	testMessageReception(t, clientConn, errors["invalidDirOrRoom"])
+	testMessageReception(t, clientConn, errors["invalidDirection"])
 
 	parseDig(json.RawMessage(`{"direction": "up", "room": ""}`), client)
-	testMessageReception(t, clientConn, errors["invalidDirOrRoom"])
+	testMessageReception(t, clientConn, errors["invalidRoom"])
 
 	parseDig(json.RawMessage(`{"direction": "up", "room": "test"}`), client)
 	testMessageReception(t, clientConn, errors["notARunner"])
