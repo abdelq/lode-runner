@@ -42,6 +42,11 @@ func (r *room) listen() {
 				client.out <- &message{"error", json.RawMessage(`"already in room"`)}
 				continue
 			}
+			/*else if r.hasPlayer(joinData.Name) {
+				// TODO Maybe move this logic in room.go
+				sender.out <- &message{"error", json.RawMessage(`"name already used"`)}
+				return
+			}*/
 
 			r.clients[client] = nil
 			if r.game.lvl != nil || player == nil { // Game started or spectator
@@ -52,22 +57,26 @@ func (r *room) listen() {
 			switch p := player.(type) {
 			case *runner:
 				if game.runner != nil {
-					client.out <- &message{"error", json.RawMessage(`"runner already joined"`)} // TODO
+					client.out <- &message{"error",
+						json.RawMessage(`"runner already joined"`)}
 					continue
 				}
 
 				r.clients[client] = p
 				game.runner = p
-				r.broadcast <- &message{"join", json.RawMessage(`"runner ` + p.name + ` joined"`)}
+				r.broadcast <- &message{"join",
+					json.RawMessage(`{"name": ` + p.name + `, "role": 0}`)}
 			case *guard:
 				if len(game.guards) == cap(game.guards) {
-					client.out <- &message{"error", json.RawMessage(`"guards already joined"`)} // TODO
+					client.out <- &message{"error",
+						json.RawMessage(`"guards already joined"`)}
 					continue
 				}
 
 				r.clients[client] = p
 				game.guards = append(game.guards, p)
-				r.broadcast <- &message{"join", json.RawMessage(`"guard ` + p.name + ` joined"`)}
+				r.broadcast <- &message{"join",
+					json.RawMessage(`{"name": ` + p.name + `, "role": 1}`)}
 			}
 
 			if game.runner != nil && len(game.guards) == cap(game.guards) {
@@ -81,18 +90,23 @@ func (r *room) listen() {
 				continue
 			}
 
-			game := r.game // TODO
 			switch p := player.(type) {
 			case *runner:
-				game.runner = nil
-				r.broadcast <- &message{"leave", json.RawMessage(`"runner ` + p.name + ` left"`)}
+				r.game.runner = nil
+				r.broadcast <- &message{"leave",
+					json.RawMessage(`{"name": ` + p.name + `, "role": 0}`)}
 			case *guard:
-				game.deleteGuard(p)
-				r.broadcast <- &message{"leave", json.RawMessage(`"guard ` + p.name + ` left"`)}
+				r.game.deleteGuard(p)
+				r.broadcast <- &message{"leave",
+					json.RawMessage(`{"name": ` + p.name + `, "role": 1}`)}
 			}
 
-			if game.lvl != nil && (game.runner == nil || len(game.guards) == 0) {
-				go game.stop()
+			if r.game.lvl != nil {
+				if r.game.runner == nil {
+					go r.game.stop() // TODO
+				} else if len(r.game.guards) == 0 {
+					go r.game.stop() // TODO
+				}
 			}
 		case message := <-r.broadcast:
 			for client := range r.clients {

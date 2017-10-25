@@ -1,17 +1,16 @@
 package main
 
-import (
-	"math/rand"
-	"time"
-)
+import "math/rand"
 
 type guard struct {
-	name string
-	pos  position
+	name  string
+	pos   position
+	state state
 }
 
 func (g *guard) init(grid [][]byte) {
-	positions := make([]position, 0, 6)
+	// TODO Move to level to stop the repeated calls
+	var positions []position
 	for i, row := range grid {
 		for j, cell := range row {
 			if cell == GUARD {
@@ -20,10 +19,11 @@ func (g *guard) init(grid [][]byte) {
 		}
 	}
 
-	// Pick at random
-	rand.Seed(time.Now().UnixNano())
+	// TODO Verify it's not taken already
+	// TODO Real random or no random ?
 	g.pos = positions[rand.Intn(len(positions))]
 }
 
-// TODO
-func (g *guard) move(direction string) {}
+func (g *guard) move(direction string, game *game) {
+	// TODO
+}

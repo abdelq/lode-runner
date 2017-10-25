@@ -5,7 +5,8 @@ import (
 	"testing"
 )
 
-func TestListen(t *testing.T) {
+// TODO Uppercase
+func testListen(t *testing.T) {
 	room := newRoom("test")
 
 	conn, _ := net.Pipe()
