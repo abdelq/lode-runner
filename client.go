@@ -35,6 +35,7 @@ func (c *client) close() {
 			}
 		}
 
+		// TODO Make sure channel finished
 		close(c.out)
 		c.conn.Close()
 

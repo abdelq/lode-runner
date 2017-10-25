@@ -15,6 +15,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+// TODO Rename function
 func testMessageReception(t *testing.T, conn io.Reader, expected message) {
 	t.Helper()
 

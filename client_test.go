@@ -13,7 +13,7 @@ func TestClose(t *testing.T) {
 	client.close() // First
 	client.close() // Second
 
-	// TODO Verify all rooms are left
+	// TODO Verify rooms are left
 
 	// Verify output channel is closed
 	if _, ok := <-client.out; ok {
