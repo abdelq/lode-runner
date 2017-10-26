@@ -29,3 +29,5 @@ func testMessageReception(t *testing.T, conn io.Reader, expected message) {
 		t.Errorf("expected: %s, received: %s", expected, received)
 	}
 }
+
+// TODO Write a real dial helper function

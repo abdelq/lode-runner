@@ -25,3 +25,5 @@ func TestClose(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+// TODO Write test functions for read/write
