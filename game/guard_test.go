@@ -24,7 +24,7 @@ func posInPositions(pos position, positions []position) bool {
 }
 
 func TestGuardInit(t *testing.T) {
-	guard := &guard{}
+	guard := new(Guard)
 	for _, test := range guardInitTests {
 		lvl, err := newLevel(test.lvl)
 		if err != nil {

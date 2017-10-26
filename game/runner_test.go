@@ -14,7 +14,7 @@ var runnerInitTests = []struct {
 }
 
 func TestRunnerInit(t *testing.T) {
-	runner := new(runner)
+	runner := new(Runner)
 	for _, test := range runnerInitTests {
 		lvl, err := newLevel(test.lvl)
 		if err != nil {
