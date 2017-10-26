@@ -70,7 +70,7 @@ func TestParseJoin(t *testing.T) {
 }
 
 // TODO Improve
-func TestParseMove(t *testing.T) {
+/*func TestParseMove(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	client := newClient(serverConn)
 
@@ -90,10 +90,10 @@ func TestParseMove(t *testing.T) {
 	testMessageReception(t, clientConn, errors["notAPlayer"])
 
 	// TODO Try joining as spectator
-}
+}*/
 
 // TODO Improve
-func TestParseDig(t *testing.T) {
+/*func TestParseDig(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	client := newClient(serverConn)
 
@@ -107,4 +107,4 @@ func TestParseDig(t *testing.T) {
 
 	parseDig(json.RawMessage(`{"direction": "up", "room": "test"}`), client)
 	testMessageReception(t, clientConn, errors["notARunner"])
-}
+}*/

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"log"
+	//"strings"
 
 	"github.com/abdelq/lode-runner/game"
 )
@@ -12,30 +13,22 @@ type message struct {
 	Data  json.RawMessage
 }
 
-// Errors
-var errorMsg = map[string]*message{ // TODO Variable name + Structure
-	"invalidEvent":     &message{"error", json.RawMessage(`"invalid event"`)},
-	"invalidName":      &message{"error", json.RawMessage(`"invalid name"`)},
-	"invalidDirection": &message{"error", json.RawMessage(`"invalid direction"`)},
-	"invalidRoom":      &message{"error", json.RawMessage(`"invalid room"`)},
-	"notAPlayer":       &message{"error", json.RawMessage(`"not a player"`)},
-	"notARunner":       &message{"error", json.RawMessage(`"not a runner"`)},
-}
-
 func parseJoin(data json.RawMessage, sender *client) {
 	var joinData struct{ Name, Room, Role string }
 	if err := json.Unmarshal(data, &joinData); err != nil {
 		log.Println(err)
 		return
 	}
-	// TODO Trim all + Downcase role
+	//joinData.Name = strings.TrimSpace(joinData.Name)                  // TODO
+	//joinData.Room = strings.TrimSpace(joinData.Room)                  // TODO
+	//joinData.Role = strings.ToLower(strings.TrimSpace(joinData.Role)) // TODO
 
 	if joinData.Name == "" {
-		sender.out <- errorMsg["invalidName"]
+		sender.out <- &message{"error", json.RawMessage(`"invalid name"`)}
 		return
 	}
 	if joinData.Room == "" {
-		sender.out <- errorMsg["invalidRoom"]
+		sender.out <- &message{"error", json.RawMessage(`"invalid room"`)}
 		return
 	}
 
@@ -55,71 +48,50 @@ func parseJoin(data json.RawMessage, sender *client) {
 }
 
 // TODO Move to game package
-// TODO Remove repetition with parseDig
-func parseMove(data json.RawMessage, sender *client) {
-	var moveData struct{ Direction, Room string }
-	if err := json.Unmarshal(data, &moveData); err != nil {
+func parseGame(msg *message, sender *client) {
+	var gameData struct{ Direction, Room string }
+	if err := json.Unmarshal(msg.Data, &gameData); err != nil {
 		log.Println(err)
 		return
 	}
-	// TODO Trim all + Downcase direction
+	//gameData.Direction = strings.ToLower(strings.TrimSpace(gameData.Direction)) // TODO
+	//gameData.Room = strings.TrimSpace(gameData.Room)                            // TODO
 
-	if moveData.Direction == "" {
-		sender.out <- errorMsg["invalidDirection"]
+	if gameData.Direction == "" {
+		sender.out <- &message{"error", json.RawMessage(`"invalid direction"`)}
 		return
 	}
-	if moveData.Room == "" { // TODO Find a room with client
-		sender.out <- errorMsg["invalidRoom"]
-		return
-	}
-
-	if room, ok := rooms[moveData.Room]; ok {
-		if player := room.clients[sender]; player != nil {
-			go player.Move(moveData.Direction, room.game)
-		} else {
-			sender.out <- errorMsg["notAPlayer"]
-		}
-	}
-}
-
-// TODO Move to game package
-// TODO Remove repetition with parseMove
-func parseDig(data json.RawMessage, sender *client) {
-	var digData struct{ Direction, Room string }
-	if err := json.Unmarshal(data, &digData); err != nil {
-		log.Println(err)
-		return
-	}
-	// TODO Trim all + Downcase direction
-
-	if digData.Direction == "" {
-		sender.out <- errorMsg["invalidDirection"]
-		return
-	}
-	if digData.Room == "" { // TODO Find a room with client
-		sender.out <- errorMsg["invalidRoom"]
+	if gameData.Room == "" { // TODO Find a room with client
+		sender.out <- &message{"error", json.RawMessage(`"invalid room"`)}
 		return
 	}
 
-	if room, ok := rooms[digData.Room]; ok {
-		if runner, ok := room.clients[sender].(*game.Runner); ok {
-			go runner.Dig(digData.Direction, room.game)
-		} else {
-			sender.out <- errorMsg["notARunner"]
+	if room, ok := rooms[gameData.Room]; ok {
+		player := room.clients[sender]
+		if msg.Event == "move" {
+			if player != nil {
+				go player.Move(gameData.Direction, room.game)
+			} else {
+				sender.out <- &message{"error", json.RawMessage(`"not a player"`)}
+			}
+		} else if msg.Event == "dig" {
+			if runner, ok := player.(*game.Runner); ok {
+				go runner.Dig(gameData.Direction, room.game)
+			} else {
+				sender.out <- &message{"error", json.RawMessage(`"not a runner"`)}
+			}
 		}
 	}
 }
 
 func (m *message) parse(sender *client) {
-	// TODO Default should send to parser for game directly
-	switch m.Event { // TODO Trim + Downcase
-	case "join":
+	//m.Event = strings.ToLower(strings.TrimSpace(m.Event)) // TODO
+
+	if m.Event == "join" {
 		go parseJoin(m.Data, sender)
-	case "move":
-		go parseMove(m.Data, sender)
-	case "dig":
-		go parseDig(m.Data, sender)
-	default:
-		sender.out <- errorMsg["invalidEvent"]
+	} else if m.Event == "move" || m.Event == "dig" { // TODO Move to game package
+		go parseGame(m, sender) // TODO Rename
+	} else { // TODO Move to game package
+		sender.out <- &message{"error", json.RawMessage(`"invalid event"`)}
 	}
 }
