@@ -6,6 +6,8 @@ import (
 	"testing"
 )
 
+// TODO Write test functions for read/write
+
 func TestClose(t *testing.T) {
 	conn, _ := net.Pipe()
 	client := newClient(conn)
@@ -25,5 +27,3 @@ func TestClose(t *testing.T) {
 		t.Error(err)
 	}
 }
-
-// TODO Write test functions for read/write

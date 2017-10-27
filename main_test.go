@@ -15,6 +15,8 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+// TODO Write a real dial helper function
+
 // TODO Rename function
 func testMessageReception(t *testing.T, conn io.Reader, expected message) {
 	t.Helper()
@@ -29,5 +31,3 @@ func testMessageReception(t *testing.T, conn io.Reader, expected message) {
 		t.Errorf("expected: %s, received: %s", expected, received)
 	}
 }
-
-// TODO Write a real dial helper function
