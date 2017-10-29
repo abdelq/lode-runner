@@ -31,22 +31,37 @@ func newRoom(name string) *room {
 		game:      game.NewGame(),
 	}
 
+	rooms[name] = room // TODO
 	go room.listen()
-	rooms[name] = room
 
 	return room
 }
 
+func (r *room) listen() {
+	for {
+		select {
+		case join := <-r.join:
+			go r.joinGame(join.client, join.player)
+		case client := <-r.leave:
+			go r.leaveGame(client)
+		case message := <-r.broadcast:
+			for client := range r.clients {
+				client.out <- message
+			}
+		}
+	}
+}
+
+// TODO Rename
 func (r *room) joinGame(client *client, player game.Player) {
 	if _, ok := r.clients[client]; ok {
-		client.out <- &message{"error", json.RawMessage(`"already in room"`)}
+		client.out <- newErrorMessage("already in room") // TODO Error message
 		return
 	}
-	/*else if r.hasPlayer(joinData.Name) {
-		// TODO Maybe move this logic in room.go
-		sender.out <- &message{"error", json.RawMessage(`"name already used"`)}
+	if r.hasPlayer(player) { // TODO Find a better way
+		client.out <- newErrorMessage("name already used") // TODO Error message
 		return
-	}*/
+	}
 
 	r.clients[client] = nil
 	if r.game.Lvl != nil || player == nil { // Game started or spectator
@@ -56,26 +71,22 @@ func (r *room) joinGame(client *client, player game.Player) {
 	switch p := player.(type) {
 	case *game.Runner:
 		if r.game.Runner != nil {
-			client.out <- &message{"error",
-				json.RawMessage(`"runner already joined"`)}
+			client.out <- newErrorMessage("runner already joined") // TODO Error message
 			return
 		}
 
 		r.clients[client] = p
 		r.game.Runner = p
-		r.broadcast <- &message{"join",
-			json.RawMessage(`{"name": ` + p.Name + `, "role": 0}`)}
+		r.broadcast <- newJoinMessage(p.Name, 0)
 	case *game.Guard:
 		if len(r.game.Guards) == cap(r.game.Guards) {
-			client.out <- &message{"error",
-				json.RawMessage(`"guards already joined"`)}
+			client.out <- newErrorMessage("guards already joined") // TODO Error message
 			return
 		}
 
 		r.clients[client] = p
 		r.game.Guards = append(r.game.Guards, p)
-		r.broadcast <- &message{"join",
-			json.RawMessage(`{"name": ` + p.Name + `, "role": 1}`)}
+		r.broadcast <- newJoinMessage(p.Name, 1)
 	}
 
 	if r.game.Runner != nil && len(r.game.Guards) == cap(r.game.Guards) {
@@ -83,6 +94,7 @@ func (r *room) joinGame(client *client, player game.Player) {
 	}
 }
 
+// TODO Rename
 func (r *room) leaveGame(client *client) {
 	player := r.clients[client]
 	delete(r.clients, client)
@@ -94,12 +106,10 @@ func (r *room) leaveGame(client *client) {
 	switch p := player.(type) {
 	case *game.Runner:
 		r.game.Runner = nil
-		r.broadcast <- &message{"leave",
-			json.RawMessage(`{"name": ` + p.Name + `, "role": 0}`)}
+		r.broadcast <- newLeaveMessage(p.Name, 0)
 	case *game.Guard:
-		r.game.DeleteGuard(p)
-		r.broadcast <- &message{"leave",
-			json.RawMessage(`{"name": ` + p.Name + `, "role": 1}`)}
+		r.game.DeleteGuard(p) // TODO
+		r.broadcast <- newLeaveMessage(p.Name, 1)
 	}
 
 	if r.game.Lvl != nil {
@@ -111,26 +121,15 @@ func (r *room) leaveGame(client *client) {
 	}
 }
 
-func (r *room) broadcastGame(message *message) {
-	for client := range r.clients {
-		client.out <- message
+// TODO Rewrite
+func (r *room) hasPlayer(player game.Player) bool {
+	var name string
+	if runner, ok := player.(*game.Runner); ok {
+		name = runner.Name
+	} else if guard, ok := player.(*game.Guard); ok {
+		name = guard.Name
 	}
-}
 
-func (r *room) listen() {
-	for {
-		select {
-		case data := <-r.join:
-			go r.joinGame(data.client, data.player) // TODO go or no go + Rename
-		case client := <-r.leave:
-			go r.leaveGame(client) // TODO go or no go + Rename
-		case message := <-r.broadcast:
-			go r.broadcastGame(message) // TODO go or no go + Rename
-		}
-	}
-}
-
-func (r *room) hasPlayer(name string) bool {
 	for _, player := range r.clients {
 		if runner, ok := player.(*game.Runner); ok && runner.Name == name {
 			return true
