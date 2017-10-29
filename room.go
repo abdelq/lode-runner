@@ -1,10 +1,6 @@
 package main
 
-import (
-	"encoding/json"
-
-	"github.com/abdelq/lode-runner/game"
-)
+import "github.com/abdelq/lode-runner/game"
 
 var rooms = make(map[string]*room)
 
@@ -55,11 +51,11 @@ func (r *room) listen() {
 // TODO Rename
 func (r *room) joinGame(client *client, player game.Player) {
 	if _, ok := r.clients[client]; ok {
-		client.out <- newErrorMessage("already in room") // TODO Error message
+		client.out <- newErrorMessage("already in room")
 		return
 	}
-	if r.hasPlayer(player) { // TODO Find a better way
-		client.out <- newErrorMessage("name already used") // TODO Error message
+	if r.hasPlayer(player) {
+		client.out <- newErrorMessage("name already used")
 		return
 	}
 
@@ -71,7 +67,7 @@ func (r *room) joinGame(client *client, player game.Player) {
 	switch p := player.(type) {
 	case *game.Runner:
 		if r.game.Runner != nil {
-			client.out <- newErrorMessage("runner already joined") // TODO Error message
+			client.out <- newErrorMessage("runner already joined")
 			return
 		}
 
@@ -80,7 +76,7 @@ func (r *room) joinGame(client *client, player game.Player) {
 		r.broadcast <- newJoinMessage(p.Name, 0)
 	case *game.Guard:
 		if len(r.game.Guards) == cap(r.game.Guards) {
-			client.out <- newErrorMessage("guards already joined") // TODO Error message
+			client.out <- newErrorMessage("guards already joined")
 			return
 		}
 
@@ -108,7 +104,7 @@ func (r *room) leaveGame(client *client) {
 		r.game.Runner = nil
 		r.broadcast <- newLeaveMessage(p.Name, 0)
 	case *game.Guard:
-		r.game.DeleteGuard(p) // TODO
+		r.game.DeleteGuard(p)
 		r.broadcast <- newLeaveMessage(p.Name, 1)
 	}
 

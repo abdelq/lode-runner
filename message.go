@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -18,19 +19,18 @@ func newErrorMessage(err string) *message {
 	return &message{"error", json.RawMessage(strconv.Quote(err))}
 }
 
-// TODO
 func newJoinMessage(name string, role uint8) *message {
-	msg := fmt.Sprintf(`{"name": %q, "role": %d}`, name, role)
-	return &message{"join", json.RawMessage(msg)}
+	return &message{"join", json.RawMessage(fmt.Sprintf(
+		`{"name": %q, "role": %d}`, name, role,
+	))}
 }
 
-// TODO
 func newLeaveMessage(name string, role uint8) *message {
-	msg := fmt.Sprintf(`{"name": %q, "role": %d}`, name, role)
-	return &message{"leave", json.RawMessage(msg)}
+	return &message{"leave", json.RawMessage(fmt.Sprintf(
+		`{"name": %q, "role": %d}`, name, role,
+	))}
 }
 
-// TODO Clean up from game-related events
 func (m *message) parse(sender *client) {
 	m.Event = strings.ToLower(strings.TrimSpace(m.Event)) // TODO
 	switch m.Event {
@@ -82,15 +82,14 @@ func parseJoin(data json.RawMessage, sender *client) {
 
 	switch joinMessage.Role {
 	case 0: // Runner
-		room.join <- &join{sender, &game.Runner{Name: joinMessage.Name}} // TODO
+		room.join <- &join{sender, &game.Runner{Name: joinMessage.Name}}
 	case 1: // Guard
-		room.join <- &join{sender, &game.Guard{Name: joinMessage.Name}} // TODO
+		room.join <- &join{sender, &game.Guard{Name: joinMessage.Name}}
 	default: // Spectator
-		room.join <- &join{sender, nil} // TODO
+		room.join <- &join{sender, nil}
 	}
 }
 
-// TODO Move to game package
 func parseMove(data json.RawMessage, sender *client) {
 	var moveMessage *game.Message
 	if err := moveMessage.Parse(data); err != nil {
@@ -108,7 +107,6 @@ func parseMove(data json.RawMessage, sender *client) {
 	}
 }
 
-// TODO Move to game package
 func parseDig(data json.RawMessage, sender *client) {
 	var digMessage *game.Message
 	if err := digMessage.Parse(data); err != nil {
