@@ -2,14 +2,16 @@ package game
 
 type Runner struct {
 	Name  string
-	pos   position
+	pos   *position
 	state state
 }
 
-func (r *Runner) init(grid [][]byte) {
-	for i := len(grid) - 1; i >= 0; i-- {
-		for j := len(grid[i]) - 1; j >= 0; j-- {
-			if grid[i][j] == RUNNER {
+// TODO Replace in original lvl by empty
+func (r *Runner) init(game *Game) {
+	for i := len(game.Lvl.grid) - 1; i >= 0; i-- {
+		for j := len(game.Lvl.grid[i]) - 1; j >= 0; j-- {
+			if game.Lvl.grid[i][j] == RUNNER {
+				game.Lvl.grid[i][j] = EMPTY // TODO Try using cell = ?
 				r.pos.x, r.pos.y = j, i
 				return
 			}
@@ -17,58 +19,35 @@ func (r *Runner) init(grid [][]byte) {
 	}
 }
 
-// TODO
-func (r *Runner) Move(direction string, game *Game) {
-	// TODO Timeout ?
+// TODO Timeout + Direction
+func (r *Runner) Move(direction uint8, game *Game) {
 	if r.state == DIGGING {
 		return
 	}
 
-	if r.state == FALLING && direction != "down" {
-		direction = "down"
+	if r.state == FALLING && direction != DOWN {
+		direction = DOWN
 	}
 
-	/*if !game.lvl.valid_move(r.pos, direction) {
+	// TODO Check if position changes when getting into function (passage valeur)
+	if !game.Lvl.validMove(*(r.pos), direction) {
 		if r.state == FALLING {
-			hero.state &= ~STATE_FALLING
+			// TODO r.state &= ~STATE_FALLING
 		}
 		return
-	}*/
-
-	switch direction {
-	case "up":
-		r.pos.y--
-	case "left":
-		r.pos.x--
-	case "down":
-		r.pos.y++
-	case "right":
-		r.pos.x++
+	} else {
+		r.pos.set(direction)
 	}
 
-	if direction == "down" || game.Lvl.emptyBelow(r.pos) {
-		r.state = FALLING
+	if direction == DOWN || game.Lvl.emptyBelow(*(r.pos)) {
+		//r.state = FALLING
+		// TODO r.state |= FALLING
 	}
 
+	// TODO
 	//gfx_move_sprite(HERO, orig, hero.pos)
 	//game.check_collisions()
 }
 
 // TODO
-func (r *Runner) Dig(direction string, game *Game) {
-	// TODO Timeout ?
-	/*var digPos *position
-	switch direction {
-	case "left":
-		digPos = &position{r.pos.x - 1, r.pos.y + 1}
-	case "right":
-		digPos = &position{r.pos.x + 1, r.pos.y + 1}
-	default:
-		// TODO Error
-	}*/
-
-	/*if game.lvl.validDig(digPos) {
-		r.state = DIGGING
-		// bricks_break(&digPos)
-	}*/
-}
+func (r *Runner) Dig(direction uint8, game *Game) {}

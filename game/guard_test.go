@@ -23,7 +23,8 @@ func posInPositions(pos position, positions []position) bool {
 	return false
 }
 
-func TestGuardInit(t *testing.T) {
+// TODO The test should be done with NewGame capability of 3
+/*func TestGuardInit(t *testing.T) {
 	guard := new(Guard)
 	for _, test := range guardInitTests {
 		lvl, err := newLevel(test.lvl)
@@ -38,7 +39,7 @@ func TestGuardInit(t *testing.T) {
 			//t.Errorf("level %d: %+v, want %+v", test.lvl, runner.pos, test.pos)
 		}
 	}
-}
+}*/
 
 // TODO
 func TestGuardMove(t *testing.T) {}

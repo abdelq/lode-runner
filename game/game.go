@@ -7,41 +7,26 @@ type Game struct {
 }
 
 func NewGame() *Game {
+	// TODO Capability should be a command-line flag
+	// TODO Auto min?/max on invalid values
 	return &Game{Guards: make([]*Guard, 0, 1)}
 }
 
-// TODO
 func (g *Game) Start() {
+	// Level
 	g.Lvl, _ = newLevel(1)
-	/*if err != nil {
-		log.Println(err)
-		return
-	}*/
-	/*if g.lvl == nil {
-		// TODO Broadcast failure ?
-	}*/
 
-	//g.runner.init(g.lvl.grid)
-	//g.guards[0].init(g.lvl.grid) // TODO Garbage
+	// Runner
+	g.Runner.init(g)
 
-	//for _, guard := range g.guards {}
-	//g.runner.init(g.lvl.grid)
-
-	// TODO Check for nil ?
-	/*for _, player := range g.players {
-		go player.init(g.lvl.grid)
-	}*/
-
-	// TODO Send a start message
+	// Guards
+	for _, guard := range g.Guards {
+		guard.init(g)
+	}
 }
 
 // TODO
-func (g *Game) Stop() {
-	// TODO Add argument to know if it's lost by runner or guards
-	// TODO Decide the winner
-	// TODO Call for a leave of everyone in room
-	// TODO Delete room with its game
-}
+func (g *Game) Stop() {}
 
 func (g *Game) DeleteGuard(guard *Guard) {
 	// TODO Rename v

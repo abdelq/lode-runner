@@ -15,7 +15,7 @@ var emptyBelowTests = []struct {
 	{position{11, 11}, false},
 }
 
-// TODO
+// TODO Every single level
 func TestNewLevel(t *testing.T) {}
 
 func TestEmptyBelow(t *testing.T) {
@@ -32,4 +32,9 @@ func TestEmptyBelow(t *testing.T) {
 				test.pos, isEmptyBelow, test.isEmptyBelow)
 		}
 	}
+}
+
+func TestValidMove(t *testing.T) {
+	lvl, _ := newLevel(1)
+	lvl.validMove(position{0, 0}, UP)
 }
