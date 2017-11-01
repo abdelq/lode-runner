@@ -6,16 +6,35 @@ import (
 	"testing"
 )
 
-// TODO Write test functions for read/write
+// TODO
+func TestNewClient(t *testing.T) {}
+
+// TODO
+func TestRead(t *testing.T) {}
+
+// TODO
+func TestWrite(t *testing.T) {}
 
 func TestClose(t *testing.T) {
 	conn, _ := net.Pipe()
 	client := newClient(conn)
 
+	// Join rooms
+	rooms := []*room{newRoom("Buzz"), newRoom("Rex"), newRoom("Bo")}
+	for _, room := range rooms {
+		room.join <- &join{client, nil}
+	}
+
 	client.close() // First
 	client.close() // Second
 
-	// TODO Verify rooms are left
+	// Verify rooms are left
+	for _, room := range rooms {
+		if _, ok := room.clients[client]; ok {
+			t.Errorf("client still in a room")
+			break
+		}
+	}
 
 	// Verify output channel is closed
 	if _, ok := <-client.out; ok {

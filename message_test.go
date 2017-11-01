@@ -51,7 +51,7 @@ func TestMessageParse(t *testing.T) {
 	}
 
 	// TODO Comment
-	testMessageReception(t, clientConn, *newErrorMessage("invalid event"))
+	receiveMsg(t, clientConn, *newErrorMessage("invalid event"))
 }
 
 // TODO
