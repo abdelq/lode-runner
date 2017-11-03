@@ -1,49 +1,117 @@
 package main
 
 import (
-	"encoding/json"
 	"net"
 	"testing"
+
+	. "github.com/abdelq/lode-runner/game"
 )
 
 func TestNewRoom(t *testing.T) {
-	room := newRoom("test")
-	if rooms["test"] != room {
+	if room := newRoom("test"); rooms["test"] != room {
 		t.Error("room not in slice")
 	}
 }
 
-func newClients(t *testing.T) map[net.Conn]*client {
-	t.Helper()
-
-	clients := make(map[net.Conn]*client, 3)
-	for i := 0; i < len(clients); i++ {
-		serverConn, clientConn := net.Pipe()
-		clients[clientConn] = newClient(serverConn)
-	}
-	return clients
-}
-
+// TODO newClient() to struct
+// TODO Second join/leave after verifications
 func TestListen(t *testing.T) {
 	room := newRoom("test")
-	clients := newClients(t)
 
-	// TODO
-	t.Run("join", func(t *testing.T) {
-		for _, client := range clients {
-			room.join <- &join{client, nil}
+	t.Run("spectator", func(t *testing.T) {
+		serverConn, clientConn := net.Pipe()
+		spectator := newClient(serverConn)
+
+		// Join
+		room.join <- &join{spectator, nil} // First
+		room.join <- &join{spectator, nil} // Second
+		receiveMsg(t, clientConn, message{"error", []byte(`"already in room"`)})
+
+		player, ok := room.clients[spectator]
+		if !ok {
+			t.Fail() // TODO
+		}
+		if player != nil {
+			t.Fail() // TODO
+		}
+
+		// Broadcast
+		room.broadcast <- &message{"test", []byte(`"spectator"`)}
+		receiveMsg(t, clientConn, message{"test", []byte(`"spectator"`)})
+
+		// Leave
+		room.leave <- spectator // First
+		room.leave <- spectator // Second
+		receiveMsg(t, clientConn, message{"error", []byte(`"not in room"`)})
+
+		if _, ok := room.clients[spectator]; ok {
+			t.Fail() // TODO
 		}
 	})
 
-	// TODO
-	t.Run("leave", func(t *testing.T) {})
+	t.Run("runner", func(t *testing.T) {
+		serverConn, clientConn := net.Pipe()
+		runner := newClient(serverConn)
 
-	t.Run("broadcast", func(t *testing.T) {
-		msg := message{"test", json.RawMessage(`"test"`)}
-		room.broadcast <- &msg
+		// Join
+		room.join <- &join{runner, new(Runner)} // First
+		room.join <- &join{runner, new(Runner)} // Second
+		receiveMsg(t, clientConn, message{"error", []byte(`"already in room"`)})
 
-		for conn, _ := range clients {
-			receiveMsg(t, conn, msg)
+		player, ok := room.clients[runner]
+		if !ok {
+			t.Fail() // TODO
+		}
+		if _, ok := player.(*Runner); !ok {
+			t.Fail() // TODO
+		}
+
+		// Broadcast
+		room.broadcast <- &message{"test", []byte(`"runner"`)}
+		receiveMsg(t, clientConn, message{"test", []byte(`"runner"`)})
+
+		// Leave
+		room.leave <- runner // First
+		room.leave <- runner // Second
+		receiveMsg(t, clientConn, message{"error", []byte(`"not in room"`)})
+
+		if _, ok := room.clients[runner]; ok {
+			t.Fail() // TODO
 		}
 	})
+
+	t.Run("guard", func(t *testing.T) {
+		serverConn, clientConn := net.Pipe()
+		guard := newClient(serverConn)
+
+		// Join
+		room.join <- &join{guard, new(Guard)} // First
+		room.join <- &join{guard, new(Guard)} // Second
+		receiveMsg(t, clientConn, message{"error", []byte(`"already in room"`)})
+
+		player, ok := room.clients[guard]
+		if !ok {
+			t.Fail() // TODO
+		}
+		if _, ok := player.(*Guard); !ok {
+			t.Fail() // TODO
+		}
+
+		// Broadcast
+		room.broadcast <- &message{"test", []byte(`"guard"`)}
+		receiveMsg(t, clientConn, message{"test", []byte(`"guard"`)})
+
+		// Leave
+		room.leave <- guard // First
+		room.leave <- guard // Second
+		receiveMsg(t, clientConn, message{"error", []byte(`"not in room"`)})
+
+		if _, ok := room.clients[guard]; ok {
+			t.Fail() // TODO
+		}
+	})
+
+	// TODO Join: When game is started
+	// TODO Join: Broadcasts
+	// TODO Leave: Broadcasts
 }

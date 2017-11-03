@@ -15,8 +15,8 @@ type message struct {
 	Data  json.RawMessage
 }
 
-func newErrorMessage(err string) *message {
-	return &message{"error", json.RawMessage(strconv.Quote(err))}
+func newMessage(event, data string) *message {
+	return &message{event, json.RawMessage(strconv.Quote(data))}
 }
 
 func newJoinMessage(name string, role uint8) *message {
@@ -41,7 +41,7 @@ func (m *message) parse(sender *client) {
 	case "dig":
 		go parseDig(m.Data, sender)
 	default:
-		sender.out <- newErrorMessage("invalid event")
+		sender.out <- newMessage("error", "invalid event")
 	}
 }
 
@@ -71,7 +71,7 @@ func (m *joinMessage) parse(data json.RawMessage) error {
 func parseJoin(data json.RawMessage, sender *client) {
 	var joinMessage *joinMessage
 	if err := joinMessage.parse(data); err != nil {
-		sender.out <- newErrorMessage(err.Error())
+		sender.out <- newMessage("error", err.Error())
 		return
 	}
 
@@ -93,16 +93,17 @@ func parseJoin(data json.RawMessage, sender *client) {
 func parseMove(data json.RawMessage, sender *client) {
 	var moveMessage *game.Message
 	if err := moveMessage.Parse(data); err != nil {
-		sender.out <- newErrorMessage(err.Error())
+		sender.out <- newMessage("error", err.Error())
 		return
 	}
 
 	// TODO Find room with client if none sent
+	// TODO Verify game already started + Should be calling game not room ?
 	if room, ok := rooms[moveMessage.Room]; ok {
 		if player := room.clients[sender]; player != nil {
 			go player.Move(moveMessage.Direction, room.game)
 		} else {
-			sender.out <- newErrorMessage("not a player")
+			sender.out <- newMessage("error", "not a player")
 		}
 	}
 }
@@ -110,16 +111,17 @@ func parseMove(data json.RawMessage, sender *client) {
 func parseDig(data json.RawMessage, sender *client) {
 	var digMessage *game.Message
 	if err := digMessage.Parse(data); err != nil {
-		sender.out <- newErrorMessage(err.Error())
+		sender.out <- newMessage("error", err.Error())
 		return
 	}
 
 	// TODO Find room with client if none sent
+	// TODO Verify game already started + Should be calling game not room ?
 	if room, ok := rooms[digMessage.Room]; ok {
 		if runner, ok := room.clients[sender].(*game.Runner); ok {
 			go runner.Dig(digMessage.Direction, room.game)
 		} else {
-			sender.out <- newErrorMessage("not a runner")
+			sender.out <- newMessage("error", "not a runner")
 		}
 	}
 }

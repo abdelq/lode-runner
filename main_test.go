@@ -18,7 +18,7 @@ func TestMain(m *testing.M) {
 func receiveMsg(t *testing.T, conn io.Reader, expected message) {
 	t.Helper()
 
-	received := message{}
+	var received message
 	if err := json.NewDecoder(conn).Decode(&received); err != nil {
 		t.Error(err)
 		return
