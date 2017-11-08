@@ -1,6 +1,4 @@
-# Build
 server
 
-# TLS
 *.key
 *.crt

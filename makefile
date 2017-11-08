@@ -2,10 +2,8 @@ GOCMD   := go
 GOBUILD := $(GOCMD) build
 GOTEST  := $(GOCMD) test
 
-all: test certs build
-
 build:
-	$(GOBUILD)
+	$(GOBUILD) -o server
 	sudo setcap cap_net_bind_service=+ep server
 
 test:
@@ -13,6 +11,3 @@ test:
 
 certs:
 	openssl req -new -nodes -x509 -newkey rsa -keyout server.key -out server.crt -subj "/"
-
-clean:
-	$(RM) server*

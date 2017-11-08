@@ -6,21 +6,14 @@ import (
 	"testing"
 )
 
-func TestNewclient(t *testing.T) {
-	conn, _ := net.Pipe()
-	if client := newClient(conn); client.conn != conn {
-		t.Fail() // TODO
-	}
-}
-
-func TestRead(t *testing.T) {
+/*func TestRead(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	client := &client{conn: serverConn, out: make(chan *message)}
 
 	go client.read()
 
-	_ = clientConn // TODO
-}
+	// TODO
+}*/
 
 func TestWrite(t *testing.T) {
 	serverConn, clientConn := net.Pipe()

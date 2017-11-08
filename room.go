@@ -24,8 +24,8 @@ func newRoom(name string) *room {
 		leave:     make(chan *leave),
 		broadcast: make(chan *message),
 		clients:   make(map[*client]Player),
-		game:      NewGame(),
 	}
+	room.game = NewGame(room.broadcast) // TODO
 
 	go room.listen()
 	rooms[name] = room
@@ -43,20 +43,16 @@ func (r *room) listen() {
 				continue
 			}
 
-			r.clients[client] = player
+			r.clients[client] = nil
 			if player == nil || r.game.Started() {
 				continue
 			}
 
-			// TODO Broadcast join
 			if err := r.game.AddPlayer(player); err != nil {
 				client.out <- newMessage("error", err.Error())
 				continue
 			}
-
-			if r.game.Started() {
-				//r.broadcast <- newMessage("start", "TODO") // TODO
-			}
+			r.clients[client] = player
 		case client := <-r.leave:
 			player := r.clients[client]
 			if _, ok := r.clients[client]; !ok {
@@ -65,16 +61,11 @@ func (r *room) listen() {
 			}
 
 			delete(r.clients, client)
-			if player == nil || r.game.Stopped() {
+			if player == nil /*|| r.game.Stopped()*/ { // TODO
 				continue
 			}
 
-			// TODO Broadcast leave
 			r.game.RemovePlayer(player)
-
-			if r.game.Stopped() {
-				//r.broadcast <- newMessage("stop", "TODO") // TODO
-			}
 		case message := <-r.broadcast:
 			for client := range r.clients {
 				client.out <- message
