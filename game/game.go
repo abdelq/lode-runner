@@ -1,44 +1,98 @@
 package game
 
+import "errors"
+
 type Game struct {
-	Lvl    *level
-	Runner *Runner
-	Guards []*Guard
+	Level     *level
+	Runner    *Runner
+	Guards    map[*Guard]bool
+	broadcast chan *message // TODO TODO TODO
 }
 
-func NewGame() *Game {
-	// TODO Capability should be a command-line flag
-	// TODO Auto min?/max on invalid values
-	return &Game{Guards: make([]*Guard, 0, 1)}
+func NewGame(broadcast chan *message) *Game { // TODO TODO TODO
+	return &Game{Guards: make(map[*Guard]bool), broadcast: broadcast}
 }
 
-func (g *Game) Start() {
+func (g *Game) start() {
 	// Level
-	g.Lvl, _ = newLevel(1)
+	g.Level, _ = newLevel(1)
+	g.Level.game = g // TODO Temporary
 
 	// Runner
 	g.Runner.init(g)
 
 	// Guards
-	for _, guard := range g.Guards {
+	for guard := range g.Guards {
 		guard.init(g)
 	}
+
+	//g.broadcast <- newMessage("start", "") // TODO
 }
 
-// TODO
-func (g *Game) Stop() {}
+func (g *game) Started() bool {
+	return g.Level != nil
+}
 
-func (g *Game) DeleteGuard(guard *Guard) {
-	// TODO Rename v
-	for i, v := range g.Guards {
-		if guard == v {
-			copy(g.Guards[i:], g.Guards[i+1:])
-			g.Guards[len(g.Guards)-1] = nil
-			g.Guards = g.Guards[:len(g.Guards)-1]
-			return
+func (g *Game) stop() {} // TODO TODO Cleanup + Broadcast
+
+func (g *Game) hasPlayer(name string) bool {
+	// Runner
+	if g.Runner != nil && g.Runner.Name == name {
+		return true
+	}
+
+	// Guards
+	for guard := range g.Guards {
+		if guard.Name == name {
+			return true
 		}
 	}
+
+	return false
 }
 
-// TODO
-func (g *Game) checkCollisions() {}
+func (g *Game) AddPlayer(player player) error {
+	switch p := player.(type) {
+	case *Runner:
+		if g.Runner != nil {
+			return errors.New("runner already joined")
+		}
+		if g.hasPlayer(p.Name) {
+			return errors.New("name already used")
+		}
+
+		g.Runner = p
+		//g.broadcast <- newJoinMessage(p.name, 0) // TODO
+	case *Guard:
+		if len(g.Guards) == 1 { // TODO
+			return errors.New("guards already joined")
+		}
+		if g.hasPlayer(p.Name) {
+			return errors.New("name already used")
+		}
+
+		g.Guards[p] = true
+		//g.broadcast <- newJoinMessage(p.name, 1) // TODO
+	}
+
+	if g.Runner != nil && len(g.Guards) == 1 { // TODO
+		go g.start()
+	}
+
+	return nil
+}
+
+func (g *Game) RemovePlayer(player player) {
+	switch p := player.(type) {
+	case *Runner:
+		g.Runner = nil
+		//g.broadcast <- newLeaveMessage(p.name, 0) // TODO
+	case *Guard:
+		delete(g.Guards, p)
+		//g.broadcast <- newLeaveMessage(p.name, 1) // TODO
+	}
+
+	if g.Started() && (g.Runner == nil || len(g.Guards) == 0) {
+		go g.stop()
+	}
+}

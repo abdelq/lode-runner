@@ -7,7 +7,7 @@ import (
 )
 
 type Message struct {
-	Direction uint8
+	Direction direction
 	Room      string
 }
 
@@ -16,12 +16,10 @@ func (m *Message) Parse(data json.RawMessage) error {
 		return err
 	}
 
-	if m.Direction > 3 {
+	if m.Direction > RIGHT { // TODO Comment
 		return errors.New("invalid direction")
 	}
-
-	m.Room = strings.TrimSpace(m.Room)
-	if m.Room == "" { // TODO Temporary
+	if m.Room = strings.TrimSpace(m.Room); m.Room == "" { // TODO Temporary
 		return errors.New("invalid room")
 	}
 

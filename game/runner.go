@@ -2,46 +2,56 @@ package game
 
 type Runner struct {
 	Name  string
-	pos   *position
+	pos   position
 	state state
 }
 
-// TODO Replace in original lvl by empty
+// TODO Maybe just use landmarks directly
 func (r *Runner) init(game *Game) {
-	for i := len(game.Lvl.grid) - 1; i >= 0; i-- {
-		for j := len(game.Lvl.grid[i]) - 1; j >= 0; j-- {
-			if game.Lvl.grid[i][j] == RUNNER {
-				game.Lvl.grid[i][j] = EMPTY // TODO Try using cell = ?
-				r.pos.x, r.pos.y = j, i
-				return
-			}
+	for pos, tile := range game.Level.landmarks {
+		if tile == RUNNER {
+			r.pos = pos
+			delete(game.Level.landmarks, pos) // TODO Test
+			return
 		}
 	}
 }
 
-// TODO Timeout + Direction
-func (r *Runner) Move(direction uint8, game *Game) {
+func (r *Runner) Move(lvl *level, dir direction) {
 	if r.state == DIGGING {
 		return
 	}
 
-	if r.state == FALLING && direction != DOWN {
-		direction = DOWN
+	if r.state == FALLING && dir != DOWN {
+		dir = DOWN
 	}
 
-	// TODO Check if position changes when getting into function (passage valeur)
-	if !game.Lvl.validMove(*(r.pos), direction) {
+	// TODO Improve
+	var newPos position
+	switch dir {
+	case NONE:
+		newPos = position{r.pos.x, r.pos.y}
+	case UP:
+		newPos = position{r.pos.x, r.pos.y - 1}
+	case LEFT:
+		newPos = position{r.pos.x - 1, r.pos.y}
+	case DOWN:
+		newPos = position{r.pos.x, r.pos.y + 1}
+	case RIGHT:
+		newPos = position{r.pos.x + 1, r.pos.y}
+	}
+
+	if !lvl.validMove(r.pos, newPos, dir) {
 		if r.state == FALLING {
-			// TODO r.state &= ~STATE_FALLING
+			r.state = ALIVE
 		}
 		return
-	} else {
-		r.pos.set(direction)
 	}
 
-	if direction == DOWN || game.Lvl.emptyBelow(*(r.pos)) {
-		//r.state = FALLING
-		// TODO r.state |= FALLING
+	r.pos.x, r.pos.y = newPos.x, newPos.y // TODO Improve
+
+	if dir == DOWN || lvl.emptyBelow(r.pos) {
+		r.state = FALLING
 	}
 
 	// TODO
@@ -49,5 +59,4 @@ func (r *Runner) Move(direction uint8, game *Game) {
 	//game.check_collisions()
 }
 
-// TODO
-func (r *Runner) Dig(direction uint8, game *Game) {}
+func (r *Runner) Dig(lvl *level, dir direction) {} // TODO TODO

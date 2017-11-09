@@ -77,7 +77,7 @@ func parseMove(data json.RawMessage, sender *client) {
 		}
 
 		if player := room.clients[sender]; player != nil {
-			go player.Move(moveMessage.Direction, room.game) // TODO TODO
+			go player.Move(room.game.Level, moveMessage.Direction)
 		} else {
 			sender.out <- newMessage("error", "not a player")
 		}
@@ -100,7 +100,7 @@ func parseDig(data json.RawMessage, sender *client) {
 		}
 
 		if runner, ok := room.clients[sender].(*game.Runner); ok {
-			go runner.Dig(digMessage.Direction, room.game) // TODO TODO
+			go runner.Dig(digMessage.Direction, room.game.Level)
 		} else {
 			sender.out <- newMessage("error", "not a runner")
 		}

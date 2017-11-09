@@ -6,13 +6,17 @@ import (
 	"io/ioutil"
 )
 
+type tile = byte
+type position struct{ x, y int }
 type level struct {
-	num  int
-	grid [][]byte
+	num       int
+	tiles     [][]tile
+	landmarks map[position]tile // TODO Rename
+	game      *Game             // TODO Temporary
 }
 
 // Tiles
-const ( // TODO Order/Rename
+const (
 	EMPTY        = ' '
 	RUNNER       = '&'
 	GUARD        = '0'
@@ -26,34 +30,111 @@ const ( // TODO Order/Rename
 )
 
 func newLevel(num int) (*level, error) {
-	filename := fmt.Sprintf("levels/%03d.lvl", num)
-
-	content, err := ioutil.ReadFile(filename)
+	content, err := ioutil.ReadFile(fmt.Sprintf("levels/%03d.lvl", num))
 	if err != nil {
 		return nil, err
 	}
 
-	return &level{num, bytes.Split(content, []byte("\n"))}, nil
+	// TODO Rewrite this section
+	lvl := &level{
+		num:       num,
+		tiles:     bytes.Split(content, []byte("\n")),
+		landmarks: make(map[position]tile),
+	}
+	for i, tiles := range lvl.tiles {
+		for j, tile := range tiles {
+			/*if tile == GOLD {
+				lvl.landmarks[position{j, i}] = tile
+			} else */if tile == GUARD || tile == RUNNER {
+				lvl.landmarks[position{j, i}] = tile
+				lvl.tiles[i][j] = EMPTY // TODO
+			}
+		}
+	}
+
+	return lvl, nil
 }
 
-// TODO One-liner using join ?
-func (l *level) print() {
-	for _, row := range l.grid {
-		fmt.Println(string(row))
+// TODO Rename function
+// TODO Try to get rid of game usage
+func (l *level) getTiles() [][]tile {
+	// TODO Rewrite
+	tiles := make([][]tile, len(l.tiles))
+	for i := range tiles {
+		tiles[i] = make([]tile, len(l.tiles[i]))
+		copy(tiles[i], l.tiles[i])
+	}
+
+	// Runner
+	tiles[l.game.Runner.pos.y][l.game.Runner.pos.x] = RUNNER
+
+	// Guards
+	for guard := range l.game.Guards {
+		tiles[guard.pos.y][guard.pos.x] = GUARD
 	}
 }
 
 func (l *level) emptyBelow(pos position) bool {
-	return l.grid[pos.y+1][pos.x] == EMPTY
+	return l.getTiles()[pos.y+1][pos.x] == EMPTY
 }
 
-// TODO
-func (l *level) validMove(pos position, direction uint8) bool {
-	(&pos).set(direction) // TODO Problematic ?
+func manhattanDist(a, b position) float64 {
+	return math.Abs(float64(a.x-b.x)) + math.Abs(float64(a.y-b.y))
+}
 
-	if pos.x < 0 || pos.x >= 28 || pos.y < 0 || pos.y >= 16 {
+// TODO Rename + Interface
+/*func (l *level) toString() string {
+	return bytes.Join(lvl.getTiles(), []byte("\n"))
+}*/
+
+/*func (l *level) print() {
+// TODO One-liner using join ?
+	for _, row := range l.grid {
+		fmt.Println(string(row))
+	}
+}*/
+
+/*func (l *level) replaceTiles(positions []position, tile tile) {
+	for _, pos := range positions {
+		l.tiles[pos.y][pos.x] = tile
+	}
+}*/
+
+func (l *level) validMove(orig position, dest position, dir direction) bool {
+	if dest.x < 0 || dest.x >= 28 || /*dest.y < 0 ||*/ dest.y >= 16 {
 		return false
 	}
 
-	return true // TODO valid_decor_move
+	// TODO valid_decor_move
+	origTile := l.tiles[orig.y][orig.x]
+	destTile := l.tiles[dest.y][dest.x]
+	if dir == DOWN && origTile == ROPE {
+		return false
+	}
+	if dest.y < 0 && origTile == ESCAPELADDER {
+		return true
+	}
+
+	switch destTile {
+	case EMPTY, ROPE:
+		if dir == UP {
+			return origTile == LADDER || origTile == ESCAPELADDER
+		} else {
+			return true
+		}
+	case BRICK:
+		return dir != UP && false // TODO && bricksbrokenat(dest)
+	case SOLIDBRICK:
+		return false
+	case LADDER:
+		return dir != DOWN
+	case ESCAPELADDER:
+		if l.getTiles()[orig.y][orig.x] == RUNNER {
+			return dir != DOWN
+		} else {
+			return dir != UP
+		}
+	}
+
+	return false
 }

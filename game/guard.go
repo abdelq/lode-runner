@@ -4,30 +4,26 @@ import "sort"
 
 type Guard struct {
 	Name  string
-	pos   *position
+	pos   position
 	state state
 }
 
-// TODO Move to level to stop the repeated calls
-func (g *Guard) init(game *Game) { // TODO Rename runnerPos
+// TODO Maybe just use landmarks directly
+func (g *Guard) init(game *Game) {
 	var positions []position
-	for i, row := range game.Lvl.grid {
-		for j, cell := range row {
-			if cell == GUARD {
-				positions = append(positions, position{j, i})
-			}
+	for pos, tile := range game.Level.landmarks {
+		if tile == GUARD {
+			positions = append(positions, pos)
 		}
 	}
 
-	sort.Slice(positions, func(i, j int) bool {
-		return manhattanDistance(positions[i], *(game.Runner.pos)) > manhattanDistance(positions[j], *(game.Runner.pos))
+	sort.SliceStable(positions, func(i, j int) bool {
+		return manhattanDist(positions[i], game.Runner.pos) >
+			manhattanDist(positions[j], game.Runner.pos)
 	})
 
-	g.pos = &positions[0]                   // TODO
-	game.Lvl.grid[g.pos.y][g.pos.x] = EMPTY // TODO Try using cell = ?
-
-	// TODO Maybe error management on positions
+	g.pos = positions[0]
+	delete(game.Level.landmarks, positions[0])
 }
 
-// TODO
-func (g *Guard) Move(direction uint8, game *Game) {}
+func (g *Guard) Move(lvl *level, dir direction) {} // TODO TODO
