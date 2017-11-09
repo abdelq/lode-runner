@@ -2,7 +2,18 @@ package game
 
 type Player interface {
 	init(*Game)
-	Move(*level, direction)
+	Move(direction, *level)
+}
+
+func NewPlayer(name string, role uint8) Player { // TODO *Player vs Player
+	switch role {
+	case 0:
+		return &Runner{Name: name}
+	case 1:
+		return &Guard{Name: name}
+	}
+
+	return nil
 }
 
 // States

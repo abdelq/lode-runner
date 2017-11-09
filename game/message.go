@@ -19,9 +19,10 @@ func (m *Message) Parse(data json.RawMessage) error {
 	if m.Direction > RIGHT { // TODO Comment
 		return errors.New("invalid direction")
 	}
-	if m.Room = strings.TrimSpace(m.Room); m.Room == "" { // TODO Temporary
+	m.Room = strings.TrimSpace(m.Room)
+	/*if ; m.Room == "" { // TODO Temporary
 		return errors.New("invalid room")
-	}
+	}*/
 
 	return nil
 }

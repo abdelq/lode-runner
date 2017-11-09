@@ -22,18 +22,28 @@ type join struct {
 }
 
 func newRoom(name string) *room {
+	broadcast := make(chan *msg.Message)
 	room := &room{
 		join:      make(chan *join),
 		leave:     make(chan *leave),
-		broadcast: make(chan *msg.Message),
+		broadcast: broadcast,
 		clients:   make(map[*client]Player),
+		game:      NewGame(broadcast),
 	}
-	room.game = NewGame(room.broadcast) // TODO
 
 	go room.listen()
 	rooms[name] = room
 
 	return room
+}
+
+func findRoom(client *client) string {
+	for name, room := range rooms {
+		if _, ok := room.clients[client]; ok {
+			return name
+		}
+	}
+	return ""
 }
 
 func (r *room) listen() {
@@ -69,7 +79,7 @@ func (r *room) listen() {
 			}
 
 			r.game.RemovePlayer(player)
-		case mssage := <-r.broadcast: // TODO
+		case mssage := <-r.broadcast: // FIXME
 			for client := range r.clients {
 				newMsg := message(*mssage)
 				client.out <- &newMsg

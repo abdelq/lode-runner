@@ -17,7 +17,7 @@ func (r *Runner) init(game *Game) {
 	}
 }
 
-func (r *Runner) Move(lvl *level, dir direction) {
+func (r *Runner) Move(dir direction, lvl *level) {
 	if r.state == DIGGING {
 		return
 	}
@@ -59,4 +59,4 @@ func (r *Runner) Move(lvl *level, dir direction) {
 	//game.check_collisions()
 }
 
-func (r *Runner) Dig(lvl *level, dir direction) {} // TODO TODO
+func (r *Runner) Dig(dir direction, lvl *level) {} // TODO TODO

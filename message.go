@@ -11,14 +11,14 @@ import (
 
 type message Message
 
+// TODO Remove
 func newMessage(event, data string) *message {
 	return &message{event, json.RawMessage(strconv.Quote(data))}
 }
 
-// TODO Move part to game package
+// TODO Move sections to game package
 func (m *message) parse(sender *client) {
-	m.Event = strings.ToLower(strings.TrimSpace(m.Event)) // TODO
-	switch m.Event {
+	switch evt := strings.ToLower(strings.TrimSpace(m.Event)); evt {
 	case "join":
 		go parseJoin(m.Data, sender)
 	case "move":
@@ -37,19 +37,14 @@ func parseJoin(data json.RawMessage, sender *client) {
 		return
 	}
 
+	// Find/Create room
 	room, ok := rooms[joinMessage.Room]
 	if !ok {
 		room = newRoom(joinMessage.Room)
 	}
 
-	// TODO Move to game package
-	switch joinMessage.Role {
-	case 0: // Runner
-		room.join <- &join{sender, &game.Runner{Name: joinMessage.Name}}
-	case 1: // Guard
-		room.join <- &join{sender, &game.Guard{Name: joinMessage.Name}}
-	default: // Spectator
-		room.join <- &join{sender, nil}
+	room.join <- &join{sender,
+		game.NewPlayer(joinMessage.Name, joinMessage.Role),
 	}
 }
 
@@ -61,7 +56,12 @@ func parseMove(data json.RawMessage, sender *client) {
 		return
 	}
 
-	// TODO Find room with client if none sent
+	// Find room name if none sent
+	if moveMessage.Room == "" {
+		moveMessage.Room = findRoom(sender)
+		// TODO newMessage("error", "not in a room")
+	}
+
 	if room, ok := rooms[moveMessage.Room]; ok {
 		if !room.game.Started() {
 			sender.out <- newMessage("error", "game not yet started")
@@ -69,7 +69,7 @@ func parseMove(data json.RawMessage, sender *client) {
 		}
 
 		if player := room.clients[sender]; player != nil {
-			go player.Move(room.game.Level, moveMessage.Direction)
+			go player.Move(moveMessage.Direction, room.game.Level)
 		} else {
 			sender.out <- newMessage("error", "not a player")
 		}
@@ -84,7 +84,12 @@ func parseDig(data json.RawMessage, sender *client) {
 		return
 	}
 
-	// TODO Find room with client if none sent
+	// Find room name if none sent
+	if digMessage.Room == "" {
+		digMessage.Room = findRoom(sender)
+		// TODO newMessage("error", "not in a room")
+	}
+
 	if room, ok := rooms[digMessage.Room]; ok {
 		if !room.game.Started() {
 			sender.out <- newMessage("error", "game not yet started")
@@ -92,7 +97,7 @@ func parseDig(data json.RawMessage, sender *client) {
 		}
 
 		if runner, ok := room.clients[sender].(*game.Runner); ok {
-			go runner.Dig(room.game.Level, digMessage.Direction)
+			go runner.Dig(digMessage.Direction, room.game.Level)
 		} else {
 			sender.out <- newMessage("error", "not a runner")
 		}

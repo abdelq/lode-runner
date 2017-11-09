@@ -26,4 +26,4 @@ func (g *Guard) init(game *Game) {
 	delete(game.Level.landmarks, positions[0])
 }
 
-func (g *Guard) Move(lvl *level, dir direction) {} // TODO TODO
+func (g *Guard) Move(dir direction, lvl *level) {} // TODO TODO
