@@ -1,15 +1,18 @@
 package game
 
-import "errors"
+import (
+	"errors"
+	"github.com/abdelq/lode-runner/message"
+)
 
 type Game struct {
 	Level     *level
 	Runner    *Runner
 	Guards    map[*Guard]bool
-	broadcast chan *message // TODO TODO TODO
+	broadcast chan *message.Message
 }
 
-func NewGame(broadcast chan *message) *Game { // TODO TODO TODO
+func NewGame(broadcast chan *message.Message) *Game {
 	return &Game{Guards: make(map[*Guard]bool), broadcast: broadcast}
 }
 
@@ -29,7 +32,7 @@ func (g *Game) start() {
 	//g.broadcast <- newMessage("start", "") // TODO
 }
 
-func (g *game) Started() bool {
+func (g *Game) Started() bool {
 	return g.Level != nil
 }
 
@@ -51,7 +54,7 @@ func (g *Game) hasPlayer(name string) bool {
 	return false
 }
 
-func (g *Game) AddPlayer(player player) error {
+func (g *Game) AddPlayer(player Player) error {
 	switch p := player.(type) {
 	case *Runner:
 		if g.Runner != nil {
@@ -82,7 +85,7 @@ func (g *Game) AddPlayer(player player) error {
 	return nil
 }
 
-func (g *Game) RemovePlayer(player player) {
+func (g *Game) RemovePlayer(player Player) {
 	switch p := player.(type) {
 	case *Runner:
 		g.Runner = nil

@@ -1,13 +1,16 @@
 package main
 
-import . "github.com/abdelq/lode-runner/game"
+import (
+	. "github.com/abdelq/lode-runner/game"
+	msg "github.com/abdelq/lode-runner/message"
+)
 
 var rooms = make(map[string]*room)
 
 type room struct {
 	join      chan *join
 	leave     chan *leave
-	broadcast chan *message
+	broadcast chan *msg.Message
 	clients   map[*client]Player
 	game      *Game
 }
@@ -22,7 +25,7 @@ func newRoom(name string) *room {
 	room := &room{
 		join:      make(chan *join),
 		leave:     make(chan *leave),
-		broadcast: make(chan *message),
+		broadcast: make(chan *msg.Message),
 		clients:   make(map[*client]Player),
 	}
 	room.game = NewGame(room.broadcast) // TODO
@@ -39,7 +42,7 @@ func (r *room) listen() {
 		case join := <-r.join:
 			client, player := join.client, join.player
 			if _, ok := r.clients[client]; ok {
-				client.out <- newMessage("error", "already in room")
+				client.out <- msg.NewMessage("error", "already in room")
 				continue
 			}
 
@@ -49,14 +52,14 @@ func (r *room) listen() {
 			}
 
 			if err := r.game.AddPlayer(player); err != nil {
-				client.out <- newMessage("error", err.Error())
+				client.out <- msg.NewMessage("error", err.Error())
 				continue
 			}
 			r.clients[client] = player
 		case client := <-r.leave:
 			player := r.clients[client]
 			if _, ok := r.clients[client]; !ok {
-				client.out <- newMessage("error", "not in room")
+				client.out <- msg.NewMessage("error", "not in room")
 				continue
 			}
 

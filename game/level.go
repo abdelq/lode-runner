@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"math"
 )
 
 type tile = byte
@@ -72,6 +73,8 @@ func (l *level) getTiles() [][]tile {
 	for guard := range l.game.Guards {
 		tiles[guard.pos.y][guard.pos.x] = GUARD
 	}
+
+	return tiles
 }
 
 func (l *level) emptyBelow(pos position) bool {

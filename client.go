@@ -6,16 +6,18 @@ import (
 	"log"
 	"net"
 	"sync"
+
+	. "github.com/abdelq/lode-runner/message"
 )
 
 type client struct {
 	conn net.Conn
 	once sync.Once
-	out  chan *message
+	out  chan *Message
 }
 
 func newClient(conn net.Conn) *client {
-	client := &client{conn: conn, out: make(chan *message)}
+	client := &client{conn: conn, out: make(chan *Message)}
 
 	// Listeners
 	go client.read()
