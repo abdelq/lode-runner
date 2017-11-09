@@ -1,9 +1,11 @@
 package main
 
 import (
+	"net"
 	"testing"
 
 	. "github.com/abdelq/lode-runner/game"
+	msg "github.com/abdelq/lode-runner/message"
 )
 
 // TODO Join when game is started
@@ -15,7 +17,10 @@ func TestListen(t *testing.T) {
 		spectator := newClient(serverConn)
 
 		/* Join */
-		room.join <- &join{spectator, nil}
+		room.join <- &join{spectator, nil} // First
+		room.join <- &join{spectator, nil} // Second
+		receiveMsg(t, clientConn, message{"error", []byte(`"already in room"`)})
+
 		player, ok := room.clients[spectator]
 		if !ok {
 			t.Fail() // TODO
@@ -26,23 +31,18 @@ func TestListen(t *testing.T) {
 			return
 		}
 
-		// Second join
-		room.join <- &join{spectator, nil}
-		receiveMsg(t, clientConn, message{"error", []byte(`"already in room"`)})
-
 		/* Broadcast */
-		room.broadcast <- &message{"test", []byte(`"spectator"`)}
+		room.broadcast <- &msg.Message{"test", []byte(`"spectator"`)}
 		receiveMsg(t, clientConn, message{"test", []byte(`"spectator"`)})
 
 		/* Leave */
-		room.leave <- spectator
+		room.leave <- spectator // First
+		room.leave <- spectator // Second
+		receiveMsg(t, clientConn, message{"error", []byte(`"not in room"`)})
+
 		if _, ok := room.clients[spectator]; ok {
 			t.Fail() // TODO
 		}
-
-		// Second leave
-		room.leave <- spectator
-		receiveMsg(t, clientConn, message{"error", []byte(`"not in room"`)})
 	})
 
 	t.Run("runner", func(t *testing.T) {
@@ -50,7 +50,10 @@ func TestListen(t *testing.T) {
 		runner := newClient(serverConn)
 
 		/* Join */
-		room.join <- &join{runner, new(Runner)}
+		room.join <- &join{runner, new(Runner)} // First
+		room.join <- &join{runner, new(Runner)} // Second
+		receiveMsg(t, clientConn, message{"error", []byte(`"already in room"`)})
+
 		player, ok := room.clients[runner]
 		if !ok {
 			t.Fail() // TODO
@@ -61,23 +64,18 @@ func TestListen(t *testing.T) {
 			return
 		}
 
-		// Second join
-		room.join <- &join{runner, new(Runner)}
-		receiveMsg(t, clientConn, message{"error", []byte(`"already in room"`)})
-
 		/* Broadcast */
-		room.broadcast <- &message{"test", []byte(`"runner"`)}
+		room.broadcast <- &msg.Message{"test", []byte(`"runner"`)}
 		receiveMsg(t, clientConn, message{"test", []byte(`"runner"`)})
 
 		/* Leave */
-		room.leave <- runner
+		room.leave <- runner // First
+		room.leave <- runner // Second
+		receiveMsg(t, clientConn, message{"error", []byte(`"not in room"`)})
+
 		if _, ok := room.clients[runner]; ok {
 			t.Fail() // TODO
 		}
-
-		// Second leave
-		room.leave <- runner
-		receiveMsg(t, clientConn, message{"error", []byte(`"not in room"`)})
 	})
 
 	t.Run("guard", func(t *testing.T) {
@@ -85,7 +83,10 @@ func TestListen(t *testing.T) {
 		guard := newClient(serverConn)
 
 		/* Join */
-		room.join <- &join{guard, new(Guard)}
+		room.join <- &join{guard, new(Guard)} // First
+		room.join <- &join{guard, new(Guard)} // Second
+		receiveMsg(t, clientConn, message{"error", []byte(`"already in room"`)})
+
 		player, ok := room.clients[guard]
 		if !ok {
 			t.Fail() // TODO
@@ -96,22 +97,17 @@ func TestListen(t *testing.T) {
 			return
 		}
 
-		// Second join
-		room.join <- &join{guard, new(Guard)}
-		receiveMsg(t, clientConn, message{"error", []byte(`"already in room"`)})
-
 		/* Broadcast */
-		room.broadcast <- &message{"test", []byte(`"guard"`)}
+		room.broadcast <- &msg.Message{"test", []byte(`"guard"`)}
 		receiveMsg(t, clientConn, message{"test", []byte(`"guard"`)})
 
 		/* Leave */
-		room.leave <- guard
+		room.leave <- guard // First
+		room.leave <- guard // Second
+		receiveMsg(t, clientConn, message{"error", []byte(`"not in room"`)})
+
 		if _, ok := room.clients[guard]; ok {
 			t.Fail() // TODO
 		}
-
-		// Second leave
-		room.leave <- guard
-		receiveMsg(t, clientConn, message{"error", []byte(`"not in room"`)})
 	})
 }

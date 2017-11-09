@@ -4,6 +4,8 @@ import (
 	"io"
 	"net"
 	"testing"
+
+	. "github.com/abdelq/lode-runner/message"
 )
 
 /*func TestRead(t *testing.T) {
@@ -17,17 +19,17 @@ import (
 
 func TestWrite(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
-	client := &client{conn: serverConn, out: make(chan *message)}
+	client := &client{conn: serverConn, out: make(chan *Message)}
 
 	go client.write()
 
 	client.out <- nil
 	receiveMsg(t, clientConn, message{})
 
-	client.out <- new(message)
+	client.out <- new(Message)
 	receiveMsg(t, clientConn, message{"", []byte(`null`)})
 
-	client.out <- &message{"test", []byte(`"TestWrite"`)}
+	client.out <- &Message{"test", []byte(`"TestWrite"`)}
 	receiveMsg(t, clientConn, message{"test", []byte(`"TestWrite"`)})
 }
 
