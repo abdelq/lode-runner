@@ -42,7 +42,7 @@ func (r *room) listen() {
 		case join := <-r.join:
 			client, player := join.client, join.player
 			if _, ok := r.clients[client]; ok {
-				client.out <- msg.NewMessage("error", "already in room")
+				client.out <- newMessage("error", "already in room")
 				continue
 			}
 
@@ -52,14 +52,14 @@ func (r *room) listen() {
 			}
 
 			if err := r.game.AddPlayer(player); err != nil {
-				client.out <- msg.NewMessage("error", err.Error())
+				client.out <- newMessage("error", err.Error())
 				continue
 			}
 			r.clients[client] = player
 		case client := <-r.leave:
 			player := r.clients[client]
 			if _, ok := r.clients[client]; !ok {
-				client.out <- msg.NewMessage("error", "not in room")
+				client.out <- newMessage("error", "not in room")
 				continue
 			}
 
@@ -69,9 +69,10 @@ func (r *room) listen() {
 			}
 
 			r.game.RemovePlayer(player)
-		case message := <-r.broadcast:
+		case mssage := <-r.broadcast: // TODO
 			for client := range r.clients {
-				client.out <- message
+				newMsg := message(*mssage)
+				client.out <- &newMsg
 			}
 		}
 	}

@@ -4,32 +4,32 @@ import (
 	"io"
 	"net"
 	"testing"
-
-	. "github.com/abdelq/lode-runner/message"
 )
 
-/*func TestRead(t *testing.T) {
+func TestRead(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	client := &client{conn: serverConn, out: make(chan *message)}
 
 	go client.read()
 
-	// TODO
-}*/
+	// Tests
+	sendMsg(t, clientConn, message{})
+	sendMsg(t, clientConn, message{"", []byte(`null`)})
+	sendMsg(t, clientConn, message{"test", []byte(`"TestRead"`)})
+}
 
 func TestWrite(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
-	client := &client{conn: serverConn, out: make(chan *Message)}
+	client := &client{conn: serverConn, out: make(chan *message)}
 
 	go client.write()
 
+	// Tests
 	client.out <- nil
 	receiveMsg(t, clientConn, message{})
-
-	client.out <- new(Message)
+	client.out <- new(message)
 	receiveMsg(t, clientConn, message{"", []byte(`null`)})
-
-	client.out <- &Message{"test", []byte(`"TestWrite"`)}
+	client.out <- &message{"test", []byte(`"TestWrite"`)}
 	receiveMsg(t, clientConn, message{"test", []byte(`"TestWrite"`)})
 }
 
@@ -37,22 +37,22 @@ func TestClose(t *testing.T) {
 	conn, _ := net.Pipe()
 	client := newClient(conn)
 
-	// TODO Join rooms
-	/*rooms := []*room{newRoom("Buzz"), newRoom("Rex"), newRoom("Bo")}
+	// Join rooms
+	rooms := []*room{newRoom("Buzz"), newRoom("Rex"), newRoom("Bo")}
 	for _, room := range rooms {
 		room.join <- &join{client, nil}
-	}*/
+	}
 
 	client.close() // First
 	client.close() // Second
 
-	// TODO Verify rooms are left
-	/*for _, room := range rooms {
+	// Verify rooms are left
+	for _, room := range rooms {
 		if _, ok := room.clients[client]; ok {
-			t.Errorf("client still in a room")
+			t.Errorf("client still in a room") // FIXME
 			break
 		}
-	}*/
+	}
 
 	// Verify output channel is closed
 	if _, ok := <-client.out; ok {

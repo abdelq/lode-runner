@@ -31,7 +31,7 @@ const (
 )
 
 func newLevel(num int) (*level, error) {
-	content, err := ioutil.ReadFile(fmt.Sprintf("levels/%03d.lvl", num))
+	content, err := ioutil.ReadFile(fmt.Sprintf("game/levels/%03d.lvl", num))
 	if err != nil {
 		return nil, err
 	}
@@ -86,9 +86,9 @@ func manhattanDist(a, b position) float64 {
 }
 
 // TODO Rename + Interface
-/*func (l *level) toString() string {
-	return bytes.Join(lvl.getTiles(), []byte("\n"))
-}*/
+func (l *level) toString() string {
+	return string(bytes.Join(l.getTiles(), []byte("\n")))
+}
 
 /*func (l *level) print() {
 // TODO One-liner using join ?

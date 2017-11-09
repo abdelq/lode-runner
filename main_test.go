@@ -15,6 +15,14 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func sendMsg(t *testing.T, conn io.Writer, sent message) {
+	t.Helper()
+
+	if err := json.NewEncoder(conn).Encode(&sent); err != nil {
+		t.Error(err)
+	}
+}
+
 func receiveMsg(t *testing.T, conn io.Reader, expected message) {
 	t.Helper()
 

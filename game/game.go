@@ -29,7 +29,7 @@ func (g *Game) start() {
 		guard.init(g)
 	}
 
-	//g.broadcast <- newMessage("start", "") // TODO
+	g.broadcast <- message.NewMessage("start", g.Level.toString()) // TODO
 }
 
 func (g *Game) Started() bool {
