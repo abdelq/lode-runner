@@ -2,24 +2,28 @@ package game
 
 import (
 	"errors"
-	"github.com/abdelq/lode-runner/message"
+	msg "github.com/abdelq/lode-runner/message"
 )
 
 type Game struct {
 	Level     *level
 	Runner    *Runner
-	Guards    map[*Guard]bool
-	broadcast chan *message.Message
+	Guards    map[*Guard]struct{}
+	broadcast chan *msg.Message
 }
 
-func NewGame(broadcast chan *message.Message) *Game {
-	return &Game{Guards: make(map[*Guard]bool), broadcast: broadcast}
+func NewGame(broadcast chan *msg.Message) *Game {
+	return &Game{Guards: make(map[*Guard]struct{}), broadcast: broadcast}
+}
+
+func (g *Game) Started() bool {
+	return g.Level != nil
 }
 
 func (g *Game) start() {
 	// Level
 	g.Level, _ = newLevel(1)
-	g.Level.game = g // TODO Temporary
+	g.Level.game = g // FIXME
 
 	// Runner
 	g.Runner.init(g)
@@ -29,14 +33,10 @@ func (g *Game) start() {
 		guard.init(g)
 	}
 
-	g.broadcast <- message.NewMessage("start", g.Level.toString()) // TODO
+	g.broadcast <- msg.NewMessage("start", g.Level.toString()) // XXX
 }
 
-func (g *Game) Started() bool {
-	return g.Level != nil
-}
-
-func (g *Game) stop() {} // TODO TODO Cleanup + Broadcast
+func (g *Game) stop() {} // XXX Cleanup + Broadcast
 
 func (g *Game) hasPlayer(name string) bool {
 	// Runner
@@ -54,6 +54,7 @@ func (g *Game) hasPlayer(name string) bool {
 	return false
 }
 
+// XXX Try player.Add(g)
 func (g *Game) AddPlayer(player Player) error {
 	switch p := player.(type) {
 	case *Runner:
@@ -74,7 +75,7 @@ func (g *Game) AddPlayer(player Player) error {
 			return errors.New("name already used")
 		}
 
-		g.Guards[p] = true
+		g.Guards[p] = struct{}{} // FIXME
 		//g.broadcast <- newJoinMessage(p.name, 1) // TODO
 	}
 
@@ -85,6 +86,7 @@ func (g *Game) AddPlayer(player Player) error {
 	return nil
 }
 
+// XXX Try player.Remove(g)
 func (g *Game) RemovePlayer(player Player) {
 	switch p := player.(type) {
 	case *Runner:

@@ -74,7 +74,7 @@ func (r *room) listen() {
 			}
 
 			delete(r.clients, client)
-			if player == nil /*|| r.game.Stopped()*/ { // TODO
+			if player == nil /*|| r.game.Stopped()*/ { // XXX
 				continue
 			}
 
