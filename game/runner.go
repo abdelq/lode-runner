@@ -1,5 +1,7 @@
 package game
 
+import "errors"
+
 type Runner struct {
 	Name  string
 	pos   position
@@ -60,3 +62,30 @@ func (r *Runner) Move(dir direction, lvl *level) {
 }
 
 func (r *Runner) Dig(dir direction, lvl *level) {} // TODO TODO
+
+func (r *Runner) Add(game *Game) error {
+	if game.Runner != nil {
+		return errors.New("runner already joined")
+	}
+	if game.hasPlayer(r.Name) {
+		return errors.New("name already used")
+	}
+
+	game.Runner = r
+	//game.broadcast <- newJoinMessage(p.name, 0) // TODO
+
+	if game.filled() {
+		go game.start()
+	}
+
+	return nil
+}
+
+func (r *Runner) Remove(game *Game) {
+	game.Runner = nil
+	//game.broadcast <- newLeaveMessage(p.name, 0) // TODO
+
+	if game.Started() {
+		go game.stop()
+	}
+}

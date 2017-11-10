@@ -1,10 +1,25 @@
 package main
 
-import "testing"
+import (
+	"net"
+	"testing"
+)
 
-// TODO
 func TestParse(t *testing.T) {
-	//events := []string{" JOIN", "	Move	", "dig "}
+	serverConn, clientConn := net.Pipe()
+	client := newClient(serverConn)
+
+	// Valid Events
+	for _, msg := range []message{
+		{Event: "JOIN "}, {Event: " Move "}, {Event: " dig"},
+	} {
+		msg.parse(client)
+		receiveMsg(t, clientConn, message{"error", []byte(`"unexpected end of JSON input"`)})
+	}
+
+	// Invalid Event
+	new(message).parse(client)
+	receiveMsg(t, clientConn, message{"error", []byte(`"invalid event"`)})
 }
 
 func TestParseJoin(t *testing.T) {} // TODO

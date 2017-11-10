@@ -16,6 +16,7 @@ func (m *JoinMessage) Parse(data json.RawMessage) error {
 		return err
 	}
 
+	// TODO Remove hardcoded value
 	if m.Role < 2 { // Runner/Guard
 		if m.Name = strings.TrimSpace(m.Name); m.Name == "" {
 			return errors.New("invalid name")

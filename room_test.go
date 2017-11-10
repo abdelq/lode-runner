@@ -8,7 +8,34 @@ import (
 	. "github.com/abdelq/lode-runner/message"
 )
 
-func testListenSpectator(t *testing.T) {
+func TestFindRoom(t *testing.T) {
+	client := new(client)
+	for _, name := range []string{"Buzz", "Rex", "Bo"} {
+		newRoom(name)
+	}
+
+	if room := findRoom(client); room != "" {
+		t.Errorf("expected: %s, receveived: %s", "", room) // TODO
+	}
+
+	rooms["Rex"].clients[client] = nil
+	if room := findRoom(client); room != "Rex" {
+		t.Errorf("expected: %s, receveived: %s", "Rex", room) // TODO
+	}
+}
+
+// TODO Join when game is already started
+// TODO Leave when game is already stopped
+// TODO Check effets of player.Add and player.Remove
+func TestListen(t *testing.T) {
+	t.Run("listen", func(t *testing.T) {
+		t.Run("spectator", listenSpectator)
+		t.Run("runner", listenRunner)
+		t.Run("guard", listenGuard)
+	})
+}
+
+func listenSpectator(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	spectator := newClient(serverConn)
 
@@ -43,7 +70,7 @@ func testListenSpectator(t *testing.T) {
 	}
 }
 
-func testListenRunner(t *testing.T) {
+func listenRunner(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	runner := newClient(serverConn)
 
@@ -78,7 +105,7 @@ func testListenRunner(t *testing.T) {
 	}
 }
 
-func testListenGuard(t *testing.T) {
+func listenGuard(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	guard := newClient(serverConn)
 
@@ -111,13 +138,4 @@ func testListenGuard(t *testing.T) {
 	if _, ok := room.clients[guard]; ok {
 		t.Error("still in room")
 	}
-}
-
-// TODO Join when game is already started
-func TestListen(t *testing.T) {
-	t.Run("listen", func(t *testing.T) {
-		t.Run("spectator", testListenSpectator)
-		t.Run("runner", testListenRunner)
-		t.Run("guard", testListenGuard)
-	})
 }

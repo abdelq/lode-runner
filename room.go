@@ -61,7 +61,7 @@ func (r *room) listen() {
 				continue
 			}
 
-			if err := r.game.AddPlayer(player); err != nil {
+			if err := player.Add(r.game); err != nil {
 				client.out <- newMessage("error", err.Error())
 				continue
 			}
@@ -74,11 +74,11 @@ func (r *room) listen() {
 			}
 
 			delete(r.clients, client)
-			if player == nil /*|| r.game.Stopped()*/ { // XXX
+			if player == nil || r.game.Stopped() {
 				continue
 			}
 
-			r.game.RemovePlayer(player)
+			player.Remove(r.game)
 		case msg := <-r.broadcast:
 			for client := range r.clients { // FIXME
 				msg2 := message(*msg)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"strconv"
 	"strings"
 
 	"github.com/abdelq/lode-runner/game"
@@ -11,9 +10,9 @@ import (
 
 type message Message
 
-// TODO Remove
-func newMessage(event, data string) *message {
-	return &message{event, json.RawMessage(strconv.Quote(data))}
+func newMessage(event, data string) *message { // FIXME
+	msg := message(*NewMessage(event, data))
+	return &msg
 }
 
 // TODO Move sections to game package
@@ -31,47 +30,45 @@ func (m *message) parse(sender *client) {
 }
 
 func parseJoin(data json.RawMessage, sender *client) {
-	joinMessage := new(JoinMessage)
-	if err := joinMessage.Parse(data); err != nil {
+	msg := new(JoinMessage)
+	if err := msg.Parse(data); err != nil {
 		sender.out <- newMessage("error", err.Error())
 		return
 	}
 
 	// Find/Create room
-	room, ok := rooms[joinMessage.Room]
+	room, ok := rooms[msg.Room]
 	if !ok {
-		room = newRoom(joinMessage.Room)
+		room = newRoom(msg.Room)
 	}
 
-	room.join <- &join{sender,
-		game.NewPlayer(joinMessage.Name, joinMessage.Role),
-	}
+	room.join <- &join{sender, game.NewPlayer(msg.Name, msg.Role)}
 }
 
 // TODO Move to game package
 func parseMove(data json.RawMessage, sender *client) {
-	moveMessage := new(game.Message)
-	if err := moveMessage.Parse(data); err != nil {
+	msg := new(game.Message)
+	if err := msg.Parse(data); err != nil {
 		sender.out <- newMessage("error", err.Error())
 		return
 	}
 
 	// Find room name if none sent
-	if moveMessage.Room == "" {
-		if moveMessage.Room = findRoom(sender); moveMessage.Room == "" {
+	if msg.Room == "" {
+		if msg.Room = findRoom(sender); msg.Room == "" {
 			sender.out <- newMessage("error", "not in a room")
 			return
 		}
 	}
 
-	if room, ok := rooms[moveMessage.Room]; ok {
+	if room, ok := rooms[msg.Room]; ok {
 		if !room.game.Started() {
 			sender.out <- newMessage("error", "game not yet started")
 			return
 		}
 
 		if player := room.clients[sender]; player != nil {
-			go player.Move(moveMessage.Direction, room.game.Level)
+			go player.Move(msg.Direction, room.game.Level)
 		} else {
 			sender.out <- newMessage("error", "not a player")
 		}
@@ -80,28 +77,28 @@ func parseMove(data json.RawMessage, sender *client) {
 
 // TODO Move to game package
 func parseDig(data json.RawMessage, sender *client) {
-	digMessage := new(game.Message)
-	if err := digMessage.Parse(data); err != nil {
+	msg := new(game.Message)
+	if err := msg.Parse(data); err != nil {
 		sender.out <- newMessage("error", err.Error())
 		return
 	}
 
 	// Find room name if none sent
-	if digMessage.Room == "" {
-		if digMessage.Room = findRoom(sender); digMessage.Room == "" {
+	if msg.Room == "" {
+		if msg.Room = findRoom(sender); msg.Room == "" {
 			sender.out <- newMessage("error", "not in a room")
 			return
 		}
 	}
 
-	if room, ok := rooms[digMessage.Room]; ok {
+	if room, ok := rooms[msg.Room]; ok {
 		if !room.game.Started() {
 			sender.out <- newMessage("error", "game not yet started")
 			return
 		}
 
 		if runner, ok := room.clients[sender].(*game.Runner); ok {
-			go runner.Dig(digMessage.Direction, room.game.Level)
+			go runner.Dig(msg.Direction, room.game.Level)
 		} else {
 			sender.out <- newMessage("error", "not a runner")
 		}

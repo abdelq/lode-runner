@@ -12,7 +12,7 @@ func TestRead(t *testing.T) {
 
 	go client.read()
 
-	// Tests
+	/* Tests */
 	sendMsg(t, clientConn, message{})
 	sendMsg(t, clientConn, message{"", []byte(`null`)})
 	sendMsg(t, clientConn, message{"test", []byte(`"TestRead"`)})
@@ -24,11 +24,13 @@ func TestWrite(t *testing.T) {
 
 	go client.write()
 
-	// Tests
+	/* Tests */
 	client.out <- nil
 	receiveMsg(t, clientConn, message{})
+
 	client.out <- new(message)
 	receiveMsg(t, clientConn, message{"", []byte(`null`)})
+
 	client.out <- &message{"test", []byte(`"TestWrite"`)}
 	receiveMsg(t, clientConn, message{"test", []byte(`"TestWrite"`)})
 }

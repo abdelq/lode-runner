@@ -7,14 +7,15 @@ import (
 	"math"
 )
 
-type tile = byte
-type position struct{ x, y int }
 type level struct {
 	num       int
 	tiles     [][]tile
 	landmarks map[position]tile // TODO Rename
-	game      *Game             // TODO Temporary
+	game      *Game             // FIXME
 }
+
+type tile = byte
+type position struct{ x, y int }
 
 // Tiles
 const (
