@@ -1,8 +1,8 @@
 package main
 
 import (
-	. "github.com/abdelq/lode-runner/game"
-	msg "github.com/abdelq/lode-runner/message"
+	"github.com/abdelq/lode-runner/game"
+	. "github.com/abdelq/lode-runner/message"
 )
 
 var rooms = make(map[string]*room)
@@ -10,25 +10,25 @@ var rooms = make(map[string]*room)
 type room struct {
 	join      chan *join
 	leave     chan *leave
-	broadcast chan *msg.Message
-	clients   map[*client]Player
-	game      *Game
+	broadcast chan *Message
+	clients   map[*client]game.Player
+	game      *game.Game
 }
 
 type leave = client
 type join struct {
 	client *client
-	player Player
+	player game.Player
 }
 
 func newRoom(name string) *room {
-	broadcast := make(chan *msg.Message)
+	broadcast := make(chan *Message)
 	room := &room{
 		join:      make(chan *join),
 		leave:     make(chan *leave),
 		broadcast: broadcast,
-		clients:   make(map[*client]Player),
-		game:      NewGame(broadcast),
+		clients:   make(map[*client]game.Player),
+		game:      game.NewGame(broadcast),
 	}
 
 	go room.listen()
@@ -79,10 +79,10 @@ func (r *room) listen() {
 			}
 
 			r.game.RemovePlayer(player)
-		case mssage := <-r.broadcast: // FIXME
-			for client := range r.clients {
-				newMsg := message(*mssage)
-				client.out <- &newMsg
+		case msg := <-r.broadcast:
+			for client := range r.clients { // FIXME
+				msg2 := message(*msg)
+				client.out <- &msg2
 			}
 		}
 	}

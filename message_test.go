@@ -2,7 +2,10 @@ package main
 
 import "testing"
 
-func TestParse(t *testing.T) {} // TODO
+// TODO
+func TestParse(t *testing.T) {
+	//events := []string{" JOIN", "	Move	", "dig "}
+}
 
 func TestParseJoin(t *testing.T) {} // TODO
 

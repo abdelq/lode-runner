@@ -58,8 +58,10 @@ func parseMove(data json.RawMessage, sender *client) {
 
 	// Find room name if none sent
 	if moveMessage.Room == "" {
-		moveMessage.Room = findRoom(sender)
-		// TODO newMessage("error", "not in a room")
+		if moveMessage.Room = findRoom(sender); moveMessage.Room == "" {
+			sender.out <- newMessage("error", "not in a room")
+			return
+		}
 	}
 
 	if room, ok := rooms[moveMessage.Room]; ok {
@@ -86,8 +88,10 @@ func parseDig(data json.RawMessage, sender *client) {
 
 	// Find room name if none sent
 	if digMessage.Room == "" {
-		digMessage.Room = findRoom(sender)
-		// TODO newMessage("error", "not in a room")
+		if digMessage.Room = findRoom(sender); digMessage.Room == "" {
+			sender.out <- newMessage("error", "not in a room")
+			return
+		}
 	}
 
 	if room, ok := rooms[digMessage.Room]; ok {
