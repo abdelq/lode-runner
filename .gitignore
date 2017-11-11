@@ -1,5 +1,1 @@
-server
-lode-runner
-
-*.key
-*.crt
+/build/
