@@ -2,4 +2,4 @@ package game
 
 import "testing"
 
-func TestParse(t *testing.T) {} // XXX
+func TestParse(t *testing.T) {} // TODO

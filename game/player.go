@@ -3,14 +3,13 @@ package game
 type Player interface {
 	Add(*Game) error
 	Remove(*Game)
-	init(*Game)
+	init(map[position]tile)
 	Move(direction, *level)
 }
 
-type state uint8
-type direction = uint8 // TODO
-
 // States
+type state uint8
+
 const (
 	ALIVE state = iota
 	FALLING
@@ -19,6 +18,8 @@ const (
 )
 
 // Directions
+type direction = uint8 // FIXME
+
 const (
 	NONE direction = iota
 	UP

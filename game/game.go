@@ -1,15 +1,15 @@
 package game
 
-import "github.com/abdelq/lode-runner/message"
+import msg "github.com/abdelq/lode-runner/message"
 
 type Game struct {
 	Level     *level
 	Runner    *Runner
 	Guards    map[*Guard]struct{}
-	broadcast chan *message.Message
+	broadcast chan *msg.Message
 }
 
-func NewGame(broadcast chan *message.Message) *Game {
+func NewGame(broadcast chan *msg.Message) *Game {
 	return &Game{Guards: make(map[*Guard]struct{}), broadcast: broadcast}
 }
 
@@ -19,7 +19,6 @@ func (g *Game) Started() bool {
 
 func (g *Game) Stopped() bool {
 	return false // FIXME
-	//return g.Level != nil
 }
 
 func (g *Game) filled() bool {
@@ -29,20 +28,29 @@ func (g *Game) filled() bool {
 func (g *Game) start() {
 	// Level
 	g.Level, _ = newLevel(1)
-	g.Level.game = g // FIXME
 
 	// Runner
-	g.Runner.init(g)
+	g.Runner.init(g.Level.landmarks)
 
-	// Guards
+	/* Guards */
 	for guard := range g.Guards {
-		guard.init(g)
+		guard.init(g.Level.landmarks)
 	}
 
-	g.broadcast <- message.NewMessage("start", g.Level.toString()) // XXX
+	// Remove unused landmarks
+	for pos, _ := range g.Level.landmarks {
+		for guard := range g.Guards {
+			if *guard.pos == pos {
+				continue
+			}
+		}
+		delete(g.Level.landmarks, pos)
+	}
+
+	g.broadcast <- msg.NewMessage("start", g.Level.String()) // FIXME
 }
 
-func (g *Game) stop() {} // XXX Cleanup + Broadcast
+func (g *Game) stop() {} // TODO
 
 func (g *Game) hasPlayer(name string) bool {
 	// Runner

@@ -8,6 +8,8 @@ import (
 	. "github.com/abdelq/lode-runner/message"
 )
 
+func TestNewRoom(t *testing.T) {} // TODO
+
 func TestFindRoom(t *testing.T) {
 	client := new(client)
 	for _, name := range []string{"Buzz", "Rex", "Bo"} {

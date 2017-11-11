@@ -2,8 +2,8 @@ package game
 
 import "testing"
 
-func TestStart(t *testing.T) {} // XXX
+func TestStart(t *testing.T) {} // TODO
 
-func TestStop(t *testing.T) {} // XXX
+func TestStop(t *testing.T) {} // TODO
 
-func TestHasPlayer(t *testing.T) {} // XXX
+func TestHasPlayer(t *testing.T) {} // TODO

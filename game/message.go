@@ -16,10 +16,10 @@ func (m *Message) Parse(data json.RawMessage) error {
 		return err
 	}
 
-	m.Room = strings.TrimSpace(m.Room)
 	if m.Direction > 4 { // NONE is a valid direction
 		return errors.New("invalid direction")
 	}
+	m.Room = strings.TrimSpace(m.Room)
 
 	return nil
 }
