@@ -5,10 +5,8 @@ import (
 	"testing"
 
 	"github.com/abdelq/lode-runner/game"
-	. "github.com/abdelq/lode-runner/message"
+	msg "github.com/abdelq/lode-runner/message"
 )
-
-func TestNewRoom(t *testing.T) {} // TODO
 
 func TestFindRoom(t *testing.T) {
 	client := new(client)
@@ -16,25 +14,26 @@ func TestFindRoom(t *testing.T) {
 		newRoom(name)
 	}
 
+	// Not in a room
 	if room := findRoom(client); room != "" {
-		t.Errorf("expected: %s, receveived: %s", "", room) // TODO
+		t.Error("room found")
 	}
 
+	// In a room
 	rooms["Rex"].clients[client] = nil
 	if room := findRoom(client); room != "Rex" {
-		t.Errorf("expected: %s, receveived: %s", "Rex", room) // TODO
+		t.Error("room not found")
 	}
 }
 
 // TODO Join when game is already started
 // TODO Leave when game is already stopped
-// TODO Check effets of player.Add and player.Remove
 func TestListen(t *testing.T) {
-	t.Run("listen", func(t *testing.T) {
-		t.Run("spectator", listenSpectator)
-		t.Run("runner", listenRunner)
-		t.Run("guard", listenGuard)
-	})
+	t.Parallel()
+
+	t.Run("Spectator", listenSpectator)
+	t.Run("Runner", listenRunner)
+	t.Run("Guard", listenGuard)
 }
 
 func listenSpectator(t *testing.T) {
@@ -59,7 +58,7 @@ func listenSpectator(t *testing.T) {
 	}
 
 	/* Broadcast */
-	room.broadcast <- &Message{"test", []byte(`"spectator"`)}
+	room.broadcast <- &msg.Message{"test", []byte(`"spectator"`)}
 	receiveMsg(t, clientConn, message{"test", []byte(`"spectator"`)})
 
 	/* Leave */
@@ -72,6 +71,7 @@ func listenSpectator(t *testing.T) {
 	}
 }
 
+// TODO Check effets of player.Add and player.Remove
 func listenRunner(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	runner := newClient(serverConn)
@@ -94,7 +94,7 @@ func listenRunner(t *testing.T) {
 	}
 
 	/* Broadcast */
-	room.broadcast <- &Message{"test", []byte(`"runner"`)}
+	room.broadcast <- &msg.Message{"test", []byte(`"runner"`)}
 	receiveMsg(t, clientConn, message{"test", []byte(`"runner"`)})
 
 	/* Leave */
@@ -107,6 +107,7 @@ func listenRunner(t *testing.T) {
 	}
 }
 
+// TODO Check effets of player.Add and player.Remove
 func listenGuard(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	guard := newClient(serverConn)
@@ -129,7 +130,7 @@ func listenGuard(t *testing.T) {
 	}
 
 	/* Broadcast */
-	room.broadcast <- &Message{"test", []byte(`"guard"`)}
+	room.broadcast <- &msg.Message{"test", []byte(`"guard"`)}
 	receiveMsg(t, clientConn, message{"test", []byte(`"guard"`)})
 
 	/* Leave */

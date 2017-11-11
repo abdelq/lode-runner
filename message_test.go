@@ -9,21 +9,46 @@ func TestParse(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	client := newClient(serverConn)
 
-	// Valid Events
-	for _, msg := range []message{
-		{Event: "JOIN "}, {Event: " Move "}, {Event: " dig"},
-	} {
+	// Valid events
+	messages := []message{{Event: "JOIN "}, {Event: " Move "}, {Event: " dig"}}
+	for _, msg := range messages {
 		msg.parse(client)
 		receiveMsg(t, clientConn, message{"error", []byte(`"unexpected end of JSON input"`)})
 	}
 
-	// Invalid Event
+	// Invalid event
 	new(message).parse(client)
 	receiveMsg(t, clientConn, message{"error", []byte(`"invalid event"`)})
 }
 
 func TestParseJoin(t *testing.T) {} // TODO
 
-func TestParseMove(t *testing.T) {} // TODO
+func TestParseMove(t *testing.T) {
+	serverConn, clientConn := net.Pipe()
+	spectator := newClient(serverConn)
 
-func TestParseDig(t *testing.T) {} // TODO
+	parseDig([]byte(`{"direction": 0, "room": ""}`), spectator)
+	receiveMsg(t, clientConn, message{"error", []byte(`"not in a room"`)})
+
+	newRoom("test").clients[spectator] = nil // FIXME
+
+	parseDig([]byte(`{"direction": 0, "room": "test"}`), spectator)
+	receiveMsg(t, clientConn, message{"error", []byte(`"game not yet started"`)})
+
+	// TODO Not a player
+}
+
+func TestParseDig(t *testing.T) {
+	serverConn, clientConn := net.Pipe()
+	spectator := newClient(serverConn)
+
+	parseDig([]byte(`{"direction": 0, "room": ""}`), spectator)
+	receiveMsg(t, clientConn, message{"error", []byte(`"not in a room"`)})
+
+	newRoom("test").clients[spectator] = nil // FIXME
+
+	parseDig([]byte(`{"direction": 0, "room": "test"}`), spectator)
+	receiveMsg(t, clientConn, message{"error", []byte(`"game not yet started"`)})
+
+	// TODO Not a runner
+}

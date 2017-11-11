@@ -8,7 +8,7 @@ import (
 
 func TestRead(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
-	client := &client{conn: serverConn, out: make(chan *message)}
+	client := &client{conn: serverConn, out: make(chan message)}
 
 	go client.read()
 
@@ -20,18 +20,15 @@ func TestRead(t *testing.T) {
 
 func TestWrite(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
-	client := &client{conn: serverConn, out: make(chan *message)}
+	client := &client{conn: serverConn, out: make(chan message)}
 
 	go client.write()
 
 	/* Tests */
-	client.out <- nil
-	receiveMsg(t, clientConn, message{})
-
-	client.out <- new(message)
+	client.out <- message{}
 	receiveMsg(t, clientConn, message{"", []byte(`null`)})
 
-	client.out <- &message{"test", []byte(`"TestWrite"`)}
+	client.out <- message{"test", []byte(`"TestWrite"`)}
 	receiveMsg(t, clientConn, message{"test", []byte(`"TestWrite"`)})
 }
 
@@ -51,7 +48,7 @@ func TestClose(t *testing.T) {
 	// Verify rooms are left
 	for _, room := range rooms {
 		if _, ok := room.clients[client]; ok {
-			t.Errorf("client still in a room") // FIXME
+			t.Errorf("client still in a room")
 			break
 		}
 	}

@@ -11,11 +11,11 @@ import (
 type client struct {
 	conn net.Conn
 	once sync.Once
-	out  chan *message
+	out  chan message
 }
 
 func newClient(conn net.Conn) *client {
-	client := &client{conn: conn, out: make(chan *message)}
+	client := &client{conn: conn, out: make(chan message)}
 
 	// Listeners
 	go client.read()
