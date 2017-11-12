@@ -1,11 +1,19 @@
 package game
 
-import "errors"
+import (
+	"errors"
+	"log"
+	"time"
+	//msg "github.com/abdelq/lode-runner/message"
+)
+
+//import "fmt"
 
 type Runner struct {
-	Name  string
-	pos   *position
-	state state
+	Name   string
+	pos    *position
+	state  state
+	health uint8 // TODO Use
 }
 
 func (r *Runner) Add(game *Game) error {
@@ -17,7 +25,7 @@ func (r *Runner) Add(game *Game) error {
 	}
 
 	game.Runner = r
-	//game.broadcast <- newJoinMessage(p.name, 0) // TODO
+	//game.broadcast <- msg.NewMessage("join", r.Name) // FIXME
 
 	if game.filled() {
 		go game.start()
@@ -28,7 +36,7 @@ func (r *Runner) Add(game *Game) error {
 
 func (r *Runner) Remove(game *Game) {
 	game.Runner = nil
-	//game.broadcast <- newLeaveMessage(p.name, 0) // TODO
+	//game.broadcast <- msg.NewMessage("leave", r.Name) // FIXME
 
 	if game.Started() {
 		go game.stop()
@@ -44,6 +52,7 @@ func (r *Runner) init(landmarks map[position]tile) {
 	}
 }
 
+// TODO Broadcast
 func (r *Runner) Move(dir direction, lvl *level) {
 	if r.state == DIGGING {
 		return
@@ -69,13 +78,20 @@ func (r *Runner) Move(dir direction, lvl *level) {
 	}
 
 	if !lvl.validMove(*r.pos, newPos, dir) { // FIXME
+		//fmt.Println("notvalidmove")
 		if r.state == FALLING {
 			r.state = ALIVE
 		}
 		return
 	}
 
+	// FIXME
+	//fmt.Println("validmove")
+	//fmt.Println(r.pos)
+	//fmt.Println(*r.pos)
+	delete(lvl.landmarks, *r.pos)
 	r.pos.x, r.pos.y = newPos.x, newPos.y // FIXME
+	lvl.landmarks[*r.pos] = RUNNER
 
 	if dir == DOWN || lvl.emptyBelow(*r.pos) {
 		r.state = FALLING
@@ -86,4 +102,30 @@ func (r *Runner) Move(dir direction, lvl *level) {
 	//game.check_collisions()
 }
 
-func (r *Runner) Dig(dir direction, lvl *level) {} // TODO
+// TODO Broadcast
+func (r *Runner) Dig(dir direction, lvl *level) {
+	// FIXME
+	var digPos position
+	if dir == RIGHT {
+		digPos = position{r.pos.x + 1, r.pos.y + 1}
+	} else {
+		digPos = position{r.pos.x - 1, r.pos.y + 1}
+	}
+
+	// FIXME FIXME
+	if lvl.validDig(digPos) {
+		//r.state = DIGGING
+		lvl.tiles[digPos.y][digPos.x] = EMPTY
+
+		digDuration, err := time.ParseDuration("320ms") // TODO Using flag ?
+		if err != nil {
+			log.Println(err)
+			digDuration, _ = time.ParseDuration("320ms") // TODO Forced to default
+		}
+
+		time.AfterFunc(digDuration, func() {
+			lvl.tiles[digPos.y][digPos.x] = BRICK
+			// TODO Check if player in position and kill him/respawn him
+		})
+	}
+}

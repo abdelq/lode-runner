@@ -1,9 +1,28 @@
 package game
 
-import "testing"
+import (
+	"testing"
 
-func TestStart(t *testing.T) {} // TODO
+	msg "github.com/abdelq/lode-runner/message"
+)
 
-func TestStop(t *testing.T) {} // TODO
+// TODO
+func TestStart(t *testing.T) {
+	broadcast := make(chan *msg.Message, 1)
+	defer close(broadcast)
 
-func TestHasPlayer(t *testing.T) {} // TODO
+	game := NewGame(broadcast)
+	game.Runner = new(Runner)
+	game.Guards[new(Guard)] = struct{}{}
+
+	game.start()
+
+	//t.Error(game.Level)
+	//t.Error(string(<-game.broadcast))
+}
+
+// TODO
+func TestStop(t *testing.T) {}
+
+// TODO
+func TestHasPlayer(t *testing.T) {}

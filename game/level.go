@@ -65,6 +65,15 @@ func (l *level) emptyBelow(pos position) bool {
 	return l.getTiles()[pos.y+1][pos.x] == EMPTY
 }
 
+func (l *level) moneyCollected() bool {
+	for _, tile := range l.landmarks {
+		if tile == GOLD {
+			return false
+		}
+	}
+	return true
+}
+
 // TODO Rewrite + Rename
 func (l *level) getTiles() [][]tile {
 	tiles := make([][]tile, len(l.tiles))
@@ -76,6 +85,17 @@ func (l *level) getTiles() [][]tile {
 	// TODO Comment
 	for pos, tile := range l.landmarks {
 		tiles[pos.y][pos.x] = tile
+	}
+
+	// FIXME Show/Hide escape ladder
+	if !l.moneyCollected() {
+		for i, row := range tiles {
+			for j, cell := range row {
+				if cell == ESCAPELADDER {
+					tiles[i][j] = EMPTY
+				}
+			}
+		}
 	}
 
 	return tiles
@@ -116,4 +136,8 @@ func (l *level) validMove(orig, dest position, dir direction) bool {
 	}
 
 	return false
+}
+
+func (l *level) validDig(pos position) bool {
+	return l.tiles[pos.y][pos.x] == BRICK
 }

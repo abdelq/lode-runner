@@ -33,7 +33,7 @@ func TestParseMove(t *testing.T) {
 	newRoom("test").clients[spectator] = nil // FIXME
 
 	parseDig([]byte(`{"direction": 0, "room": "test"}`), spectator)
-	receiveMsg(t, clientConn, message{"error", []byte(`"game not yet started"`)})
+	receiveMsg(t, clientConn, message{"error", []byte(`"not in a game"`)})
 
 	// TODO Not a player
 }
@@ -48,7 +48,7 @@ func TestParseDig(t *testing.T) {
 	newRoom("test").clients[spectator] = nil // FIXME
 
 	parseDig([]byte(`{"direction": 0, "room": "test"}`), spectator)
-	receiveMsg(t, clientConn, message{"error", []byte(`"game not yet started"`)})
+	receiveMsg(t, clientConn, message{"error", []byte(`"not in a game"`)})
 
 	// TODO Not a runner
 }

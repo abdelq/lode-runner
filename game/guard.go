@@ -3,6 +3,7 @@ package game
 import (
 	"errors"
 	"sort"
+	//msg "github.com/abdelq/lode-runner/message"
 )
 
 type Guard struct {
@@ -20,7 +21,7 @@ func (g *Guard) Add(game *Game) error {
 	}
 
 	game.Guards[g] = struct{}{} // FIXME
-	//game.broadcast <- newJoinMessage(p.name, 1) // TODO
+	//game.broadcast <- msg.NewMessage("join", g.Name) // FIXME
 
 	if game.filled() {
 		go game.start()
@@ -31,7 +32,7 @@ func (g *Guard) Add(game *Game) error {
 
 func (g *Guard) Remove(game *Game) {
 	delete(game.Guards, g)
-	//game.broadcast <- newLeaveMessage(p.name, 1) // TODO
+	//game.broadcast <- msg.NewMessage("leave", g.Name) // FIXME
 
 	if game.Started() && len(game.Guards) == 0 {
 		go game.stop()
@@ -39,22 +40,23 @@ func (g *Guard) Remove(game *Game) {
 }
 
 func (g *Guard) init(landmarks map[position]tile) { // XXX
-	var runnerPos *position
-	var positions []*position
+	var runnerPos position
+	var positions []position
 	for pos, tile := range landmarks {
 		if tile == RUNNER {
-			runnerPos = &pos
+			runnerPos = pos
 		} else if tile == GUARD {
-			positions = append(positions, &pos)
+			positions = append(positions, pos)
 		}
 	}
 
 	sort.SliceStable(positions, func(i, j int) bool {
-		return manhattanDist(*positions[i], *runnerPos) >
-			manhattanDist(*positions[j], *runnerPos)
+		return manhattanDist(positions[i], runnerPos) >
+			manhattanDist(positions[j], runnerPos)
 	})
 
-	g.pos = positions[0]
+	g.pos = &positions[0]
 }
 
+// TODO Broadcast
 func (g *Guard) Move(dir direction, lvl *level) {} // TODO

@@ -18,7 +18,7 @@ func (g *Game) Started() bool {
 }
 
 func (g *Game) Stopped() bool {
-	return false // FIXME
+	return g.Guards == nil // FIXME
 }
 
 func (g *Game) filled() bool {
@@ -32,25 +32,33 @@ func (g *Game) start() {
 	// Runner
 	g.Runner.init(g.Level.landmarks)
 
-	/* Guards */
+	// Guards
 	for guard := range g.Guards {
 		guard.init(g.Level.landmarks)
 	}
 
 	// Remove unused landmarks
-	for pos, _ := range g.Level.landmarks {
-		for guard := range g.Guards {
-			if *guard.pos == pos {
-				continue
+	for pos, tile := range g.Level.landmarks {
+		if tile == GUARD {
+			var found = false
+			for guard := range g.Guards {
+				if *guard.pos == pos {
+					found = true
+				}
+			}
+			if !found {
+				delete(g.Level.landmarks, pos)
 			}
 		}
-		delete(g.Level.landmarks, pos)
 	}
 
 	g.broadcast <- msg.NewMessage("start", g.Level.String()) // FIXME
 }
 
-func (g *Game) stop() {} // TODO
+func (g *Game) stop() {
+	// TODO Force everyone to leave room
+	// TODO g.Guards = nil
+}
 
 func (g *Game) hasPlayer(name string) bool {
 	// Runner

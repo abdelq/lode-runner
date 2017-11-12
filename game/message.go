@@ -16,6 +16,7 @@ func (m *Message) Parse(data json.RawMessage) error {
 		return err
 	}
 
+	// TODO Valid only LEFT/RIGHT for digging
 	if m.Direction > 4 { // NONE is a valid direction
 		return errors.New("invalid direction")
 	}

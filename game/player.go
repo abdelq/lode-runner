@@ -28,11 +28,11 @@ const (
 	RIGHT
 )
 
-func NewPlayer(name string, role uint8) Player {
+func NewPlayer(name string, role tile) Player {
 	switch role {
-	case 0:
+	case RUNNER: // FIXME Empty byte/default one from the marshalling
 		return &Runner{Name: name}
-	case 1:
+	case GUARD:
 		return &Guard{Name: name}
 	}
 
