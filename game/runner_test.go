@@ -18,7 +18,7 @@ func TestMove(t *testing.T) {
 
 	game.start()
 
-	t.Error(game.Level)
+	/*t.Error(game.Level)
 	game.Runner.Move(DOWN, game.Level)
 	t.Error(game.Level)
 	game.Runner.Move(UP, game.Level)
@@ -62,7 +62,7 @@ func TestMove(t *testing.T) {
 
 	//time.Sleep(80000 * 5)
 	//time.Sleep(600 * time.Millisecond)
-	t.Error(game.Level)
+	t.Error(game.Level)*/
 	/*t.Error(game.Runner.pos)
 	for pos, tile := range game.Level.landmarks {
 		if tile == RUNNER {

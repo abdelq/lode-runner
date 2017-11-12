@@ -16,11 +16,11 @@ func (m *JoinMessage) Parse(data json.RawMessage) error {
 		return err
 	}
 
-	//if m.Role < 2 { // FIXME Runner/Guard only
-	if m.Name = strings.TrimSpace(m.Name); m.Name == "" {
-		return errors.New("invalid name")
+	if m.Role == 0 || m.Role == 38 || m.Role == 48 { // FIXME Runner/Guard only
+		if m.Name = strings.TrimSpace(m.Name); m.Name == "" {
+			return errors.New("invalid name")
+		}
 	}
-	//}
 	if m.Room = strings.TrimSpace(m.Room); m.Room == "" {
 		return errors.New("invalid room")
 	}

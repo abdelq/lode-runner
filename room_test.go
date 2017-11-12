@@ -26,10 +26,8 @@ func TestFindRoom(t *testing.T) {
 	}
 }
 
-// TODO Join when game is already started
-// TODO Leave when game is already stopped
 func TestListen(t *testing.T) {
-	t.Parallel()
+	t.Parallel() // TODO Make sure it's parallel
 
 	t.Run("Spectator", listenSpectator)
 	t.Run("Runner", listenRunner)
@@ -71,6 +69,8 @@ func listenSpectator(t *testing.T) {
 	}
 }
 
+// TODO Join when game is already started
+// TODO Leave when game is already stopped
 // TODO Check effets of player.Add and player.Remove
 func listenRunner(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
@@ -107,6 +107,8 @@ func listenRunner(t *testing.T) {
 	}
 }
 
+// TODO Join when game is already started
+// TODO Leave when game is already stopped
 // TODO Check effets of player.Add and player.Remove
 func listenGuard(t *testing.T) {
 	serverConn, clientConn := net.Pipe()

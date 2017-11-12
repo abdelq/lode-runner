@@ -14,7 +14,6 @@ func TestRead(t *testing.T) {
 
 	/* Tests */
 	sendMsg(t, clientConn, message{})
-	sendMsg(t, clientConn, message{"", []byte(`null`)})
 	sendMsg(t, clientConn, message{"test", []byte(`"TestRead"`)})
 }
 
@@ -37,9 +36,8 @@ func TestClose(t *testing.T) {
 	client := newClient(conn)
 
 	// Join rooms
-	rooms := []*room{newRoom("Buzz"), newRoom("Rex"), newRoom("Bo")}
-	for _, room := range rooms {
-		room.join <- &join{client, nil}
+	for _, name := range []string{"Buzz", "Rex", "Bo"} {
+		newRoom(name).join <- &join{client, nil}
 	}
 
 	client.close() // First

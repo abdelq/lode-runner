@@ -30,7 +30,7 @@ const (
 
 func NewPlayer(name string, role tile) Player {
 	switch role {
-	case RUNNER: // FIXME Empty byte/default one from the marshalling
+	case 0, RUNNER: // FIXME
 		return &Runner{Name: name}
 	case GUARD:
 		return &Guard{Name: name}

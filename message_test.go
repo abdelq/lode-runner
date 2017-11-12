@@ -10,8 +10,8 @@ func TestParse(t *testing.T) {
 	client := newClient(serverConn)
 
 	// Valid events
-	messages := []message{{Event: "JOIN "}, {Event: " Move "}, {Event: " dig"}}
-	for _, msg := range messages {
+	for _, event := range []string{"JOIN ", " Move ", " dig"} {
+		msg := &message{Event: event}
 		msg.parse(client)
 		receiveMsg(t, clientConn, message{"error", []byte(`"unexpected end of JSON input"`)})
 	}
@@ -21,7 +21,27 @@ func TestParse(t *testing.T) {
 	receiveMsg(t, clientConn, message{"error", []byte(`"invalid event"`)})
 }
 
-func TestParseJoin(t *testing.T) {} // TODO
+func TestParseJoin(t *testing.T) {
+	conn, _ := net.Pipe()
+	spectator, runner := newClient(conn), newClient(conn)
+
+	if _, ok := rooms["test"]; ok {
+		t.Error("room already exists")
+		return
+	}
+
+	// New room
+	parseJoin([]byte(`{"name": "spectator", "room": "test", "role": 255}`), spectator)
+	if _, ok := rooms["test"].clients[spectator]; !ok {
+		t.Error("spectator not in room")
+	}
+
+	// Existing room
+	parseJoin([]byte(`{"name": "runner", "room": "test", "role": 0}`), runner)
+	if _, ok := rooms["test"].clients[runner]; !ok {
+		t.Error("runner not in room")
+	}
+}
 
 func TestParseMove(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
@@ -30,7 +50,7 @@ func TestParseMove(t *testing.T) {
 	parseDig([]byte(`{"direction": 0, "room": ""}`), spectator)
 	receiveMsg(t, clientConn, message{"error", []byte(`"not in a room"`)})
 
-	newRoom("test").clients[spectator] = nil // FIXME
+	newRoom("test").clients[spectator] = nil
 
 	parseDig([]byte(`{"direction": 0, "room": "test"}`), spectator)
 	receiveMsg(t, clientConn, message{"error", []byte(`"not in a game"`)})
@@ -45,7 +65,7 @@ func TestParseDig(t *testing.T) {
 	parseDig([]byte(`{"direction": 0, "room": ""}`), spectator)
 	receiveMsg(t, clientConn, message{"error", []byte(`"not in a room"`)})
 
-	newRoom("test").clients[spectator] = nil // FIXME
+	newRoom("test").clients[spectator] = nil
 
 	parseDig([]byte(`{"direction": 0, "room": "test"}`), spectator)
 	receiveMsg(t, clientConn, message{"error", []byte(`"not in a game"`)})
