@@ -97,7 +97,7 @@ func parseDig(data json.RawMessage, sender *client) {
 		}
 
 		if runner, ok := room.clients[sender].(*game.Runner); ok {
-			go runner.Dig(message.Direction, room.game.Level)
+			go runner.Dig(message.Direction, room.game)
 		} else {
 			sender.out <- newMessage("error", "not a runner")
 		}

@@ -124,7 +124,7 @@ func (r *Runner) Move(dir direction, game *Game) {
 }
 
 // TODO Broadcast
-func (r *Runner) Dig(dir direction, lvl *level) {
+func (r *Runner) Dig(dir direction, game *Game) {
 	// FIXME
 	var digPos position
 	if dir == RIGHT {
@@ -134,9 +134,9 @@ func (r *Runner) Dig(dir direction, lvl *level) {
 	}
 
 	// FIXME FIXME
-	if lvl.validDig(digPos) {
+	if game.Level.validDig(digPos) {
 		//r.state = DIGGING
-		lvl.tiles[digPos.y][digPos.x] = EMPTY
+		game.Level.tiles[digPos.y][digPos.x] = EMPTY
 
 		digDuration, err := time.ParseDuration("320ms") // TODO Using flag ?
 		if err != nil {
@@ -145,8 +145,19 @@ func (r *Runner) Dig(dir direction, lvl *level) {
 		}
 
 		time.AfterFunc(digDuration, func() {
-			lvl.tiles[digPos.y][digPos.x] = BRICK
-			// TODO Check if player in position and kill him/respawn him
+			if tile, ok := game.Level.players[digPos]; ok && tile == RUNNER {
+				r.health--
+
+				if r.health == 0 {
+					game.stop() // TODO Goroutine?
+					return
+				}
+
+				game.start(game.Level.num) // TODO Goroutine or not ?
+				return
+			}
+			// FIXME For guard
+			game.Level.tiles[digPos.y][digPos.x] = BRICK
 		})
 	}
 }
