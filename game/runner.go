@@ -28,7 +28,7 @@ func (r *Runner) Add(game *Game) error {
 	//game.broadcast <- msg.NewMessage("join", r.Name) // FIXME Join Msg ?
 
 	if game.filled() {
-		go game.start()
+		go game.start(1)
 	}
 
 	return nil
@@ -53,7 +53,7 @@ func (r *Runner) init(landmarks map[position]tile) {
 }
 
 // TODO Broadcast
-func (r *Runner) Move(dir direction, lvl *level) {
+func (r *Runner) Move(dir direction, game *Game) {
 	if r.state == DIGGING {
 		return
 	}
@@ -77,7 +77,8 @@ func (r *Runner) Move(dir direction, lvl *level) {
 		newPos = position{r.pos.x + 1, r.pos.y}
 	}
 
-	if !lvl.validMove(*r.pos, newPos, dir) { // FIXME
+	if !game.Level.validMove(*r.pos, newPos, dir) { // FIXME
+		//fmt.Println("notvalidmove")
 		if r.state == FALLING {
 			r.state = ALIVE
 		}
@@ -88,21 +89,27 @@ func (r *Runner) Move(dir direction, lvl *level) {
 	//fmt.Println("validmove")
 	//fmt.Println(r.pos)
 	//fmt.Println(*r.pos)
-	//delete(lvl.gold, *r.pos) // FIXME
-	//lvl.gold[i] = lvl.gold[len(a)-1]
-	lvl.collectGold(*r.pos)
-	delete(lvl.players, *r.pos)
+	//delete(game.Level.gold, *r.pos) // FIXME
+	//game.Level.gold[i] = game.Level.gold[len(a)-1]
+	game.Level.collectGold(*r.pos)
+	delete(game.Level.players, *r.pos)
 	r.pos.x, r.pos.y = newPos.x, newPos.y // FIXME
-	lvl.players[*r.pos] = RUNNER
 
-	if dir == DOWN || (lvl.emptyBelow(*r.pos) && lvl.tiles[r.pos.y][r.pos.x] != ROPE) {
+	// Collision checking
+	if _, ok := game.Level.players[*r.pos]; ok {
+		r.health--
+		game.start(game.Level.num) // TODO Goroutine or not ?
+		return
+		// TODO Reset
+	}
+
+	game.Level.players[*r.pos] = RUNNER
+
+	if dir == DOWN || (game.Level.emptyBelow(*r.pos) && game.Level.tiles[r.pos.y][r.pos.x] != ROPE) {
 		r.state = FALLING
 	}
 
-	fmt.Println(lvl.String())
-	// TODO
-	//gfx_move_sprite(HERO, orig, hero.pos)
-	//game.check_collisions()
+	fmt.Println(game.Level.String())
 }
 
 // TODO Broadcast

@@ -16,7 +16,7 @@ func TestMove(t *testing.T) {
 	game.Runner = new(Runner)
 	game.Guards[new(Guard)] = struct{}{}
 
-	game.start()
+	//game.start()
 
 	/*t.Error(game.Level)
 	game.Runner.Move(DOWN, game.Level)

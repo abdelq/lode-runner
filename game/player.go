@@ -4,7 +4,7 @@ type Player interface {
 	Add(*Game) error
 	Remove(*Game)
 	init(map[position]tile)
-	Move(direction, *level)
+	Move(direction, *Game)
 }
 
 // States
@@ -31,7 +31,7 @@ const (
 func NewPlayer(name string, role tile) Player {
 	switch role {
 	case 0, RUNNER: // FIXME
-		return &Runner{Name: name}
+		return &Runner{Name: name, health: 5}
 	case GUARD:
 		return &Guard{Name: name}
 	}

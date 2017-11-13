@@ -67,7 +67,7 @@ func parseMove(data json.RawMessage, sender *client) {
 		}
 
 		if player := room.clients[sender]; player != nil {
-			go player.Move(message.Direction, room.game.Level)
+			go player.Move(message.Direction, room.game)
 		} else {
 			sender.out <- newMessage("error", "not a player")
 		}

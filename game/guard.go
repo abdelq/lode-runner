@@ -24,7 +24,7 @@ func (g *Guard) Add(game *Game) error {
 	//game.broadcast <- msg.NewMessage("join", g.Name) // FIXME
 
 	if game.filled() {
-		go game.start()
+		go game.start(1)
 	}
 
 	return nil
@@ -59,4 +59,4 @@ func (g *Guard) init(landmarks map[position]tile) { // XXX
 }
 
 // TODO Broadcast
-func (g *Guard) Move(dir direction, lvl *level) {} // TODO
+func (g *Guard) Move(dir direction, game *Game) {} // TODO

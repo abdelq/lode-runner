@@ -1,5 +1,6 @@
 package game
 
+import "log"
 import msg "github.com/abdelq/lode-runner/message"
 
 type Game struct {
@@ -25,9 +26,15 @@ func (g *Game) filled() bool {
 	return g.Runner != nil && len(g.Guards) == 1 // FIXME
 }
 
-func (g *Game) start() {
+func (g *Game) start(lvl int) {
+	var err error // TODO
 	// Level
-	g.Level, _ = newLevel(1)
+	g.Level, err = newLevel(lvl)
+	if err != nil {
+		log.Println(err)
+		return
+		// TODO Crash people ?
+	}
 
 	// Runner
 	g.Runner.init(g.Level.players)
