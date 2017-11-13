@@ -1,14 +1,24 @@
-- [ ] Fin de partie quand le joueur tombe dans un trou au premier étage
-- [ ] Pouvoir descendre des échelles
-- [ ] Besoin de taper deux fois sur une direction lorsqu'on est sur une rope
-- [ ] Ne pas avoir accès à l'échelle de sortie avant la fin
-- [ ] Lvl 01: impossible de ramasser le tout premier $
+# High priority
+
 - [ ] Use a system based on ticks
-- [ ] Death on block rebuild
-- [ ] Flags for timeouts
-- [ ] Manage collisions
+- [ ] game.Stop() n'arrête pas le jeu
 - [ ] Manage death
+    - [ ] Manage collisions
+    - [ ] Quand plus de vies
+    - [ ] Fin de partie quand le joueur tombe dans un trou au premier étage
+
+# Mid priority
+
+- [x] Pouvoir descendre des échelles
+- [x] Besoin de taper deux fois sur une direction lorsqu'on est sur une rope
+- [x] Ne pas avoir accès à l'échelle de sortie avant la fin
+- [x] Lvl 01: impossible de ramasser le tout premier $
+- [ ] Death on block rebuild
 - [ ] Manage going to the next level
-- [ ] End of game (lvl 150)
 - [ ] Respawn of players
+
+# Low priority
+
+- [ ] End of game (lvl 150)
 - [ ] Allow multiple rooms for a single client
+- [ ] Flags for timeouts
