@@ -47,12 +47,12 @@ func TestParseMove(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	spectator := newClient(serverConn)
 
-	parseDig([]byte(`{"direction": 0, "room": ""}`), spectator)
+	parseMove([]byte(`{"direction": 0, "room": ""}`), spectator)
 	receiveMsg(t, clientConn, message{"error", []byte(`"not in a room"`)})
 
 	newRoom("test").clients[spectator] = nil
 
-	parseDig([]byte(`{"direction": 0, "room": "test"}`), spectator)
+	parseMove([]byte(`{"direction": 0, "room": "test"}`), spectator)
 	receiveMsg(t, clientConn, message{"error", []byte(`"not in a game"`)})
 
 	// TODO Not a player
