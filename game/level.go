@@ -160,5 +160,9 @@ func (l *level) validMove(orig, dest position, dir direction) bool {
 }
 
 func (l *level) validDig(pos position) bool {
+	if pos.x < 0 || pos.x >= 28 {
+		return false
+	}
+
 	return l.tiles[pos.y][pos.x] == BRICK
 }
