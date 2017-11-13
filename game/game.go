@@ -62,9 +62,12 @@ func (g *Game) start(lvl int) {
 	g.broadcast <- msg.NewMessage("start", g.Level.String()) // FIXME
 }
 
-func (g *Game) stop() { // XXX
-	// TODO Force everyone to leave room
-	// TODO g.Guards = nil
+func (g *Game) stop() {
+	// Force everyone to leave room
+	g.broadcast <- msg.NewMessage("quit", "") // FIXME
+
+	// Destroy guards
+	g.Guards = nil
 }
 
 func (g *Game) hasPlayer(name string) bool {

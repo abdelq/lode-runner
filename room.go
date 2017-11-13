@@ -50,6 +50,7 @@ func (r *room) listen() {
 		select {
 		case join := <-r.join:
 			client, player := join.client, join.player
+
 			if _, ok := r.clients[client]; ok {
 				client.out <- newMessage("error", "already in room")
 				continue
@@ -65,6 +66,7 @@ func (r *room) listen() {
 				continue
 			}
 			r.clients[client] = player
+
 		case client := <-r.leave:
 			player := r.clients[client]
 			if _, ok := r.clients[client]; !ok {
@@ -78,7 +80,15 @@ func (r *room) listen() {
 			}
 
 			player.Remove(r.game)
+
 		case msg := <-r.broadcast:
+			if msg.Event == "quit" {
+				for client := range r.clients {
+					client.close() // FIXME : leave
+				}
+				continue
+			}
+
 			for client := range r.clients {
 				client.out <- message(*msg)
 			}
