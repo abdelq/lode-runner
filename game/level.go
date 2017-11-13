@@ -15,7 +15,6 @@ type level struct {
 	tiles   [][]tile
 	players map[position]tile // TODO
 	gold    []position        // TODO
-	//gold    map[position]tile // TODO
 }
 
 // Tiles
@@ -85,6 +84,7 @@ func (l *level) collectGold(pos position) {
 	for i, p := range l.gold {
 		if p == pos {
 			l.gold[i] = l.gold[len(l.gold)-1]
+			l.gold = l.gold[:len(l.gold)-1]
 			return
 		}
 	}
