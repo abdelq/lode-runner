@@ -62,9 +62,16 @@ func (g *Game) start(lvl int) {
 	g.broadcast <- msg.NewMessage("start", g.Level.String()) // FIXME
 }
 
+// TODO Add argument w/ winner
 func (g *Game) stop() {
 	// Force everyone to leave room
-	g.broadcast <- msg.NewMessage("quit", "") // FIXME
+	if g.Runner == nil || g.Runner.health == 0 {
+		g.broadcast <- msg.NewMessage("quit", "guards win") // FIXME
+	} else if len(g.Guards) == 0 {
+		g.broadcast <- msg.NewMessage("quit", "runner wins") // FIXME
+	} else { // TODO ?
+		g.broadcast <- msg.NewMessage("quit", "") // FIXME
+	}
 
 	g.Level = nil
 	g.Runner = nil
