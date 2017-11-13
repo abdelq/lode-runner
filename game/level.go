@@ -123,20 +123,32 @@ func (l *level) getTiles() [][]tile {
 }
 
 func (l *level) validMove(orig, dest position, dir direction) bool {
+
 	if dest.x < 0 || dest.x >= 28 || /*dest.y < 0 ||*/ dest.y >= 16 {
 		return false
 	}
 
 	origTile := l.tiles[orig.y][orig.x]
 
-	if dir == DOWN && origTile == ROPE {
-		return false
-	}
-	if dest.y < 0 && origTile == ESCAPELADDER {
-		return true
+	if !l.goldCollected() && origTile == ESCAPELADDER {
+		origTile = EMPTY
 	}
 
-	switch destTile := l.tiles[dest.y][dest.x]; destTile {
+	// if dir == DOWN && origTile == ROPE {
+	// 	return false
+	// }
+
+	if dest.y < 0 {
+		return origTile == ESCAPELADDER || origTile == LADDER
+	}
+
+	destTile := l.tiles[dest.y][dest.x]
+
+	if !l.goldCollected() && destTile == ESCAPELADDER {
+		destTile = EMPTY
+	}
+
+	switch destTile {
 	case EMPTY, ROPE:
 		if dir == UP {
 			return origTile == LADDER || origTile == ESCAPELADDER
@@ -148,16 +160,10 @@ func (l *level) validMove(orig, dest position, dir direction) bool {
 	*/
 	case BRICK, SOLIDBRICK:
 		return false
-	case LADDER:
+	case LADDER, ESCAPELADDER:
 		return true
 	// case LADDER:
 	// 	return dir != DOWN
-	case ESCAPELADDER:
-		if origTile == ESCAPELADDER {
-			return l.goldCollected()
-		}
-
-		return true
 	}
 
 	return false

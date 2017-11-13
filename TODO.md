@@ -9,6 +9,7 @@
 
 # Mid priority
 
+- [ ] X tiles
 - [x] Pouvoir descendre des échelles
 - [x] Besoin de taper deux fois sur une direction lorsqu'on est sur une rope
 - [x] Ne pas avoir accès à l'échelle de sortie avant la fin

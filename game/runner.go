@@ -77,11 +77,20 @@ func (r *Runner) Move(dir direction, game *Game) {
 		newPos = position{r.pos.x + 1, r.pos.y}
 	}
 
-	if !game.Level.validMove(*r.pos, newPos, dir) { // FIXME
-		//fmt.Println("notvalidmove")
+	var nextTile = game.Level.tiles[r.pos.y][r.pos.x]
+	var validMove = game.Level.validMove(*r.pos, newPos, dir)
+
+	// Stop falling
+	if r.state == FALLING && (!validMove || nextTile == LADDER || nextTile == ESCAPELADDER) {
+		r.state = ALIVE
+	}
+
+	if !validMove { // FIXME
+
 		if r.state == FALLING {
 			r.state = ALIVE
 		}
+
 		return
 	}
 
@@ -116,7 +125,7 @@ func (r *Runner) Move(dir direction, game *Game) {
 
 	game.Level.players[*r.pos] = RUNNER
 
-	if dir == DOWN || (game.Level.emptyBelow(*r.pos) && game.Level.tiles[r.pos.y][r.pos.x] != ROPE) {
+	if game.Level.emptyBelow(*r.pos) && game.Level.tiles[r.pos.y][r.pos.x] != ROPE {
 		r.state = FALLING
 	}
 
