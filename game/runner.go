@@ -7,7 +7,7 @@ import (
 	//msg "github.com/abdelq/lode-runner/message"
 )
 
-//import "fmt"
+import "fmt"
 
 type Runner struct {
 	Name   string
@@ -100,6 +100,7 @@ func (r *Runner) Move(dir direction, lvl *level) {
 		r.state = FALLING
 	}
 
+	fmt.Println(lvl.String())
 	// TODO
 	//gfx_move_sprite(HERO, orig, hero.pos)
 	//game.check_collisions()
