@@ -8,7 +8,7 @@ build:
 	cp -r game/levels/ build/
 
 test:
-	$(GOTEST)
+	$(GOTEST) -coverprofile=coverage.out
 
 certs:
 	openssl req -new -nodes -x509 -newkey rsa -keyout build/server.key -out build/server.crt -subj "/"

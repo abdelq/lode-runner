@@ -1,3 +1,6 @@
 # Build
 lode-runner
 /build/
+
+# Tests
+*.out
