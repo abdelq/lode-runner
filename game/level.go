@@ -153,7 +153,11 @@ func (l *level) validMove(orig, dest position, dir direction) bool {
 	// case LADDER:
 	// 	return dir != DOWN
 	case ESCAPELADDER:
-		return l.goldCollected() || dir != UP
+		if origTile == ESCAPELADDER {
+			return l.goldCollected()
+		}
+
+		return true
 	}
 
 	return false

@@ -85,6 +85,11 @@ func (r *Runner) Move(dir direction, game *Game) {
 		return
 	}
 
+	if newPos.y < 0 {
+		game.start(game.Level.num + 1)
+		return
+	}
+
 	// FIXME
 	//fmt.Println("validmove")
 	//fmt.Println(r.pos)

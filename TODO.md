@@ -3,8 +3,8 @@
 - [ ] Use a system based on ticks
 - [ ] game.Stop() n'arrête pas le jeu
 - [ ] Manage death
-    - [ ] Manage collisions
-    - [ ] Quand plus de vies
+    - [x] Manage collisions
+    - [x] Quand plus de vies
     - [ ] Fin de partie quand le joueur tombe dans un trou au premier étage
 
 # Mid priority
@@ -14,7 +14,7 @@
 - [x] Ne pas avoir accès à l'échelle de sortie avant la fin
 - [x] Lvl 01: impossible de ramasser le tout premier $
 - [ ] Death on block rebuild
-- [ ] Manage going to the next level
+- [x] Manage going to the next level
 - [ ] Respawn of players
 
 # Low priority
