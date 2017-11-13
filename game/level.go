@@ -128,6 +128,7 @@ func (l *level) validMove(orig, dest position, dir direction) bool {
 	}
 
 	origTile := l.tiles[orig.y][orig.x]
+
 	if dir == DOWN && origTile == ROPE {
 		return false
 	}
@@ -148,12 +149,11 @@ func (l *level) validMove(orig, dest position, dir direction) bool {
 	case BRICK, SOLIDBRICK:
 		return false
 	case LADDER:
-		return dir != DOWN
+		return true
+	// case LADDER:
+	// 	return dir != DOWN
 	case ESCAPELADDER:
-		if l.getTiles()[orig.y][orig.x] == RUNNER {
-			return dir != DOWN
-		}
-		return dir != UP
+		return l.goldCollected() || dir != UP
 	}
 
 	return false

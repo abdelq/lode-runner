@@ -78,7 +78,6 @@ func (r *Runner) Move(dir direction, lvl *level) {
 	}
 
 	if !lvl.validMove(*r.pos, newPos, dir) { // FIXME
-		//fmt.Println("notvalidmove")
 		if r.state == FALLING {
 			r.state = ALIVE
 		}
@@ -96,7 +95,7 @@ func (r *Runner) Move(dir direction, lvl *level) {
 	r.pos.x, r.pos.y = newPos.x, newPos.y // FIXME
 	lvl.players[*r.pos] = RUNNER
 
-	if dir == DOWN || lvl.emptyBelow(*r.pos) {
+	if dir == DOWN || (lvl.emptyBelow(*r.pos) && lvl.tiles[r.pos.y][r.pos.x] != ROPE) {
 		r.state = FALLING
 	}
 
