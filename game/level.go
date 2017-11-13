@@ -7,10 +7,15 @@ import (
 	"math"
 )
 
+// FIXME Gold deleted if guard goes past it
+// FIXME Issue w/ runner + guard collision
+// TODO Trapdoor
 type level struct {
-	num       int
-	tiles     [][]tile
-	landmarks map[position]tile // TODO Rename
+	num     int
+	tiles   [][]tile
+	players map[position]tile // TODO
+	gold    []position        // TODO
+	//gold    map[position]tile // TODO
 }
 
 // Tiles
@@ -43,12 +48,17 @@ func newLevel(num int) (*level, error) {
 	}
 
 	lvl := &level{
-		num, bytes.Split(content, []byte("\n")), make(map[position]tile),
+		num, bytes.Split(content, []byte("\n")),
+		make(map[position]tile), make([]position, 0), // FIXME Specify better length
 	}
+	// FIXME
 	for i, tiles := range lvl.tiles {
 		for j, tile := range tiles {
-			if tile == RUNNER || tile == GUARD || tile == GOLD {
-				lvl.landmarks[position{j, i}] = tile
+			if tile == GOLD {
+				lvl.gold = append(lvl.gold, position{j, i})
+				lvl.tiles[i][j] = EMPTY
+			} else if tile == RUNNER || tile == GUARD {
+				lvl.players[position{j, i}] = tile
 				lvl.tiles[i][j] = EMPTY
 			}
 		}
@@ -65,13 +75,19 @@ func (l *level) emptyBelow(pos position) bool {
 	return l.getTiles()[pos.y+1][pos.x] == EMPTY
 }
 
-func (l *level) moneyCollected() bool {
-	for _, tile := range l.landmarks {
-		if tile == GOLD {
-			return false
+// FIXME Gold may be stolen by guards
+func (l *level) goldCollected() bool {
+	return len(l.gold) == 0
+}
+
+// TODO i, p
+func (l *level) collectGold(pos position) {
+	for i, p := range l.gold {
+		if p == pos {
+			l.gold[i] = l.gold[len(l.gold)-1]
+			return
 		}
 	}
-	return true
 }
 
 // TODO Rewrite + Rename
@@ -82,13 +98,18 @@ func (l *level) getTiles() [][]tile {
 		copy(tiles[i], l.tiles[i])
 	}
 
-	// TODO Comment
-	for pos, tile := range l.landmarks {
+	// Gold
+	for _, pos := range l.gold {
+		tiles[pos.y][pos.x] = GOLD
+	}
+
+	// Players
+	for pos, tile := range l.players {
 		tiles[pos.y][pos.x] = tile
 	}
 
 	// FIXME Show/Hide escape ladder
-	if !l.moneyCollected() {
+	if !l.goldCollected() {
 		for i, row := range tiles {
 			for j, cell := range row {
 				if cell == ESCAPELADDER {

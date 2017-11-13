@@ -25,7 +25,7 @@ func (r *Runner) Add(game *Game) error {
 	}
 
 	game.Runner = r
-	//game.broadcast <- msg.NewMessage("join", r.Name) // FIXME
+	//game.broadcast <- msg.NewMessage("join", r.Name) // FIXME Join Msg ?
 
 	if game.filled() {
 		go game.start()
@@ -36,7 +36,7 @@ func (r *Runner) Add(game *Game) error {
 
 func (r *Runner) Remove(game *Game) {
 	game.Runner = nil
-	//game.broadcast <- msg.NewMessage("leave", r.Name) // FIXME
+	//game.broadcast <- msg.NewMessage("leave", r.Name) // FIXME Join Msg ?
 
 	if game.Started() {
 		go game.stop()
@@ -89,9 +89,12 @@ func (r *Runner) Move(dir direction, lvl *level) {
 	//fmt.Println("validmove")
 	//fmt.Println(r.pos)
 	//fmt.Println(*r.pos)
-	delete(lvl.landmarks, *r.pos)
+	//delete(lvl.gold, *r.pos) // FIXME
+	//lvl.gold[i] = lvl.gold[len(a)-1]
+	lvl.collectGold(*r.pos)
+	delete(lvl.players, *r.pos)
 	r.pos.x, r.pos.y = newPos.x, newPos.y // FIXME
-	lvl.landmarks[*r.pos] = RUNNER
+	lvl.players[*r.pos] = RUNNER
 
 	if dir == DOWN || lvl.emptyBelow(*r.pos) {
 		r.state = FALLING

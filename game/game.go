@@ -30,15 +30,15 @@ func (g *Game) start() {
 	g.Level, _ = newLevel(1)
 
 	// Runner
-	g.Runner.init(g.Level.landmarks)
+	g.Runner.init(g.Level.players)
 
 	// Guards
 	for guard := range g.Guards {
-		guard.init(g.Level.landmarks)
+		guard.init(g.Level.players)
 	}
 
-	// Remove unused landmarks
-	for pos, tile := range g.Level.landmarks {
+	// FIXME Remove unused landmarks
+	for pos, tile := range g.Level.players {
 		if tile == GUARD {
 			var found = false
 			for guard := range g.Guards {
@@ -47,7 +47,7 @@ func (g *Game) start() {
 				}
 			}
 			if !found {
-				delete(g.Level.landmarks, pos)
+				delete(g.Level.players, pos)
 			}
 		}
 	}
@@ -55,7 +55,7 @@ func (g *Game) start() {
 	g.broadcast <- msg.NewMessage("start", g.Level.String()) // FIXME
 }
 
-func (g *Game) stop() {
+func (g *Game) stop() { // XXX
 	// TODO Force everyone to leave room
 	// TODO g.Guards = nil
 }
