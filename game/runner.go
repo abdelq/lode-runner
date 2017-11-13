@@ -98,6 +98,12 @@ func (r *Runner) Move(dir direction, game *Game) {
 	// Collision checking
 	if _, ok := game.Level.players[*r.pos]; ok {
 		r.health--
+
+		if r.health == 0 {
+			game.stop() // TODO Goroutine?
+			return
+		}
+
 		game.start(game.Level.num) // TODO Goroutine or not ?
 		return
 		// TODO Reset
