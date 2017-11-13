@@ -22,3 +22,4 @@
 - [ ] End of game (lvl 150)
 - [ ] Allow multiple rooms for a single client
 - [ ] Flags for timeouts
+- [ ] Permettre de tomber d'une ROPE
