@@ -1,6 +1,7 @@
 package main
 
 import (
+	//"io"
 	"github.com/abdelq/lode-runner/game"
 	msg "github.com/abdelq/lode-runner/message"
 )
@@ -82,15 +83,28 @@ func (r *room) listen() {
 			player.Remove(r.game)
 
 		case msg := <-r.broadcast:
-			if msg.Event == "quit" {
-				for client := range r.clients {
-					client.close() // FIXME : leave
-				}
-				continue
-			}
-
 			for client := range r.clients {
 				client.out <- message(*msg)
+			}
+
+			// TODO Maybe not all of it is necessary for GC
+			if msg.Event == "quit" {
+				for client := range r.clients {
+					client.close()
+					//client.out <- io.EOF
+					//client.out <- message(*msg)
+				}
+				close(r.join)
+				close(r.leave)
+				close(r.broadcast)
+				r.clients = nil
+				r.game = nil
+				for name, room := range rooms {
+					if room == r {
+						delete(rooms, name)
+						return
+					}
+				}
 			}
 		}
 	}

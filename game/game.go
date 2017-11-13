@@ -66,8 +66,10 @@ func (g *Game) stop() {
 	// Force everyone to leave room
 	g.broadcast <- msg.NewMessage("quit", "") // FIXME
 
-	// Destroy guards
+	g.Level = nil
+	g.Runner = nil
 	g.Guards = nil
+	//close(g.broadcast)
 }
 
 func (g *Game) hasPlayer(name string) bool {
