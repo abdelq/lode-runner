@@ -2,6 +2,8 @@ GOCMD   := go
 GOBUILD := $(GOCMD) build
 GOTEST  := $(GOCMD) test
 
+.PHONY: build test certs
+
 build:
 	$(GOBUILD) -o build/server
 	sudo setcap cap_net_bind_service=+ep build/server
