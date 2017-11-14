@@ -12,10 +12,14 @@
       Envoyer les déplacements du garde
 - [ ] Ne pas marcher sur la rope (lvl 007)
 - [ ] Arriver sur un ladder depuis une rope fait tomber
-- [ ] Turns out que même si y'a pas de blocs, le bas compte comme du sol (lvl 014)
+- [ ] Bug weird : laisser runner le serveur + client random pour un
+  moment, éventuellement, ça se chie dessus (voir le fichier
+  `backtrace`).  Pas sûr de comment reproduire, mais ça finit par se
+  produire éventuellement.
 
 # Mid priority
 
+- [ ] Turns out que même si y'a pas de blocs, le bas compte comme du sol (lvl 014)
 - [ ] X tiles (false blocks)
 - [x] Pouvoir descendre des échelles
 - [x] Besoin de taper deux fois sur une direction lorsqu'on est sur une rope

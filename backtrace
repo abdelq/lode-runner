@@ -1,0 +1,116 @@
+goroutine 36 [running]:
+runtime.throw(0x62133b, 0x26)
+        /home/k/src/go/src/runtime/panic.go:605 +0x95 fp=0xc420042c58 sp=0xc420042c38 pc=0x42b1d5
+runtime.mapiternext(0xc420042db8)
+        /home/k/src/go/src/runtime/hashmap.go:778 +0x6f1 fp=0xc420042cf0 sp=0xc420042c58 pc=0x40b251
+runtime.mapiterinit(0x5e1040, 0xc420010a20, 0xc4200305b8)
+        /home/k/src/go/src/runtime/hashmap.go:768 +0x270 fp=0xc420042d58 sp=0xc420042cf0 pc=0x40a900
+github.com/abdelq/lode-runner/game.(*level).getTiles(0xc42005e3c0, 0x720630, 0xc4200885f0, 0xc4200306a8)
+        /home/k/.go/src/github.com/abdelq/lode-runner/game/level.go:107 +0x215 fp=0xc420042e28 sp=0xc420042d58 pc=0x5acf75
+github.com/abdelq/lode-runner/game.(*level).String(0xc42005e3c0, 0xc4200cc7e0, 0xc420030708)
+        /home/k/.go/src/github.com/abdelq/lode-runner/game/level.go:70 +0x40 fp=0xc420042eb8 sp=0xc420042e28 pc=0x5acb70
+github.com/abdelq/lode-runner/game.NewGame.func1(0xc4200ee880)
+        /home/k/.go/src/github.com/abdelq/lode-runner/game/game.go:46 +0x299 fp=0xc420042fd8 sp=0xc420042eb8 pc=0x5ae0c9
+runtime.goexit()
+        /home/k/src/go/src/runtime/asm_amd64.s:2337 +0x1 fp=0xc420042fe0 sp=0xc420042fd8 pc=0x458481
+created by github.com/abdelq/lode-runner/game.NewGame
+        /home/k/.go/src/github.com/abdelq/lode-runner/game/game.go:21 +0xbd
+
+
+goroutine 1 [IO wait]:
+internal/poll.runtime_pollWait(0x7fb73cd46f70, 0x72, 0xffffffffffffffff)
+        /home/k/src/go/src/runtime/netpoll.go:173 +0x57
+internal/poll.(*pollDesc).wait(0xc4200b4098, 0x72, 0xc4200ad900, 0x0, 0x0)
+        /home/k/src/go/src/internal/poll/fd_poll_runtime.go:85 +0xae
+internal/poll.(*pollDesc).waitRead(0xc4200b4098, 0xffffffffffffff00, 0x0, 0x0)
+        /home/k/src/go/src/internal/poll/fd_poll_runtime.go:90 +0x3d
+internal/poll.(*FD).Accept(0xc4200b4080, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0)
+        /home/k/src/go/src/internal/poll/fd_unix.go:335 +0x1e2
+net.(*netFD).accept(0xc4200b4080, 0x7fb73cd82d90, 0x0, 0x0)
+        /home/k/src/go/src/net/fd_unix.go:238 +0x42
+net.(*TCPListener).accept(0xc42000e048, 0xc4200adba0, 0x411fd8, 0x380)
+        /home/k/src/go/src/net/tcpsock_posix.go:136 +0x2e
+net.(*TCPListener).Accept(0xc42000e048, 0x4342fb, 0xc4200adbd0, 0x5af655, 0x454f20)
+        /home/k/src/go/src/net/tcpsock.go:247 +0x49
+crypto/tls.(*listener).Accept(0xc42000c960, 0x625c58, 0x70ac20, 0xc420158000, 0x0)
+        /home/k/src/go/src/crypto/tls/tls.go:52 +0x37
+main.main()
+        /home/k/.go/src/github.com/abdelq/lode-runner/main.go:35 +0x4df
+
+goroutine 6 [IO wait]:
+internal/poll.runtime_pollWait(0x7fb73cd46eb0, 0x72, 0x0)
+        /home/k/src/go/src/runtime/netpoll.go:173 +0x57
+internal/poll.(*pollDesc).wait(0xc4200b4118, 0x72, 0xffffffffffffff00, 0x7074c0, 0x7053c0)
+        /home/k/src/go/src/internal/poll/fd_poll_runtime.go:85 +0xae
+internal/poll.(*pollDesc).waitRead(0xc4200b4118, 0xc4200d2000, 0x400, 0x400)
+        /home/k/src/go/src/internal/poll/fd_poll_runtime.go:90 +0x3d
+internal/poll.(*FD).Read(0xc4200b4100, 0xc4200d2000, 0x400, 0x400, 0x0, 0x0, 0x0)
+        /home/k/src/go/src/internal/poll/fd_unix.go:126 +0x18a
+net.(*netFD).Read(0xc4200b4100, 0xc4200d2000, 0x400, 0x400, 0x1, 0x2, 0xc4200ca028)
+        /home/k/src/go/src/net/fd_unix.go:202 +0x52
+net.(*conn).Read(0xc42000e050, 0xc4200d2000, 0x400, 0x400, 0x0, 0x0, 0x0)
+        /home/k/src/go/src/net/net.go:176 +0x6d
+crypto/tls.(*block).readFromUntil(0xc4200cc030, 0x7fb73cd02028, 0xc42000e050, 0x5, 0xc42000e050, 0x4c0d48)
+        /home/k/src/go/src/crypto/tls/conn.go:488 +0x95
+crypto/tls.(*Conn).readRecord(0xc420033500, 0x626217, 0xc420033620, 0xc4200de208)
+        /home/k/src/go/src/crypto/tls/conn.go:590 +0xe0
+crypto/tls.(*Conn).Read(0xc420033500, 0xc4200ce000, 0x200, 0x200, 0x0, 0x0, 0x0)
+        /home/k/src/go/src/crypto/tls/conn.go:1134 +0x110
+encoding/json.(*Decoder).refill(0xc4200ca000, 0x5ef7e0, 0xc4200cc000)
+        /home/k/src/go/src/encoding/json/stream.go:152 +0x114
+encoding/json.(*Decoder).readValue(0xc4200ca000, 0x0, 0x0, 0x411fd8)
+        /home/k/src/go/src/encoding/json/stream.go:128 +0x275
+encoding/json.(*Decoder).Decode(0xc4200ca000, 0x5df600, 0xc4200109c0, 0xc420010870, 0x0)
+        /home/k/src/go/src/encoding/json/stream.go:57 +0x78
+main.(*client).read(0xc420010870)
+        /home/k/.go/src/github.com/abdelq/lode-runner/client.go:51 +0x129
+created by main.newClient
+        /home/k/.go/src/github.com/abdelq/lode-runner/client.go:21 +0xbb
+
+
+main.(*client).write(0xc420010870)
+        /home/k/.go/src/github.com/abdelq/lode-runner/client.go:65 +0x136
+created by main.newClient
+        /home/k/.go/src/github.com/abdelq/lode-runner/client.go:22 +0xdd
+
+goroutine 19 [IO wait]:
+internal/poll.runtime_pollWait(0x7fb73cd46df0, 0x72, 0x0)
+        /home/k/src/go/src/runtime/netpoll.go:173 +0x57
+internal/poll.(*pollDesc).wait(0xc420150018, 0x72, 0xffffffffffffff00, 0x7074c0, 0x7053c0)
+        /home/k/src/go/src/internal/poll/fd_poll_runtime.go:85 +0xae
+internal/poll.(*pollDesc).waitRead(0xc420150018, 0xc4200a0400, 0x400, 0x400)
+        /home/k/src/go/src/internal/poll/fd_poll_runtime.go:90 +0x3d
+internal/poll.(*FD).Read(0xc420150000, 0xc4200a0400, 0x400, 0x400, 0x0, 0x0, 0x0)
+        /home/k/src/go/src/internal/poll/fd_unix.go:126 +0x18a
+net.(*netFD).Read(0xc420150000, 0xc4200a0400, 0x400, 0x400, 0xc420053b38, 0x4c407b, 0xc42016a028)
+        /home/k/src/go/src/net/fd_unix.go:202 +0x52
+net.(*conn).Read(0xc420154000, 0xc4200a0400, 0x400, 0x400, 0x0, 0x0, 0x0)
+        /home/k/src/go/src/net/net.go:176 +0x6d
+crypto/tls.(*block).readFromUntil(0xc4200108d0, 0x7fb73cd02028, 0xc420154000, 0x5, 0xc420154000, 0x4c0d48)
+        /home/k/src/go/src/crypto/tls/conn.go:488 +0x95
+crypto/tls.(*Conn).readRecord(0xc420158000, 0x626217, 0xc420158120, 0xc4200de208)
+        /home/k/src/go/src/crypto/tls/conn.go:590 +0xe0
+crypto/tls.(*Conn).Read(0xc420158000, 0xc42016c000, 0x200, 0x200, 0x0, 0x0, 0x0)
+        /home/k/src/go/src/crypto/tls/conn.go:1134 +0x110
+encoding/json.(*Decoder).refill(0xc42016a000, 0x5ef7e0, 0xc4200ccf00)
+        /home/k/src/go/src/encoding/json/stream.go:152 +0x114
+encoding/json.(*Decoder).readValue(0xc42016a000, 0x0, 0x0, 0x411fd8)
+        /home/k/src/go/src/encoding/json/stream.go:128 +0x275
+encoding/json.(*Decoder).Decode(0xc42016a000, 0x5df600, 0xc420011b90, 0xc420152060, 0x0)
+        /home/k/src/go/src/encoding/json/stream.go:57 +0x78
+main.(*client).read(0xc420152060)
+        /home/k/.go/src/github.com/abdelq/lode-runner/client.go:51 +0x129
+created by main.newClient
+        /home/k/.go/src/github.com/abdelq/lode-runner/client.go:21 +0xbb
+
+goroutine 20 [chan receive]:
+main.(*client).write(0xc420152060)
+        /home/k/.go/src/github.com/abdelq/lode-runner/client.go:65 +0x136
+created by main.newClient
+        /home/k/.go/src/github.com/abdelq/lode-runner/client.go:22 +0xdd
+
+goroutine 37 [select]:
+main.(*room).listen(0xc4200cc7b0)
+        /home/k/.go/src/github.com/abdelq/lode-runner/room.go:50 +0x20c
+created by main.newRoom
+        /home/k/.go/src/github.com/abdelq/lode-runner/room.go:33 +0x170
