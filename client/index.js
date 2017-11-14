@@ -1,11 +1,12 @@
 var keypress = require('keypress');
 
-var { connect } = require('net');
+var {connect} = require('net');
 var tls = require('tls');
 var fs = require('fs');
+var {onkeypress, start, next} = require('./tp1.js');
+console.log(onkeypress, start, next);
 
 keypress(process.stdin);
-
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -28,38 +29,27 @@ var client = tls.connect(1337, {}, () => {
 
 client.on('data', (data) => {
     var json = JSON.parse(data.toString());
-    if (json.Event == "start")
-        console.log(json.Data);
-    else
-        console.log(json.Event);
+
+    var events = {
+        start: start,
+        next: next,
+    };
+
+    var out;
+
+    if(json.Event in events) {
+        out = events[json.Event](json.Data);
+    }
+
+    if(out !== undefined && "event" in out) {
+        var event = out.event;
+        delete out.event;
+        send(event, out);
+    }
 });
 
-var directions = [
-    null,
-    "up",
-    "left",
-    "down",
-    "right"
-];
-
-var last_direction = true;
-
 process.stdin.on('keypress', function (ch, key) {
-    /* console.log('got "keypress"', key); */
-
-    var dir = directions.indexOf(key.name);
-
-    if(dir > 0)
-        send("move", {direction: dir});
-
-    if([2,4].indexOf(dir) !== -1)
-        last_direction = dir;
-
-    if(key.name == "space")
-        send("dig", {direction: last_direction});
-
-    if(key.name == "q")
-        process.exit();
+    onkeypress(key);
 });
 
 process.stdin.setRawMode(true);
