@@ -1,6 +1,7 @@
 package game
 
 import "log"
+import "time"
 import msg "github.com/abdelq/lode-runner/message"
 
 type Game struct {
@@ -11,7 +12,38 @@ type Game struct {
 }
 
 func NewGame(broadcast chan *msg.Message) *Game {
-	return &Game{Guards: make(map[*Guard]struct{}), broadcast: broadcast}
+	game := &Game{Guards: make(map[*Guard]struct{}), broadcast: broadcast}
+
+	go func() {
+		for now := range time.Tick(1 * time.Second) {
+			_ = now
+			if game.Started() && !game.Stopped() { // TODO Stupid
+				// TODO Maybe order them (runner first + guard then)
+				// Do the actions
+				if game.Runner.Action.ActionType == "move" {
+					go game.Runner.Move(game.Runner.Action.Direction, game)
+				} else if game.Runner.Action.ActionType == "dig" {
+					go game.Runner.Dig(game.Runner.Action.Direction, game)
+				}
+
+				for guard := range game.Guards {
+					if guard.Action.ActionType == "move" {
+						go guard.Move(guard.Action.Direction, game)
+					}
+				}
+
+				// Reset actions
+				game.Runner.Action = Action{"move", 0}
+				for guard := range game.Guards {
+					guard.Action = Action{"move", 0}
+				}
+
+				game.broadcast <- msg.NewMessage("next", game.Level.String()) // FIXME
+			}
+		}
+	}()
+
+	return game
 }
 
 func (g *Game) Started() bool {

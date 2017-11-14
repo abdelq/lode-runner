@@ -7,9 +7,10 @@ import (
 )
 
 type Guard struct {
-	Name  string
-	pos   *position
-	state state
+	Name   string
+	pos    *position
+	state  state
+	Action Action
 }
 
 func (g *Guard) Add(game *Game) error {

@@ -14,6 +14,7 @@ type Runner struct {
 	pos    *position
 	state  state
 	health uint8 // TODO Use
+	Action Action
 }
 
 func (r *Runner) Add(game *Game) error {

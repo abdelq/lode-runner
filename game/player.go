@@ -7,6 +7,12 @@ type Player interface {
 	Move(direction, *Game)
 }
 
+// TODO Rename fields
+type Action struct {
+	ActionType string
+	Direction  direction
+}
+
 // States
 type state uint8
 

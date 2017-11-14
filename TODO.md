@@ -1,6 +1,6 @@
 # High priority
 
-- [ ] Use a system based on ticks
+- [x] Use a system based on ticks
 - [x] game.Stop() n'arrête pas le jeu
 - [x] Manage death
     - [x] Manage collisions
