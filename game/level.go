@@ -40,7 +40,7 @@ func manhattanDist(a, b position) float64 {
 	return math.Abs(float64(a.x-b.x)) + math.Abs(float64(a.y-b.y))
 }
 
-func newLevel(num int) (*level, error) {
+func newlevel(num int) (*level, error) {
 	content, err := ioutil.ReadFile(fmt.Sprintf("levels/%03d.lvl", num))
 	if err != nil {
 		return nil, err

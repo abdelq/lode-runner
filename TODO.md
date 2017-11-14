@@ -32,3 +32,5 @@
 - [ ] Allow multiple rooms for a single client
 - [ ] Flags for timeouts
 - [x] Permettre de tomber d'une ROPE
+- [ ] Proper makefiles
+- [ ] Let's Encrypt certs

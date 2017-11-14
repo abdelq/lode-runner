@@ -13,14 +13,14 @@ type Guard struct {
 }
 
 func (g *Guard) Add(game *Game) error {
-	if len(game.Guards) == 1 { // FIXME
+	if len(game.guards) == 1 { // FIXME
 		return errors.New("guards already joined")
 	}
 	if game.hasPlayer(g.Name) {
 		return errors.New("name already used")
 	}
 
-	game.Guards[g] = struct{}{} // FIXME
+	game.guards[g] = struct{}{} // FIXME
 	//game.broadcast <- msg.NewMessage("join", g.Name) // FIXME
 
 	if game.filled() {
@@ -31,10 +31,10 @@ func (g *Guard) Add(game *Game) error {
 }
 
 func (g *Guard) Remove(game *Game) {
-	delete(game.Guards, g)
+	delete(game.guards, g)
 	//game.broadcast <- msg.NewMessage("leave", g.Name) // FIXME
 
-	if game.Started() && len(game.Guards) == 0 {
+	if game.Started() && len(game.guards) == 0 {
 		go game.stop()
 	}
 }

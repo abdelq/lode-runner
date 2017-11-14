@@ -20,13 +20,13 @@ func TestStart(t *testing.T) {
 func TestStop(t *testing.T) {} // TODO
 
 func TestHasPlayer(t *testing.T) {
-	game := &Game{Guards: make(map[*Guard]struct{})}
+	game := &Game{guards: make(map[*Guard]struct{})}
 
 	// TODO Improve + Replace t.Fail by t.Error
 	if game.hasPlayer("runner") {
 		t.Fail()
 	}
-	game.Runner = &Runner{Name: "runner"}
+	game.runner = &Runner{Name: "runner"}
 	if !game.hasPlayer("runner") {
 		t.Fail()
 	}
@@ -34,7 +34,7 @@ func TestHasPlayer(t *testing.T) {
 	if game.hasPlayer("guard") {
 		t.Fail()
 	}
-	game.Guards[&Guard{Name: "guard"}] = struct{}{}
+	game.guards[&Guard{Name: "guard"}] = struct{}{}
 	if !game.hasPlayer("guard") {
 		t.Fail()
 	}

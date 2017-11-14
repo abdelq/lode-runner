@@ -17,14 +17,14 @@ type Runner struct {
 }
 
 func (r *Runner) Add(game *Game) error {
-	if game.Runner != nil {
+	if game.runner != nil {
 		return errors.New("runner already joined")
 	}
 	if game.hasPlayer(r.Name) {
 		return errors.New("name already used")
 	}
 
-	game.Runner = r
+	game.runner = r
 	//game.broadcast <- msg.NewMessage("join", r.Name) // FIXME Join Msg ?
 
 	if game.filled() {
@@ -35,7 +35,7 @@ func (r *Runner) Add(game *Game) error {
 }
 
 func (r *Runner) Remove(game *Game) {
-	game.Runner = nil
+	game.runner = nil
 	//game.broadcast <- msg.NewMessage("leave", r.Name) // FIXME Join Msg ?
 
 	if game.Started() {
@@ -77,8 +77,8 @@ func (r *Runner) Move(dir direction, game *Game) {
 		newPos = position{r.pos.x + 1, r.pos.y}
 	}
 
-	var nextTile = game.Level.tiles[r.pos.y][r.pos.x]
-	var validMove = game.Level.validMove(*r.pos, newPos, dir)
+	var nextTile = game.level.tiles[r.pos.y][r.pos.x]
+	var validMove = game.level.validMove(*r.pos, newPos, dir)
 
 	// Stop falling
 	if r.state == FALLING && (!validMove || nextTile == LADDER || nextTile == ESCAPELADDER) {
@@ -95,7 +95,7 @@ func (r *Runner) Move(dir direction, game *Game) {
 	}
 
 	if newPos.y < 0 {
-		game.start(game.Level.num + 1)
+		game.start(game.level.num + 1)
 		return
 	}
 
@@ -103,14 +103,14 @@ func (r *Runner) Move(dir direction, game *Game) {
 	//fmt.Println("validmove")
 	//fmt.Println(r.pos)
 	//fmt.Println(*r.pos)
-	//delete(game.Level.gold, *r.pos) // FIXME
-	//game.Level.gold[i] = game.Level.gold[len(a)-1]
-	game.Level.collectGold(*r.pos)
-	delete(game.Level.players, *r.pos)
+	//delete(game.level.gold, *r.pos) // FIXME
+	//game.level.gold[i] = game.level.gold[len(a)-1]
+	game.level.collectGold(*r.pos)
+	delete(game.level.players, *r.pos)
 	r.pos.x, r.pos.y = newPos.x, newPos.y // FIXME
 
 	// Collision checking
-	if _, ok := game.Level.players[*r.pos]; ok {
+	if _, ok := game.level.players[*r.pos]; ok {
 		r.health--
 
 		if r.health == 0 {
@@ -118,18 +118,18 @@ func (r *Runner) Move(dir direction, game *Game) {
 			return
 		}
 
-		game.start(game.Level.num) // TODO Goroutine or not ?
+		game.start(game.level.num) // TODO Goroutine or not ?
 		return
 		// TODO Reset
 	}
 
-	game.Level.players[*r.pos] = RUNNER
+	game.level.players[*r.pos] = RUNNER
 
-	if game.Level.emptyBelow(*r.pos) && game.Level.tiles[r.pos.y][r.pos.x] != ROPE {
+	if game.level.emptyBelow(*r.pos) && game.level.tiles[r.pos.y][r.pos.x] != ROPE {
 		r.state = FALLING
 	}
 
-	fmt.Println(game.Level.String())
+	fmt.Println(game.level.String())
 }
 
 // TODO Broadcast
@@ -143,9 +143,9 @@ func (r *Runner) Dig(dir direction, game *Game) {
 	}
 
 	// FIXME FIXME
-	if game.Level.validDig(digPos) {
+	if game.level.validDig(digPos) {
 		//r.state = DIGGING
-		game.Level.tiles[digPos.y][digPos.x] = EMPTY
+		game.level.tiles[digPos.y][digPos.x] = EMPTY
 
 		digDuration, err := time.ParseDuration("320ms") // TODO Using flag ?
 		if err != nil {
@@ -154,7 +154,7 @@ func (r *Runner) Dig(dir direction, game *Game) {
 		}
 
 		time.AfterFunc(digDuration, func() {
-			if tile, ok := game.Level.players[digPos]; ok && tile == RUNNER {
+			if tile, ok := game.level.players[digPos]; ok && tile == RUNNER {
 				r.health--
 
 				if r.health == 0 {
@@ -162,11 +162,11 @@ func (r *Runner) Dig(dir direction, game *Game) {
 					return
 				}
 
-				game.start(game.Level.num) // TODO Goroutine or not ?
+				game.start(game.level.num) // TODO Goroutine or not ?
 				return
 			}
 			// FIXME For guard
-			game.Level.tiles[digPos.y][digPos.x] = BRICK
+			game.level.tiles[digPos.y][digPos.x] = BRICK
 		})
 	}
 }
