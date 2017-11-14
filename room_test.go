@@ -27,14 +27,14 @@ func TestFindRoom(t *testing.T) {
 }
 
 func TestListen(t *testing.T) {
-	t.Parallel() // TODO Make sure it's parallel
-
 	t.Run("Spectator", listenSpectator)
 	t.Run("Runner", listenRunner)
 	t.Run("Guard", listenGuard)
 }
 
 func listenSpectator(t *testing.T) {
+	t.Parallel()
+
 	serverConn, clientConn := net.Pipe()
 	spectator := newClient(serverConn)
 
@@ -58,6 +58,7 @@ func listenSpectator(t *testing.T) {
 	/* Broadcast */
 	room.broadcast <- &msg.Message{"test", []byte(`"spectator"`)}
 	receiveMsg(t, clientConn, message{"test", []byte(`"spectator"`)})
+	// TODO Quit message
 
 	/* Leave */
 	room.leave <- spectator // First
@@ -73,6 +74,8 @@ func listenSpectator(t *testing.T) {
 // TODO Leave when game is already stopped
 // TODO Check effets of player.Add and player.Remove
 func listenRunner(t *testing.T) {
+	t.Parallel()
+
 	serverConn, clientConn := net.Pipe()
 	runner := newClient(serverConn)
 
@@ -96,6 +99,7 @@ func listenRunner(t *testing.T) {
 	/* Broadcast */
 	room.broadcast <- &msg.Message{"test", []byte(`"runner"`)}
 	receiveMsg(t, clientConn, message{"test", []byte(`"runner"`)})
+	// TODO Quit message
 
 	/* Leave */
 	room.leave <- runner // First
@@ -111,6 +115,8 @@ func listenRunner(t *testing.T) {
 // TODO Leave when game is already stopped
 // TODO Check effets of player.Add and player.Remove
 func listenGuard(t *testing.T) {
+	t.Parallel()
+
 	serverConn, clientConn := net.Pipe()
 	guard := newClient(serverConn)
 
@@ -134,6 +140,7 @@ func listenGuard(t *testing.T) {
 	/* Broadcast */
 	room.broadcast <- &msg.Message{"test", []byte(`"guard"`)}
 	receiveMsg(t, clientConn, message{"test", []byte(`"guard"`)})
+	// TODO Quit message
 
 	/* Leave */
 	room.leave <- guard // First

@@ -123,7 +123,6 @@ func (l *level) getTiles() [][]tile {
 }
 
 func (l *level) validMove(orig, dest position, dir direction) bool {
-
 	if dest.x < 0 || dest.x >= 28 || /*dest.y < 0 ||*/ dest.y >= 16 {
 		return false
 	}
@@ -162,8 +161,8 @@ func (l *level) validMove(orig, dest position, dir direction) bool {
 		return false
 	case LADDER, ESCAPELADDER:
 		return true
-	// case LADDER:
-	// 	return dir != DOWN
+		// case LADDER:
+		// 	return dir != DOWN
 	}
 
 	return false

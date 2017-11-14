@@ -3,7 +3,6 @@ package game
 import (
 	"errors"
 	"sort"
-	//msg "github.com/abdelq/lode-runner/message"
 )
 
 type Guard struct {
@@ -61,3 +60,7 @@ func (g *Guard) init(landmarks map[position]tile) { // XXX
 
 // TODO Broadcast
 func (g *Guard) Move(dir direction, game *Game) {} // TODO
+
+func (g *Guard) UpdateAction(actionType string, direction direction) {
+	g.Action = Action{actionType, direction}
+}

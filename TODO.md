@@ -14,7 +14,6 @@
 - [ ] Arriver sur un ladder depuis une rope fait tomber
 - [ ] Turns out que même si y'a pas de blocs, le bas compte comme du sol (lvl 014)
 
-
 # Mid priority
 
 - [ ] X tiles (false blocks)

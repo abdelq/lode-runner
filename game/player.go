@@ -5,11 +5,12 @@ type Player interface {
 	Remove(*Game)
 	init(map[position]tile)
 	Move(direction, *Game)
+	UpdateAction(actionType string, direction direction)
 }
 
 // TODO Rename fields
 type Action struct {
-	ActionType string
+	ActionType string // TODO Switch to iota uint8
 	Direction  direction
 }
 

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"log"
 	"time"
-	//msg "github.com/abdelq/lode-runner/message"
 )
 
 import "fmt"
@@ -13,7 +12,7 @@ type Runner struct {
 	Name   string
 	pos    *position
 	state  state
-	health uint8 // TODO Use
+	health uint8
 	Action Action
 }
 
@@ -170,4 +169,8 @@ func (r *Runner) Dig(dir direction, game *Game) {
 			game.Level.tiles[digPos.y][digPos.x] = BRICK
 		})
 	}
+}
+
+func (r *Runner) UpdateAction(actionType string, direction direction) {
+	r.Action = Action{actionType, direction}
 }

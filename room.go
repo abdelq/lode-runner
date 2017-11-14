@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"io"
 	"github.com/abdelq/lode-runner/game"
 	msg "github.com/abdelq/lode-runner/message"
 )
@@ -51,7 +50,6 @@ func (r *room) listen() {
 		select {
 		case join := <-r.join:
 			client, player := join.client, join.player
-
 			if _, ok := r.clients[client]; ok {
 				client.out <- newMessage("error", "already in room")
 				continue
@@ -67,7 +65,6 @@ func (r *room) listen() {
 				continue
 			}
 			r.clients[client] = player
-
 		case client := <-r.leave:
 			player := r.clients[client]
 			if _, ok := r.clients[client]; !ok {
@@ -81,27 +78,21 @@ func (r *room) listen() {
 			}
 
 			player.Remove(r.game)
-
 		case msg := <-r.broadcast:
 			for client := range r.clients {
 				client.out <- message(*msg)
 			}
 
-			// TODO Maybe not all of it is necessary for GC
 			if msg.Event == "quit" {
+				// Close clients
 				for client := range r.clients {
-					client.close()
-					//client.out <- io.EOF
-					//client.out <- message(*msg)
+					client.close() // TODO Goroutine?
 				}
-				close(r.join)
-				close(r.leave)
-				close(r.broadcast)
-				r.clients = nil
-				r.game = nil
+
+				// Delete room
 				for name, room := range rooms {
 					if room == r {
-						delete(rooms, name)
+						delete(rooms, name) // TODO Verify garbage collection
 						return
 					}
 				}

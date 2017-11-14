@@ -5,13 +5,13 @@ import (
 	"testing"
 )
 
+// TODO Move sections to game package
 func TestParse(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	client := newClient(serverConn)
 
 	// Valid events
-	for _, event := range []string{"JOIN ", " Move ", " dig"} {
-		msg := &message{Event: event}
+	for _, msg := range []message{{Event: "JOIN "}, {Event: " Move "}, {Event: " dig"}} {
 		msg.parse(client)
 		receiveMsg(t, clientConn, message{"error", []byte(`"unexpected end of JSON input"`)})
 	}
@@ -43,6 +43,7 @@ func TestParseJoin(t *testing.T) {
 	}
 }
 
+// TODO Move to game package
 func TestParseMove(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	spectator := newClient(serverConn)
@@ -56,8 +57,11 @@ func TestParseMove(t *testing.T) {
 	receiveMsg(t, clientConn, message{"error", []byte(`"not in a game"`)})
 
 	// TODO Not a player
+
+	// TODO Verify player action
 }
 
+// TODO Move to game package
 func TestParseDig(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	spectator := newClient(serverConn)
@@ -71,4 +75,6 @@ func TestParseDig(t *testing.T) {
 	receiveMsg(t, clientConn, message{"error", []byte(`"not in a game"`)})
 
 	// TODO Not a runner
+
+	// TODO Verify player action
 }
