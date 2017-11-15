@@ -16,7 +16,7 @@ func (m *JoinMessage) Parse(data json.RawMessage) error {
 		return err
 	}
 
-	if m.Role == 0 || m.Role == 38 || m.Role == 48 { // FIXME Runner/Guard only
+	if m.Role == 0 || m.Role == '&' || m.Role == '0' { // FIXME Runner/Guard only
 		if m.Name = strings.TrimSpace(m.Name); m.Name == "" {
 			return errors.New("invalid name")
 		}

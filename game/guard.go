@@ -6,7 +6,7 @@ import (
 )
 
 type Guard struct {
-	Name   string
+	name   string
 	pos    *position
 	state  state
 	Action Action
@@ -16,12 +16,12 @@ func (g *Guard) Add(game *Game) error {
 	if len(game.guards) == 1 { // FIXME
 		return errors.New("guards already joined")
 	}
-	if game.hasPlayer(g.Name) {
+	if game.hasPlayer(g.name) {
 		return errors.New("name already used")
 	}
 
 	game.guards[g] = struct{}{} // FIXME
-	//game.broadcast <- msg.NewMessage("join", g.Name) // FIXME
+	//game.broadcast <- msg.NewMessage("join", g.name) // FIXME
 
 	if game.filled() {
 		go game.start(1)
@@ -32,10 +32,10 @@ func (g *Guard) Add(game *Game) error {
 
 func (g *Guard) Remove(game *Game) {
 	delete(game.guards, g)
-	//game.broadcast <- msg.NewMessage("leave", g.Name) // FIXME
+	//game.broadcast <- msg.NewMessage("leave", g.name) // FIXME
 
 	if game.Started() && len(game.guards) == 0 {
-		go game.stop()
+		go game.stop(RUNNER)
 	}
 }
 

@@ -2,6 +2,7 @@ package message
 
 import "testing"
 
+// TODO Try using '&' and '0' instead of 38 and 48
 func TestParse(t *testing.T) {
 	t.Run("Spectator", func(t *testing.T) {
 		t.Parallel()

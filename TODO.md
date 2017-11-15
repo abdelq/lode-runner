@@ -13,9 +13,7 @@
 - [ ] Ne pas marcher sur la rope (lvl 007)
 - [ ] Arriver sur un ladder depuis une rope fait tomber
 - [ ] Bug weird : laisser runner le serveur + client random pour un
-  moment, éventuellement, ça se chie dessus (voir le fichier
-  `backtrace`).  Pas sûr de comment reproduire, mais ça finit par se
-  produire éventuellement.
+  moment, éventuellement, ça se chie dessus
 
 # Mid priority
 
@@ -36,5 +34,6 @@
 - [ ] Allow multiple rooms for a single client
 - [ ] Flags for timeouts
 - [x] Permettre de tomber d'une ROPE
-- [ ] Proper makefiles
+- [ ] Proper makefiles + .gitignore
 - [ ] Let's Encrypt certs
+- [ ] Clean up JS client

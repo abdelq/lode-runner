@@ -11,39 +11,32 @@ type Game struct {
 	level     *level
 	runner    *Runner
 	guards    map[*Guard]struct{}
+	ticker    *time.Ticker
 	broadcast chan *msg.Message
 }
 
 func NewGame(broadcast chan *msg.Message) *Game {
-	game := &Game{guards: make(map[*Guard]struct{}), broadcast: broadcast}
+	game := &Game{
+		guards:    make(map[*Guard]struct{}),
+		ticker:    time.NewTicker(time.Second), // TODO Choose appropriate duration
+		broadcast: broadcast,
+	}
 
-	// FIXME
 	go func() {
-		// https://gobyexample.com/tickers
-		for now := range time.Tick(1 * time.Second) {
-			_ = now
-			if game.Started() && !game.Stopped() { // TODO Stupid
-				// TODO Maybe order them (runner first + guard then)
-				// Do the actions
-				if game.runner.Action.ActionType == "move" {
-					go game.runner.Move(game.runner.Action.Direction, game)
-				} else if game.runner.Action.ActionType == "dig" {
-					go game.runner.Dig(game.runner.Action.Direction, game)
+		for range game.ticker.C {
+			if game.Started() {
+				// Runner
+				switch action := game.runner.Action; action.ActionType {
+				case "move":
+					game.runner.Move(action.Direction, game) // XXX
+				case "dig":
+					game.runner.Dig(action.Direction, game) // XXX
 				}
 
+				// Guards
 				for guard := range game.guards {
-					if guard.Action.ActionType == "move" {
-						go guard.Move(guard.Action.Direction, game)
-					}
+					guard.Move(guard.Action.Direction, game) // XXX
 				}
-
-				// Reset actions
-				game.runner.Action = Action{"move", 0}
-				for guard := range game.guards {
-					guard.Action = Action{"move", 0}
-				}
-
-				game.broadcast <- msg.NewMessage("next", game.level.String()) // FIXME
 			}
 		}
 	}()
@@ -51,80 +44,75 @@ func NewGame(broadcast chan *msg.Message) *Game {
 	return game
 }
 
-func (g *Game) Started() bool { // FIXME
-	return g.level != nil
+func (g *Game) Started() bool {
+	return g.level != nil // XXX
 }
 
-func (g *Game) Stopped() bool { // FIXME
-	return g.guards == nil // FIXME
+/*func (g *Game) Stopped() bool {
+	return g.guards == nil // XXX
+}*/
+
+func (g *Game) filled() bool {
+	return g.runner != nil && len(g.guards) == 1 // XXX
 }
 
-func (g *Game) filled() bool { // FIXME
-	return g.runner != nil && len(g.guards) == 1 // FIXME
-}
-
-func (g *Game) start(lvl int) { // FIXME
-	var err error // TODO
-	// Level
-	g.level, err = newlevel(lvl)
+func (g *Game) start(lvl int) {
+	level, err := newLevel(lvl)
 	if err != nil {
 		log.Println(err)
-		return
-		// TODO Crash people ?
+		// TODO Broadcast error & Stop game
+		return // XXX
 	}
 
-	// Runner
-	g.runner.init(g.level.players)
+	/* Runner */
+	g.runner.init(level.players)
 
-	// guards
+	/* Guards */
 	for guard := range g.guards {
-		guard.init(g.level.players)
+		guard.init(level.players)
 	}
 
-	// FIXME Remove unused landmarks
-	for pos, tile := range g.level.players {
+	// Delete rest
+OUTER: // TODO Rename
+	for pos, tile := range level.players {
 		if tile == GUARD {
-			var found = false
 			for guard := range g.guards {
 				if *guard.pos == pos {
-					found = true
+					continue OUTER
 				}
 			}
-			if !found {
-				delete(g.level.players, pos)
-			}
+			delete(level.players, pos)
 		}
 	}
 
-	g.broadcast <- msg.NewMessage("start", g.level.String()) // FIXME
+	// XXX
+	g.broadcast <- msg.NewMessage("start", level.String())
+	g.level = level // XXX Placement + Possible ticker issue
 }
 
-// TODO Add argument w/ winner
-func (g *Game) stop() { // FIXME
-	// Force everyone to leave room
-	if g.runner == nil || g.runner.health == 0 {
-		g.broadcast <- msg.NewMessage("quit", "guards win") // FIXME
-	} else if len(g.guards) == 0 {
-		g.broadcast <- msg.NewMessage("quit", "runner wins") // FIXME
-	} else { // TODO ?
-		g.broadcast <- msg.NewMessage("quit", "") // FIXME
+func (g *Game) stop(winner tile) {
+	switch winner {
+	case RUNNER:
+		g.broadcast <- msg.NewMessage("quit", "runner wins") // TODO
+	case GUARD:
+		g.broadcast <- msg.NewMessage("quit", "guards win") // TODO
+	default:
+		g.broadcast <- msg.NewMessage("quit", "draw") // TODO
 	}
 
-	g.level = nil
-	g.runner = nil
-	g.guards = nil
-	//close(g.broadcast)
+	// TODO Verify garbage collection
+	g.ticker.Stop() // XXX
 }
 
 func (g *Game) hasPlayer(name string) bool {
 	// Runner
-	if g.runner != nil && g.runner.Name == name {
+	if g.runner != nil && g.runner.name == name {
 		return true
 	}
 
 	// Guards
 	for guard := range g.guards {
-		if guard.Name == name {
+		if guard.name == name {
 			return true
 		}
 	}

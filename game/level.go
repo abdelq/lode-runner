@@ -7,19 +7,15 @@ import (
 	"math"
 )
 
-// FIXME Gold deleted if guard goes past it
-// FIXME Issue w/ runner + guard collision
-// TODO Trapdoor
+type tile = byte
 type level struct {
 	num     int
 	tiles   [][]tile
-	players map[position]tile // TODO
-	gold    []position        // TODO
+	players map[position]tile
+	gold    []position
 }
 
 // Tiles
-type tile = byte
-
 const (
 	EMPTY        = ' '
 	RUNNER       = '&'
@@ -40,7 +36,7 @@ func manhattanDist(a, b position) float64 {
 	return math.Abs(float64(a.x-b.x)) + math.Abs(float64(a.y-b.y))
 }
 
-func newlevel(num int) (*level, error) {
+func newLevel(num int) (*level, error) {
 	content, err := ioutil.ReadFile(fmt.Sprintf("levels/%03d.lvl", num))
 	if err != nil {
 		return nil, err
@@ -50,7 +46,7 @@ func newlevel(num int) (*level, error) {
 		num, bytes.Split(content, []byte("\n")),
 		make(map[position]tile), make([]position, 0), // FIXME Specify better length
 	}
-	// FIXME
+	// FIXME STABLE SLICE ?
 	for i, tiles := range lvl.tiles {
 		for j, tile := range tiles {
 			if tile == GOLD {

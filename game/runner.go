@@ -9,7 +9,7 @@ import (
 import "fmt"
 
 type Runner struct {
-	Name   string
+	name   string
 	pos    *position
 	state  state
 	health uint8
@@ -20,12 +20,12 @@ func (r *Runner) Add(game *Game) error {
 	if game.runner != nil {
 		return errors.New("runner already joined")
 	}
-	if game.hasPlayer(r.Name) {
+	if game.hasPlayer(r.name) {
 		return errors.New("name already used")
 	}
 
 	game.runner = r
-	//game.broadcast <- msg.NewMessage("join", r.Name) // FIXME Join Msg ?
+	//game.broadcast <- msg.NewMessage("join", r.name) // FIXME Join Msg ?
 
 	if game.filled() {
 		go game.start(1)
@@ -36,10 +36,10 @@ func (r *Runner) Add(game *Game) error {
 
 func (r *Runner) Remove(game *Game) {
 	game.runner = nil
-	//game.broadcast <- msg.NewMessage("leave", r.Name) // FIXME Join Msg ?
+	//game.broadcast <- msg.NewMessage("leave", r.name) // FIXME Join Msg ?
 
 	if game.Started() {
-		go game.stop()
+		go game.stop(GUARD)
 	}
 }
 
@@ -114,7 +114,7 @@ func (r *Runner) Move(dir direction, game *Game) {
 		r.health--
 
 		if r.health == 0 {
-			game.stop() // TODO Goroutine?
+			game.stop(GUARD) // TODO Goroutine?
 			return
 		}
 
@@ -158,7 +158,7 @@ func (r *Runner) Dig(dir direction, game *Game) {
 				r.health--
 
 				if r.health == 0 {
-					game.stop() // TODO Goroutine?
+					game.stop(GUARD) // TODO Goroutine?
 					return
 				}
 
@@ -173,4 +173,5 @@ func (r *Runner) Dig(dir direction, game *Game) {
 
 func (r *Runner) UpdateAction(actionType string, direction direction) {
 	r.Action = Action{actionType, direction}
+	// FIXME Dig should only accept left/right (DO THIS HERE)
 }

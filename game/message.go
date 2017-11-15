@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// TODO Move to msg package?
 type Message struct {
 	Direction uint8
 	Room      string

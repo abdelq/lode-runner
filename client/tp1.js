@@ -27,7 +27,6 @@ function next(data) {
     return {event: "move", direction: dir};
 }
 
-
 // XXX Important : ne pas modifier ces lignes
 module.exports.onkeypress = onkeypress;
 module.exports.start = start;

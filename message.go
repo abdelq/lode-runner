@@ -61,7 +61,7 @@ func parseMove(data json.RawMessage, sender *client) {
 	}
 
 	if room, ok := rooms[message.Room]; ok {
-		if !room.game.Started() || room.game.Stopped() {
+		if !room.game.Started() /*|| room.game.Stopped()*/ {
 			sender.out <- newMessage("error", "not in a game")
 			return
 		}
@@ -92,7 +92,7 @@ func parseDig(data json.RawMessage, sender *client) {
 	}
 
 	if room, ok := rooms[message.Room]; ok {
-		if !room.game.Started() || room.game.Stopped() {
+		if !room.game.Started() /*|| room.game.Stopped()*/ {
 			sender.out <- newMessage("error", "not in a game")
 			return
 		}
