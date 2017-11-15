@@ -9,7 +9,7 @@ type Guard struct {
 	name   string
 	pos    *position
 	state  state
-	Action Action
+	action action
 }
 
 func (g *Guard) Add(game *Game) error {
@@ -40,6 +40,7 @@ func (g *Guard) Remove(game *Game) {
 }
 
 func (g *Guard) init(landmarks map[position]tile) { // XXX
+	// FIXME Fucking sort maps still random
 	var runnerPos position
 	var positions []position
 	for pos, tile := range landmarks {
@@ -59,8 +60,8 @@ func (g *Guard) init(landmarks map[position]tile) { // XXX
 }
 
 // TODO Broadcast
-func (g *Guard) Move(dir direction, game *Game) {} // TODO
+func (g *Guard) move(dir direction, game *Game) {} // TODO
 
 func (g *Guard) UpdateAction(actionType string, direction direction) {
-	g.Action = Action{actionType, direction}
+	g.action = action{actionType, direction}
 }

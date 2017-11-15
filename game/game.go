@@ -26,16 +26,16 @@ func NewGame(broadcast chan *msg.Message) *Game {
 		for range game.ticker.C {
 			if game.Started() {
 				// Runner
-				switch action := game.runner.Action; action.ActionType {
+				switch action := game.runner.action; action.actionType {
 				case "move":
-					game.runner.Move(action.Direction, game) // XXX
+					game.runner.move(action.direction, game) // XXX
 				case "dig":
-					game.runner.Dig(action.Direction, game) // XXX
+					game.runner.dig(action.direction, game) // XXX
 				}
 
 				// Guards
 				for guard := range game.guards {
-					guard.Move(guard.Action.Direction, game) // XXX
+					guard.move(guard.action.direction, game) // XXX
 				}
 			}
 		}

@@ -13,6 +13,7 @@ type level struct {
 	tiles   [][]tile
 	players map[position]tile
 	gold    []position
+	escape  []position
 }
 
 // Tiles
@@ -42,18 +43,24 @@ func newLevel(num int) (*level, error) {
 		return nil, err
 	}
 
+	// TODO Specify right len/cap
 	lvl := &level{
 		num, bytes.Split(content, []byte("\n")),
-		make(map[position]tile), make([]position, 0), // FIXME Specify better length
+		make(map[position]tile), make([]position, 0), make([]position, 0),
 	}
-	// FIXME STABLE SLICE ?
+
+	// Collect data for players/gold
 	for i, tiles := range lvl.tiles {
 		for j, tile := range tiles {
-			if tile == GOLD {
+			switch tile {
+			case RUNNER, GUARD:
+				lvl.players[position{j, i}] = tile
+				lvl.tiles[i][j] = EMPTY
+			case GOLD:
 				lvl.gold = append(lvl.gold, position{j, i})
 				lvl.tiles[i][j] = EMPTY
-			} else if tile == RUNNER || tile == GUARD {
-				lvl.players[position{j, i}] = tile
+			case ESCAPELADDER:
+				lvl.escape = append(lvl.escape, position{j, i})
 				lvl.tiles[i][j] = EMPTY
 			}
 		}
@@ -70,20 +77,8 @@ func (l *level) emptyBelow(pos position) bool {
 	return l.getTiles()[pos.y+1][pos.x] == EMPTY
 }
 
-// FIXME Gold may be stolen by guards
 func (l *level) goldCollected() bool {
 	return len(l.gold) == 0
-}
-
-// TODO i, p
-func (l *level) collectGold(pos position) {
-	for i, p := range l.gold {
-		if p == pos {
-			l.gold[i] = l.gold[len(l.gold)-1]
-			l.gold = l.gold[:len(l.gold)-1]
-			return
-		}
-	}
 }
 
 // TODO Rewrite + Rename
@@ -99,30 +94,27 @@ func (l *level) getTiles() [][]tile {
 		tiles[pos.y][pos.x] = GOLD
 	}
 
+	// Escape ladders
+	if !l.goldCollected() {
+		for _, pos := range l.escape {
+			tiles[pos.y][pos.x] = ESCAPELADDER
+		}
+	}
+
 	// Players
 	for pos, tile := range l.players {
 		tiles[pos.y][pos.x] = tile
-	}
-
-	// FIXME Show/Hide escape ladder
-	if !l.goldCollected() {
-		for i, row := range tiles {
-			for j, cell := range row {
-				if cell == ESCAPELADDER {
-					tiles[i][j] = EMPTY
-				}
-			}
-		}
 	}
 
 	return tiles
 }
 
 func (l *level) validMove(orig, dest position, dir direction) bool {
-	if dest.x < 0 || dest.x >= 28 || /*dest.y < 0 ||*/ dest.y >= 16 {
+	if dest.x < 0 || dest.x >= 28 /*|| dest.y < 0*/ || dest.y >= 16 {
 		return false
 	}
 
+	// FIXME FIXME FIXME FIXME FIXME FIXME FIXME
 	origTile := l.tiles[orig.y][orig.x]
 
 	if !l.goldCollected() && origTile == ESCAPELADDER {

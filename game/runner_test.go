@@ -1,20 +1,17 @@
 package game
 
-import (
-	"testing"
-	//"time"
+import "testing"
 
-	msg "github.com/abdelq/lode-runner/message"
-)
+func TestRunnerAdd(t *testing.T) {} // TODO
 
-// TODO
-func TestMove(t *testing.T) {
-	broadcast := make(chan *msg.Message, 1)
-	defer close(broadcast)
+func TestRunnerRemove(t *testing.T) {} // TODO
 
-	game := NewGame(broadcast)
-	game.runner = new(Runner)
-	game.guards[new(Guard)] = struct{}{}
+func TestRunnerInit(t *testing.T) {} // TODO
 
-	//game.start()
-}
+func TestRunnerMove(t *testing.T) {} // TODO
+
+func TestRunnerDig(t *testing.T) {} // TODO
+
+func TestRunnerUpdateAction(t *testing.T) {} // TODO
+
+func TestRunnerCollectGold(t *testing.T) {} // TODO

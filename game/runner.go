@@ -2,18 +2,17 @@ package game
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"time"
 )
-
-import "fmt"
 
 type Runner struct {
 	name   string
 	pos    *position
 	state  state
 	health uint8
-	Action Action
+	action action
 }
 
 func (r *Runner) Add(game *Game) error {
@@ -53,7 +52,7 @@ func (r *Runner) init(landmarks map[position]tile) {
 }
 
 // TODO Broadcast
-func (r *Runner) Move(dir direction, game *Game) {
+func (r *Runner) move(dir direction, game *Game) {
 	if r.state == DIGGING {
 		return
 	}
@@ -105,7 +104,7 @@ func (r *Runner) Move(dir direction, game *Game) {
 	//fmt.Println(*r.pos)
 	//delete(game.level.gold, *r.pos) // FIXME
 	//game.level.gold[i] = game.level.gold[len(a)-1]
-	game.level.collectGold(*r.pos)
+	r.collectGold(*r.pos, game.level)
 	delete(game.level.players, *r.pos)
 	r.pos.x, r.pos.y = newPos.x, newPos.y // FIXME
 
@@ -133,7 +132,7 @@ func (r *Runner) Move(dir direction, game *Game) {
 }
 
 // TODO Broadcast
-func (r *Runner) Dig(dir direction, game *Game) {
+func (r *Runner) dig(dir direction, game *Game) {
 	// FIXME
 	var digPos position
 	if dir == RIGHT {
@@ -172,6 +171,16 @@ func (r *Runner) Dig(dir direction, game *Game) {
 }
 
 func (r *Runner) UpdateAction(actionType string, direction direction) {
-	r.Action = Action{actionType, direction}
+	r.action = action{actionType, direction}
 	// FIXME Dig should only accept left/right (DO THIS HERE)
+}
+
+func (r *Runner) collectGold(pos position, lvl *level) {
+	for i, p := range lvl.gold {
+		if p == pos {
+			lvl.gold[i] = lvl.gold[len(lvl.gold)-1]
+			lvl.gold = lvl.gold[:len(lvl.gold)-1]
+			return
+		}
+	}
 }

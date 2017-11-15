@@ -1,4 +1,4 @@
-package game
+package message
 
 import (
 	"encoding/json"
@@ -6,18 +6,16 @@ import (
 	"strings"
 )
 
-// TODO Move to msg package?
-type Message struct {
+type GameMessage struct {
 	Direction uint8
 	Room      string
 }
 
-func (m *Message) Parse(data json.RawMessage) error {
+func (m *GameMessage) Parse(data json.RawMessage) error {
 	if err := json.Unmarshal(data, m); err != nil {
 		return err
 	}
 
-	// TODO Valid only LEFT/RIGHT for digging
 	if m.Direction > 4 { // NONE is a valid direction
 		return errors.New("invalid direction")
 	}

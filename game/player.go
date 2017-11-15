@@ -1,22 +1,22 @@
 package game
 
+type state uint8
 type Player interface {
 	Add(*Game) error
 	Remove(*Game)
 	init(map[position]tile)
-	Move(direction, *Game)
-	UpdateAction(actionType string, direction direction)
+	move(direction, *Game)
+	UpdateAction(string, direction)
 }
 
 // TODO Rename fields
-type Action struct {
-	ActionType string // TODO Switch to iota uint8
-	Direction  direction
+type direction = uint8 // XXX
+type action struct {
+	actionType string
+	direction  direction
 }
 
-// States
-type state uint8
-
+// XXX States
 const (
 	ALIVE state = iota
 	FALLING
@@ -24,9 +24,7 @@ const (
 	TRAPPED
 )
 
-// Directions
-type direction = uint8 // FIXME
-
+// XXX Directions
 const (
 	NONE direction = iota
 	UP
@@ -37,7 +35,7 @@ const (
 
 func NewPlayer(name string, role tile) Player {
 	switch role {
-	case 0, RUNNER: // FIXME
+	case 0, RUNNER: // XXX
 		return &Runner{name: name, health: 5}
 	case GUARD:
 		return &Guard{name: name}

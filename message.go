@@ -46,7 +46,7 @@ func parseJoin(data json.RawMessage, sender *client) {
 
 // TODO Move to game package
 func parseMove(data json.RawMessage, sender *client) {
-	message := new(game.Message)
+	message := new(msg.GameMessage)
 	if err := message.Parse(data); err != nil {
 		sender.out <- newMessage("error", err.Error())
 		return
@@ -77,7 +77,7 @@ func parseMove(data json.RawMessage, sender *client) {
 
 // TODO Move to game package
 func parseDig(data json.RawMessage, sender *client) {
-	message := new(game.Message)
+	message := new(msg.GameMessage)
 	if err := message.Parse(data); err != nil {
 		sender.out <- newMessage("error", err.Error())
 		return

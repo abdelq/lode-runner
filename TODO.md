@@ -14,6 +14,8 @@
 - [ ] Arriver sur un ladder depuis une rope fait tomber
 - [ ] Bug weird : laisser runner le serveur + client random pour un
   moment, éventuellement, ça se chie dessus
+- [ ] Validate direction LEFT/RIGHT for digging actions
+- [ ] Disable guard from game (game.filled()) + Update quit message + Comment ./run.sh for guard
 
 # Mid priority
 
