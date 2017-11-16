@@ -11,7 +11,7 @@
             }
             canvas {
                 border: 1px solid green;
-                background-color: white;
+                background-color: #EFC;
             }
         </style>
     </head>
@@ -19,14 +19,10 @@
         <h1>Code Runner</h1>
         <canvas id="c"></canvas>
         <script>
-            function draw() {
+            function draw(map) {
                 var ctx = document.getElementById('c').getContext('2d');
 
-                var str = "                            \n######H                     \n#    #H    H#########H   S  \n#$$$$#H    H         H####  \n######H    H         H      \n#     H----H------   H   $  \n#     H    H     H#########H\n#     H    H     H         H\n#     H    H#####H         H\n###########H         H###H##\n#####      H         H   H  \n#$$$#      H   ------H   H  \n########H#######     H  ####\n        H            H      \n        H   &        H      \n############################";
-
-                console.log(str);
-
-                var grid = str.split('\n').map(function(x) {
+                var grid = map.split('\n').map(function(x) {
                     return x.split('');
                 });
 
@@ -51,7 +47,10 @@
             }
 
             document.addEventListener('DOMContentLoaded', function() {
-                draw();
+                
+                var str = "                            \n######H                     \n#    #H    H#########H   S  \n#$$$$#H    H         H####  \n######H    H         H      \n#     H----H------   H   $  \n#     H    H     H#########H\n#     H    H     H         H\n#     H    H#####H         H\n###########H         H###H##\n#####      H         H   H  \n#$$$#      H   ------H   H  \n########H#######     H  ####\n        H            H      \n        H   &        H      \n############################";
+
+                draw(str);
             });
         </script>
     </body>
