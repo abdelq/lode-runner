@@ -36,9 +36,9 @@ const (
 func NewPlayer(name string, role tile) Player {
 	switch role {
 	case 0, RUNNER: // XXX
-		return &Runner{name: name, health: 5}
+		return &Runner{name: name, action: action{}, health: 5}
 	case GUARD:
-		return &Guard{name: name}
+		return &Guard{name: name, action: action{}}
 	}
 
 	return nil
