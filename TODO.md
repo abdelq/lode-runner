@@ -1,5 +1,6 @@
 # High priority
 
+- [ ] Let's Encrypt certs (Assigned to : Abdel)
 - [x] Use a system based on ticks
 - [x] game.Stop() n'arrête pas le jeu
 - [x] Manage death
@@ -41,5 +42,4 @@
 - [ ] Flags for timeouts
 - [x] Permettre de tomber d'une ROPE
 - [ ] Proper makefiles + .gitignore
-- [ ] Let's Encrypt certs
 - [ ] Clean up JS client
