@@ -21,6 +21,7 @@
 - [ ] runner.go, guard.go
 - [ ] TCP over browser...
 - [ ] TLS as option (when using 443)
+- [ ] Touching special ladder means going to next level + no hiding bc of money, only allowing to go to next lvl
 
 # Mid priority
 
