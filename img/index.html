@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Code Runner</title>
+        <style>
+            body {
+                background-color: black;
+                color: green;
+                text-align: center;
+            }
+            canvas {
+                border: 1px solid green;
+                background-color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Code Runner</h1>
+        <canvas id="c"></canvas>
+        <script>
+            function draw() {
+                var ctx = document.getElementById('c').getContext('2d');
+
+                var str = "                            \n######H                     \n#    #H    H#########H   S  \n#$$$$#H    H         H####  \n######H    H         H      \n#     H----H------   H   $  \n#     H    H     H#########H\n#     H    H     H         H\n#     H    H#####H         H\n###########H         H###H##\n#####      H         H   H  \n#$$$#      H   ------H   H  \n########H#######     H  ####\n        H            H      \n        H   &        H      \n############################";
+
+                console.log(str);
+
+                var grid = str.split('\n').map(function(x) {
+                    return x.split('');
+                });
+
+                var h = grid.length;
+                var w = grid[0].length;
+
+                document.getElementById('c').width = w * 32;
+                document.getElementById('c').height = h * 32;
+
+                grid.forEach(function(row, y) {
+
+                    row.forEach(function(e, x) {
+                        var img = new Image();
+
+                        img.onload = function() {
+                            ctx.drawImage(img, x * 32, y * 32);
+                        };
+
+                        img.src = "32/" + e.replace('#', '%23') + ".png";
+                    });
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                draw();
+            });
+        </script>
+    </body>
+</html>
