@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"log"
 	"time"
+	//msg "github.com/abdelq/lode-runner/message"
 )
 
 type Runner struct {
 	name   string
-	pos    *position
+	pos    position
 	state  state
-	health uint8
 	action action
+	health uint8
 }
 
 func (r *Runner) Add(game *Game) error {
@@ -24,7 +25,9 @@ func (r *Runner) Add(game *Game) error {
 	}
 
 	game.runner = r
-	//game.broadcast <- msg.NewMessage("join", r.name) // FIXME Join Msg ?
+	/*game.broadcast <- &msg.Message{"join",
+		[]byte(`{"name": "", "room": "", "role": "runner"}`), // FIXME
+	}*/
 
 	if game.filled() {
 		go game.start(1)
@@ -35,23 +38,25 @@ func (r *Runner) Add(game *Game) error {
 
 func (r *Runner) Remove(game *Game) {
 	game.runner = nil
-	//game.broadcast <- msg.NewMessage("leave", r.name) // FIXME Join Msg ?
+	/*game.broadcast <- &msg.Message{"leave",
+		[]byte(`{"name": "", "room": "", "role": "runner"}`), // FIXME
+	}*/
 
 	if game.Started() {
-		go game.stop(GUARD)
+		game.stop(GUARD)
 	}
 }
 
-func (r *Runner) init(landmarks map[position]tile) {
-	for pos, tile := range landmarks {
+func (r *Runner) init(players map[position]tile) {
+	for pos, tile := range players {
 		if tile == RUNNER {
-			r.pos = &pos
+			r.pos = pos
 			return
 		}
 	}
 }
 
-// TODO Broadcast
+// FIXME FIXME FIXME FIXME
 func (r *Runner) move(dir direction, game *Game) {
 	if r.state == DIGGING {
 		return
@@ -77,7 +82,7 @@ func (r *Runner) move(dir direction, game *Game) {
 	}
 
 	var nextTile = game.level.tiles[r.pos.y][r.pos.x]
-	var validMove = game.level.validMove(*r.pos, newPos, dir)
+	var validMove = game.level.validMove(r.pos, newPos, dir)
 
 	// Stop falling
 	if r.state == FALLING && (!validMove || nextTile == LADDER || nextTile == ESCAPELADDER) {
@@ -101,15 +106,15 @@ func (r *Runner) move(dir direction, game *Game) {
 	// FIXME
 	//fmt.Println("validmove")
 	//fmt.Println(r.pos)
-	//fmt.Println(*r.pos)
-	//delete(game.level.gold, *r.pos) // FIXME
+	//fmt.Println(r.pos)
+	//delete(game.level.gold, r.pos) // FIXME
 	//game.level.gold[i] = game.level.gold[len(a)-1]
-	r.collectGold(*r.pos, game.level)
-	delete(game.level.players, *r.pos)
+	r.collectGold(r.pos, game.level)
+	delete(game.level.players, r.pos)
 	r.pos.x, r.pos.y = newPos.x, newPos.y // FIXME
 
 	// Collision checking
-	if _, ok := game.level.players[*r.pos]; ok {
+	if _, ok := game.level.players[r.pos]; ok {
 		r.health--
 
 		if r.health == 0 {
@@ -122,16 +127,16 @@ func (r *Runner) move(dir direction, game *Game) {
 		// TODO Reset
 	}
 
-	game.level.players[*r.pos] = RUNNER
+	game.level.players[r.pos] = RUNNER
 
-	if game.level.emptyBelow(*r.pos) && game.level.tiles[r.pos.y][r.pos.x] != ROPE {
+	if game.level.emptyBelow(r.pos) && game.level.tiles[r.pos.y][r.pos.x] != ROPE {
 		r.state = FALLING
 	}
 
 	fmt.Println(game.level.String())
 }
 
-// TODO Broadcast
+// FIXME FIXME FIXME FIXME
 func (r *Runner) dig(dir direction, game *Game) {
 	// FIXME
 	var digPos position
@@ -170,11 +175,13 @@ func (r *Runner) dig(dir direction, game *Game) {
 	}
 }
 
+// FIXME FIXME FIXME
 func (r *Runner) UpdateAction(actionType string, direction direction) {
 	r.action = action{actionType, direction}
 	// FIXME Dig should only accept left/right (DO THIS HERE)
 }
 
+// FIXME FIXME FIXME
 func (r *Runner) collectGold(pos position, lvl *level) {
 	for i, p := range lvl.gold {
 		if p == pos {

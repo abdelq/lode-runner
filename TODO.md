@@ -6,6 +6,7 @@
     - [x] Manage collisions
     - [x] Quand plus de vies
     - [x] Fin de partie quand le joueur tombe dans un trou au premier étage
+- [ ] Leave and join back same room (room not deleted)
 - [ ] Broadcast aux spectateurs + gardes
       Envoyer la carte au complet
 - [ ] Broadcast aux Runners
@@ -15,7 +16,10 @@
 - [ ] Bug weird : laisser runner le serveur + client random pour un
   moment, éventuellement, ça se chie dessus
 - [ ] Validate direction LEFT/RIGHT for digging actions
-- [ ] Disable guard from game (game.filled()) + Update quit message + Comment ./run.sh for guard
+- [ ] Disable guard from game (just comment section from and stop the join game.filled()) + Update quit message + Comment ./run.sh for guard
+- [ ] runner.go, guard.go
+- [ ] TCP over browser...
+- [ ] TLS as option (when using 443)
 
 # Mid priority
 

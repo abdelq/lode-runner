@@ -3,25 +3,28 @@ package game
 import (
 	"errors"
 	"sort"
+	//msg "github.com/abdelq/lode-runner/message"
 )
 
 type Guard struct {
 	name   string
-	pos    *position
+	pos    position
 	state  state
 	action action
 }
 
 func (g *Guard) Add(game *Game) error {
-	if len(game.guards) == 1 { // FIXME
+	if len(game.guards) == 1 { // XXX
 		return errors.New("guards already joined")
 	}
 	if game.hasPlayer(g.name) {
 		return errors.New("name already used")
 	}
 
-	game.guards[g] = struct{}{} // FIXME
-	//game.broadcast <- msg.NewMessage("join", g.name) // FIXME
+	game.guards[g] = struct{}{}
+	/*game.broadcast <- &msg.Message{"join",
+		[]byte(`{"name": "", "room": "", "role": "guard"}`), // FIXME
+	}*/
 
 	if game.filled() {
 		go game.start(1)
@@ -32,18 +35,19 @@ func (g *Guard) Add(game *Game) error {
 
 func (g *Guard) Remove(game *Game) {
 	delete(game.guards, g)
-	//game.broadcast <- msg.NewMessage("leave", g.name) // FIXME
+	/*game.broadcast <- &msg.Message{"leave",
+		[]byte(`{"name": "", "room": "", "role": "guard"}`), // FIXME
+	}*/
 
 	if game.Started() && len(game.guards) == 0 {
-		go game.stop(RUNNER)
+		game.stop(RUNNER)
 	}
 }
 
-func (g *Guard) init(landmarks map[position]tile) { // XXX
-	// FIXME Fucking sort maps still random
+func (g *Guard) init(players map[position]tile) {
 	var runnerPos position
 	var positions []position
-	for pos, tile := range landmarks {
+	for pos, tile := range players { // FIXME Don't loop over taken positions
 		if tile == RUNNER {
 			runnerPos = pos
 		} else if tile == GUARD {
@@ -51,17 +55,17 @@ func (g *Guard) init(landmarks map[position]tile) { // XXX
 		}
 	}
 
-	sort.SliceStable(positions, func(i, j int) bool {
+	sort.Slice(positions, func(i, j int) bool {
 		return manhattanDist(positions[i], runnerPos) >
 			manhattanDist(positions[j], runnerPos)
 	})
 
-	g.pos = &positions[0]
+	g.pos = positions[0]
 }
 
-// TODO Broadcast
 func (g *Guard) move(dir direction, game *Game) {} // TODO
 
+// FIXME FIXME FIXME
 func (g *Guard) UpdateAction(actionType string, direction direction) {
 	g.action = action{actionType, direction}
 }

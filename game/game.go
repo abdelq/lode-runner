@@ -37,6 +37,8 @@ func NewGame(broadcast chan *msg.Message) *Game {
 				for guard := range game.guards {
 					guard.move(guard.action.direction, game) // XXX
 				}
+
+				game.broadcast <- msg.NewMessage("next", game.level.String()) // XXX
 			}
 		}
 	}()
@@ -77,7 +79,7 @@ OUTER: // TODO Rename
 	for pos, tile := range level.players {
 		if tile == GUARD {
 			for guard := range g.guards {
-				if *guard.pos == pos {
+				if guard.pos == pos {
 					continue OUTER
 				}
 			}
@@ -90,7 +92,12 @@ OUTER: // TODO Rename
 	g.level = level // XXX Placement + Possible ticker issue
 }
 
+// XXX XXX XXX
 func (g *Game) stop(winner tile) {
+	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
+	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
+	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
+	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
 	switch winner {
 	case RUNNER:
 		g.broadcast <- msg.NewMessage("quit", "runner wins") // TODO
