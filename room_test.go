@@ -28,8 +28,8 @@ func TestFindRoom(t *testing.T) {
 
 func TestListen(t *testing.T) {
 	t.Run("Spectator", listenSpectator)
-	//t.Run("Runner", listenRunner) // FIXME
-	//t.Run("Guard", listenGuard) // FIXME
+	t.Run("Runner", listenRunner)
+	t.Run("Guard", listenGuard)
 }
 
 func listenSpectator(t *testing.T) {

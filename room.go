@@ -86,7 +86,7 @@ func (r *room) listen() {
 			if msg.Event == "quit" {
 				// Close clients
 				for client := range r.clients {
-					client.close() // TODO Goroutine?
+					client.close()
 				}
 
 				// Delete room

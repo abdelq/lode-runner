@@ -1,6 +1,5 @@
 # Build
 lode-runner
-/build/
 
-# Tests
+# Test
 *.out
