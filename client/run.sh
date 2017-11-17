@@ -1,3 +1,3 @@
 #!/bin/sh
 
-node guard.js & node index.js
+node guard.js & node runner.js

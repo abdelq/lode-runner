@@ -29,6 +29,3 @@
 - [ ] End of game (lvl 150)
 - [ ] Allow multiple rooms for a single client
 - [ ] Flags for timeouts
-- [ ] Proper makefiles + .gitignore
-- [ ] Clean up JS client
-- [ ] Try connect 443 then 1337 (client)
