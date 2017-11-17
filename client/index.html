@@ -33,6 +33,12 @@
             button:hover {
                 background-color: #cfc;
             }
+            #loading {
+                display: none;
+            }
+            #joined-room {
+                color: lightgreen;
+            }
         </style>
         <script>
             var room = 'room';
@@ -46,6 +52,7 @@
         </form>
         <br />
         <canvas id="c"></canvas>
+        <p id="loading">En attente de début de partie dans la room <span id="joined-room"></span>.</p>
         <script>
             var images = {};
 
@@ -63,6 +70,7 @@
                 canvas.width = w * 32;
                 canvas.height = h * 32;
                 canvas.style.display = 'inline';
+                document.getElementById('loading').style.display = '';
 
                 grid.forEach(function(row, y) {
                     row.forEach(function(e, x) {
@@ -88,6 +96,9 @@
                 ws.onclose = ws.onerror = function(msg) {
                     alert('Impossible de se connecter au serveur');
                 }
+
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('joined-room').innerHTML = room;
             }
 
             document.addEventListener('DOMContentLoaded', function() {
@@ -97,7 +108,7 @@
                     images[e] = img;
                 });
 
-                if(window.location.hash != '#') {
+                if(window.location.hash != '' && window.location.hash != '#') {
                     var room = window.location.hash.slice(1);
                     document.getElementById('room').value = room;
                     start();
