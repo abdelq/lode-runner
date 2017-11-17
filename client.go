@@ -15,7 +15,7 @@ type client struct {
 }
 
 func newClient(conn net.Conn) *client {
-	client := &client{conn: conn, out: make(chan message)}
+	client := &client{conn: conn, out: make(chan message, 5)} // XXX
 
 	// Listeners
 	go client.read()

@@ -7,7 +7,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 // TODO Flag for port (process.argv)
 //const client = tls.connect(443, {ca: [ fs.readFileSync('server.crt') ]}, () => {
 //const client = tls.connect(1337, {}, () => {
-const client = tls.connect(443, {}, () => {
+const client = connect(1337, {}, () => {
     console.log(`Connected to ${client.remoteAddress}:${client.remotePort}`);
 
     //var buffer = new Buffer(JSON.stringify({"name": name, "room": room}), "utf-8")
