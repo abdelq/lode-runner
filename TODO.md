@@ -26,7 +26,6 @@
 - [ ] End of game (lvl 150)
 - [ ] Allow multiple rooms for a single client
 - [ ] Flags for timeouts
-- [ ] Event and Data in lowercase
 
 
 Marcher par dessus une rope

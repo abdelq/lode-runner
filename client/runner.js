@@ -14,7 +14,7 @@ const client = connect(1337, {}, () => {
 
 client.on('data', (data) => {
     let msg = JSON.parse(data.toString())
-    if (msg.Event == "start" || msg.Event == "next")
+    if (msg.event == "start" || msg.event == "next")
         console.log(msg.Data);
     else
         console.log(msg)
