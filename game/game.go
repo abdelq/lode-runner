@@ -92,13 +92,10 @@ PLAYERS:
 func (g *Game) stop(winner tile) {
 	g.ticker.Stop() // XXX Verify garbage collection
 
-	switch winner {
-	case RUNNER:
-		g.broadcast <- msg.NewMessage("quit", "runner wins") // XXX
-	case GUARD:
-		g.broadcast <- msg.NewMessage("quit", "guards win") // XXX
-	default:
-		g.broadcast <- msg.NewMessage("quit", "draw") // XXX
+	if winner == RUNNER {
+		g.broadcast <- msg.NewMessage("quit", "runner wins")
+	} else {
+		g.broadcast <- msg.NewMessage("quit", "runner looses")
 	}
 }
 
