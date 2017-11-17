@@ -55,7 +55,7 @@ func (g *Game) Started() bool {
 }*/
 
 func (g *Game) filled() bool {
-	return g.runner != nil && len(g.guards) == 1 // XXX
+	return g.runner != nil && len(g.guards) == 0 // XXX
 }
 
 func (g *Game) start(lvl int) {
@@ -98,14 +98,21 @@ func (g *Game) stop(winner tile) {
 	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
 	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
 	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
-	switch winner {
-	case RUNNER:
-		g.broadcast <- msg.NewMessage("quit", "runner wins") // TODO
-	case GUARD:
-		g.broadcast <- msg.NewMessage("quit", "guards win") // TODO
-	default:
-		g.broadcast <- msg.NewMessage("quit", "draw") // TODO
+
+	if winner == RUNNER {
+		g.broadcast <- msg.NewMessage("quit", "runner wins")
+	} else {
+		g.broadcast <- msg.NewMessage("quit", "runner looses")
 	}
+
+	// switch winner {
+	// case RUNNER:
+	// 	g.broadcast <- msg.NewMessage("quit", "runner wins") // TODO
+	// case GUARD:
+	// 	g.broadcast <- msg.NewMessage("quit", "runner looses") // TODO
+	// default:
+	// 	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
+	// }
 
 	// TODO Verify garbage collection
 	g.ticker.Stop() // XXX
