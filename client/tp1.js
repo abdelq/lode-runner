@@ -18,12 +18,12 @@ function start(data) {
 
 function next(data) {
     // Random :
-    /* var dir = Math.floor(4 * Math.random()) + 1;
-       return {event: "move", direction: dir}; */
+    var dir = Math.floor(4 * Math.random()) + 1;
+    return {event: "move", direction: dir};
 
     // Default : dernière direction appuyée
-    var dir = last_direction;
-    last_direction = 0;
+    /* var dir = last_direction;
+       last_direction = 0; */
     return {event: "move", direction: dir};
 }
 

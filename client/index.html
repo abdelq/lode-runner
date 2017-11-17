@@ -14,11 +14,16 @@
                 background-color: #EFC;
             }
         </style>
+        <script>
+            var room = 'room';
+        </script>
     </head>
     <body>
         <h1>Code Runner</h1>
         <canvas id="c"></canvas>
         <script>
+            var images = {};
+
             function draw(map) {
                 var ctx = document.getElementById('c').getContext('2d');
 
@@ -35,22 +40,24 @@
                 grid.forEach(function(row, y) {
 
                     row.forEach(function(e, x) {
-                        var img = new Image();
-
-                        img.onload = function() {
-                            ctx.drawImage(img, x * 32, y * 32);
-                        };
-
-                        img.src = "32/" + e.replace('#', '%23') + ".png";
+                        if(e in images)
+                            ctx.drawImage(images[e], x * 32, y * 32);
                     });
                 });
             }
 
             document.addEventListener('DOMContentLoaded', function() {
-                
-                var str = "                            \n######H                     \n#    #H    H#########H   S  \n#$$$$#H    H         H####  \n######H    H         H      \n#     H----H------   H   $  \n#     H    H     H#########H\n#     H    H     H         H\n#     H    H#####H         H\n###########H         H###H##\n#####      H         H   H  \n#$$$#      H   ------H   H  \n########H#######     H  ####\n        H            H      \n        H   &        H      \n############################";
 
-                draw(str);
+                ["-","@","$","&","H","S","X","#"].forEach(function(e) {
+                    var img = new Image();
+                    img.src = "img/" + e.replace('#', '%23') + ".png";
+                    images[e] = img;
+                });
+
+                var ws = new WebSocket('ws://localhost:1338/' + room);
+                ws.onmessage = function(msg) {
+                    draw(msg.data);
+                };
             });
         </script>
     </body>
