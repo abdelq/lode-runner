@@ -14,7 +14,7 @@ wss.on('connection', function connection(ws, req) {
     // open tcp client
     var room = location.pathname.slice(1);
 
-    var client = tls.connect(1337, {}, () => {
+    var client = connect(1337, {}, () => {
         console.log(`Connected to ${client.remoteAddress}:${client.remotePort}`);
         send(client, "join", {name: "watch", room: room, role: 42});
     });
