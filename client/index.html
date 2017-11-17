@@ -12,6 +12,26 @@
             canvas {
                 border: 1px solid green;
                 background-color: #EFC;
+                display: none;
+            }
+            input {
+                text-align: center;
+                margin: 15px;
+                padding: 10px;
+                border: none;
+                background-color: #ccc;
+            }
+            input:hover {
+                background-color: #ddd;
+            }
+            button {
+                background-color: #afa;
+                color: black;
+                border: none;
+                padding: 10px;
+            }
+            button:hover {
+                background-color: #cfc;
             }
         </style>
         <script>
@@ -20,12 +40,18 @@
     </head>
     <body>
         <h1>Code Runner</h1>
+        <form onsubmit="start(); return false">
+            <input id="room" value="room" />
+            <button type="submit">&check;</button>
+        </form>
+        <br />
         <canvas id="c"></canvas>
         <script>
             var images = {};
 
             function draw(map) {
-                var ctx = document.getElementById('c').getContext('2d');
+                var canvas = document.getElementById('c');
+                var ctx = canvas.getContext('2d');
 
                 var grid = map.split('\n').map(function(x) {
                     return x.split('');
@@ -34,11 +60,11 @@
                 var h = grid.length;
                 var w = grid[0].length;
 
-                document.getElementById('c').width = w * 32;
-                document.getElementById('c').height = h * 32;
+                canvas.width = w * 32;
+                canvas.height = h * 32;
+                canvas.style.display = 'inline';
 
                 grid.forEach(function(row, y) {
-
                     row.forEach(function(e, x) {
                         if(e in images)
                             ctx.drawImage(images[e], x * 32, y * 32);
@@ -46,18 +72,32 @@
                 });
             }
 
-            document.addEventListener('DOMContentLoaded', function() {
+            var ws = null;
 
+            function start() {
+                var room = document.getElementById('room').value;
+                document.getElementById('c').style.display = 'none';
+                ws = new WebSocket('ws://159.203.8.35:1338/' + room);
+
+                window.location.hash = '#' + room;
+
+                ws.onmessage = function(msg) {
+                    draw(msg.data);
+                };
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
                 ["-","@","$","&","H","S","X","#"].forEach(function(e) {
                     var img = new Image();
                     img.src = "img/" + e.replace('#', '%23') + ".png";
                     images[e] = img;
                 });
 
-                var ws = new WebSocket('ws://localhost:1338/' + room);
-                ws.onmessage = function(msg) {
-                    draw(msg.data);
-                };
+                if(window.location.hash != '#') {
+                    var room = window.location.hash.slice(1);
+                    document.getElementById('room').value = room;
+                    start();
+                }
             });
         </script>
     </body>
