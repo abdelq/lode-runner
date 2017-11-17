@@ -1,9 +1,6 @@
 # High priority
 
-- [ ] client/ game/
 - [ ] Write simpler version for TP
-- [ ] Fix unit tests + finish them
-- [ ] Leave and join back same room (room not deleted)
 - [ ] Broadcast aux spectateurs + gardes Envoyer la carte au complet (Would require out chan in player struct)
 - [ ] Broadcast aux Runners
       Envoyer les déplacements du garde
@@ -18,6 +15,7 @@
 
 # Mid priority
 
+- [ ] Fix unit tests + finish them
 - [ ] Turns out que même si y'a pas de blocs, le bas compte comme du sol (lvl 014)
 - [ ] X tiles (false blocks)
 - [ ] Respawn of guards
@@ -28,3 +26,9 @@
 - [ ] End of game (lvl 150)
 - [ ] Allow multiple rooms for a single client
 - [ ] Flags for timeouts
+- [ ] Event and Data in lowercase
+
+
+Marcher par dessus une rope
+Ne pas pouvoir monter escalier caché quand il apparaît
+Tomber à travers une rope au lieu de la pogner

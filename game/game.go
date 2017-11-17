@@ -32,10 +32,12 @@ func NewGame(broadcast chan *msg.Message) *Game {
 				case "dig":
 					game.runner.dig(action.direction, game)
 				}
+				game.runner.action = action{"move", NONE} // XXX
 
 				// Guards
 				for guard := range game.guards {
 					guard.move(guard.action.direction, game)
+					guard.action = action{"move", NONE} // XXX
 				}
 
 				game.broadcast <- msg.NewMessage("next", game.level.String()) // XXX
@@ -58,8 +60,8 @@ func (g *Game) start(lvl int) {
 	level, err := newLevel(lvl)
 	if err != nil {
 		log.Println(err)
-		// TODO Broadcast error & Stop game
-		return // XXX
+		// TODO Broadcast error && Stop game
+		return
 	}
 
 	/* Runner */
@@ -71,40 +73,33 @@ func (g *Game) start(lvl int) {
 	}
 
 	// Delete rest
-OUTER: // TODO Rename
+PLAYERS:
 	for pos, tile := range level.players {
 		if tile == GUARD {
 			for guard := range g.guards {
 				if guard.pos == pos {
-					continue OUTER
+					continue PLAYERS
 				}
 			}
 			delete(level.players, pos)
 		}
 	}
 
-	// XXX
 	g.broadcast <- msg.NewMessage("start", level.String())
-	g.level = level // XXX Placement + Possible ticker issue
+	g.level = level // XXX
 }
 
-// XXX XXX XXX
 func (g *Game) stop(winner tile) {
-	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
-	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
-	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
-	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
+	g.ticker.Stop() // XXX Verify garbage collection
+
 	switch winner {
 	case RUNNER:
-		g.broadcast <- msg.NewMessage("quit", "runner wins") // TODO
+		g.broadcast <- msg.NewMessage("quit", "runner wins") // XXX
 	case GUARD:
-		g.broadcast <- msg.NewMessage("quit", "guards win") // TODO
+		g.broadcast <- msg.NewMessage("quit", "guards win") // XXX
 	default:
-		g.broadcast <- msg.NewMessage("quit", "draw") // TODO
+		g.broadcast <- msg.NewMessage("quit", "draw") // XXX
 	}
-
-	// TODO Verify garbage collection
-	g.ticker.Stop() // XXX
 }
 
 func (g *Game) hasPlayer(name string) bool {
