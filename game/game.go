@@ -18,7 +18,7 @@ type Game struct {
 func NewGame(broadcast chan *msg.Message) *Game {
 	game := &Game{
 		guards:    make(map[*Guard]struct{}),
-		ticker:    time.NewTicker(time.Second), // TODO Choose appropriate duration
+		ticker:    time.NewTicker(250 * time.Millisecond), // TODO Right duration
 		broadcast: broadcast,
 	}
 
@@ -28,14 +28,14 @@ func NewGame(broadcast chan *msg.Message) *Game {
 				// Runner
 				switch action := game.runner.action; action.actionType {
 				case "move":
-					game.runner.move(action.direction, game) // XXX
+					game.runner.move(action.direction, game)
 				case "dig":
-					game.runner.dig(action.direction, game) // XXX
+					game.runner.dig(action.direction, game)
 				}
 
 				// Guards
 				for guard := range game.guards {
-					guard.move(guard.action.direction, game) // XXX
+					guard.move(guard.action.direction, game)
 				}
 
 				game.broadcast <- msg.NewMessage("next", game.level.String()) // XXX
@@ -49,10 +49,6 @@ func NewGame(broadcast chan *msg.Message) *Game {
 func (g *Game) Started() bool {
 	return g.level != nil // XXX
 }
-
-/*func (g *Game) Stopped() bool {
-	return g.guards == nil // XXX
-}*/
 
 func (g *Game) filled() bool {
 	return g.runner != nil && len(g.guards) == 1 // XXX

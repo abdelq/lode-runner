@@ -4,8 +4,7 @@
 - [ ] Write simpler version for TP
 - [ ] Fix unit tests + finish them
 - [ ] Leave and join back same room (room not deleted)
-- [ ] Broadcast aux spectateurs + gardes
-      Envoyer la carte au complet
+- [ ] Broadcast aux spectateurs + gardes Envoyer la carte au complet (Would require out chan in player struct)
 - [ ] Broadcast aux Runners
       Envoyer les déplacements du garde
 - [ ] Ne pas marcher sur la rope (lvl 007)
