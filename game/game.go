@@ -51,7 +51,7 @@ func (g *Game) Started() bool {
 }
 
 func (g *Game) filled() bool {
-	return g.runner != nil && len(g.guards) == 1 // XXX
+	return g.runner != nil && len(g.guards) == 0 // XXX
 }
 
 func (g *Game) start(lvl int) {
