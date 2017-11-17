@@ -23,9 +23,9 @@ type join struct {
 
 func newRoom(name string) *room {
 	room := &room{
-		join:      make(chan *join),
-		leave:     make(chan *leave),
-		broadcast: make(chan *msg.Message),
+		join:      make(chan *join, 5),         // XXX
+		leave:     make(chan *leave, 5),        // XXX
+		broadcast: make(chan *msg.Message, 10), // XXX
 		clients:   make(map[*client]game.Player),
 	}
 	room.game = game.NewGame(room.broadcast)
@@ -86,7 +86,7 @@ func (r *room) listen() {
 			if msg.Event == "quit" {
 				// Close clients
 				for client := range r.clients {
-					client.close() // TODO Goroutine?
+					client.close()
 				}
 
 				// Delete room

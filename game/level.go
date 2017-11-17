@@ -95,7 +95,7 @@ func (l *level) getTiles() [][]tile {
 	}
 
 	// Escape ladders
-	if !l.goldCollected() {
+	if l.goldCollected() {
 		for _, pos := range l.escape {
 			tiles[pos.y][pos.x] = ESCAPELADDER
 		}
@@ -114,43 +114,27 @@ func (l *level) validMove(orig, dest position, dir direction) bool {
 		return false
 	}
 
-	// FIXME FIXME FIXME FIXME FIXME FIXME FIXME
-	origTile := l.tiles[orig.y][orig.x]
+	//origTile2, desTile2 := l.getTiles()[orig.y][orig.x], l.getTiles()[dest.y][dest.x] // XXX
 
-	if !l.goldCollected() && origTile == ESCAPELADDER {
-		origTile = EMPTY
-	}
-
-	// if dir == DOWN && origTile == ROPE {
-	// 	return false
-	// }
-
-	if dest.y < 0 {
+	/*if dest.y < 0 {
 		return origTile == ESCAPELADDER || origTile == LADDER
-	}
+	}*/
 
-	destTile := l.tiles[dest.y][dest.x]
-
-	if !l.goldCollected() && destTile == ESCAPELADDER {
+	/*if !l.goldCollected() && destTile == ESCAPELADDER {
 		destTile = EMPTY
-	}
+	}*/
 
+	origTile, destTile := l.tiles[orig.y][orig.x], l.tiles[dest.y][dest.x]
 	switch destTile {
 	case EMPTY, ROPE:
 		if dir == UP {
 			return origTile == LADDER || origTile == ESCAPELADDER
 		}
 		return true
-	/*
-		case BRICK:
-			return dir != UP && false // TODO && bricksbrokenat(dest)
-	*/
 	case BRICK, SOLIDBRICK:
 		return false
 	case LADDER, ESCAPELADDER:
 		return true
-		// case LADDER:
-		// 	return dir != DOWN
 	}
 
 	return false

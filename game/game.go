@@ -18,7 +18,7 @@ type Game struct {
 func NewGame(broadcast chan *msg.Message) *Game {
 	game := &Game{
 		guards:    make(map[*Guard]struct{}),
-		ticker:    time.NewTicker(time.Second), // TODO Choose appropriate duration
+		ticker:    time.NewTicker(250 * time.Millisecond), // TODO Right duration
 		broadcast: broadcast,
 	}
 
@@ -28,14 +28,16 @@ func NewGame(broadcast chan *msg.Message) *Game {
 				// Runner
 				switch action := game.runner.action; action.actionType {
 				case "move":
-					game.runner.move(action.direction, game) // XXX
+					game.runner.move(action.direction, game)
 				case "dig":
-					game.runner.dig(action.direction, game) // XXX
+					game.runner.dig(action.direction, game)
 				}
+				game.runner.action = action{"move", NONE} // XXX
 
 				// Guards
 				for guard := range game.guards {
-					guard.move(guard.action.direction, game) // XXX
+					guard.move(guard.action.direction, game)
+					guard.action = action{"move", NONE} // XXX
 				}
 
 				game.broadcast <- msg.NewMessage("next", game.level.String()) // XXX
@@ -50,10 +52,6 @@ func (g *Game) Started() bool {
 	return g.level != nil // XXX
 }
 
-/*func (g *Game) Stopped() bool {
-	return g.guards == nil // XXX
-}*/
-
 func (g *Game) filled() bool {
 	return g.runner != nil && len(g.guards) == 0 // XXX
 }
@@ -62,8 +60,8 @@ func (g *Game) start(lvl int) {
 	level, err := newLevel(lvl)
 	if err != nil {
 		log.Println(err)
-		// TODO Broadcast error & Stop game
-		return // XXX
+		// TODO Broadcast error && Stop game
+		return
 	}
 
 	/* Runner */
@@ -75,29 +73,23 @@ func (g *Game) start(lvl int) {
 	}
 
 	// Delete rest
-OUTER: // TODO Rename
+PLAYERS:
 	for pos, tile := range level.players {
 		if tile == GUARD {
 			for guard := range g.guards {
 				if guard.pos == pos {
-					continue OUTER
+					continue PLAYERS
 				}
 			}
 			delete(level.players, pos)
 		}
 	}
 
-	// XXX
 	g.broadcast <- msg.NewMessage("start", level.String())
-	g.level = level // XXX Placement + Possible ticker issue
+	g.level = level // XXX
 }
 
-// XXX XXX XXX
 func (g *Game) stop(winner tile) {
-	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
-	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
-	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
-	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
 
 	if winner == RUNNER {
 		g.broadcast <- msg.NewMessage("quit", "runner wins")
@@ -114,8 +106,7 @@ func (g *Game) stop(winner tile) {
 	// 	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
 	// }
 
-	// TODO Verify garbage collection
-	g.ticker.Stop() // XXX
+	g.ticker.Stop() // XXX Verify garbage collection
 }
 
 func (g *Game) hasPlayer(name string) bool {

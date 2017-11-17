@@ -6,8 +6,8 @@ import (
 )
 
 type Message struct {
-	Event string
-	Data  json.RawMessage
+	Event string          `json:"event"`
+	Data  json.RawMessage `json:"data"`
 }
 
 func NewMessage(event, data string) *Message {
