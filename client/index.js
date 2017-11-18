@@ -32,7 +32,7 @@ function send(event, data) {
 // TODO Flag for port (process.argv)
 //const client = tls.connect(443, {ca: [ fs.readFileSync('server.crt') ]}, () => {
 //const client = tls.connect(1337, {}, () => {
-var client = tls.connect("1337", "159.203.8.35", () => {
+var client = connect("1337", "159.203.8.35", () => {
     console.log(`Connected to ${client.remoteAddress}:${client.remotePort}`);
     send("join", {"name": "runner", "room": "room"});
 });
@@ -47,8 +47,8 @@ client.on('data', (data) => {
 
     var out;
 
-    if(json.Event in events) {
-        out = events[json.Event](json.Data);
+    if(json.event in events) {
+        out = events[json.event](json.data);
     }
 
     if(out !== undefined && "event" in out) {

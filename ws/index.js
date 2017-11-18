@@ -20,7 +20,7 @@ wss.on('connection', function connection(ws, req) {
     });
 
     client.on('data', (data) => {
-        var grid = JSON.parse(data.toString()).Data;
+        var grid = JSON.parse(data.toString()).data;
         if (ws.readyState === WebSocket.OPEN) {
             ws.send(grid);
         }

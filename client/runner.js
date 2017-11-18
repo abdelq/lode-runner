@@ -7,7 +7,7 @@ function send(event, data) {
     }));
 }
 
-const client = connect(1337, {}, () => {
+const client = connect(1337, "159.203.8.35", () => {
     console.log(`Connected to ${client.remoteAddress}:${client.remotePort}`);
     send("join", {name: "runner", room: "room"});
 });
