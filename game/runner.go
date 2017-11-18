@@ -2,7 +2,7 @@ package game
 
 import (
 	"errors"
-	"fmt"
+	//"fmt"
 	"log"
 	"time"
 	//msg "github.com/abdelq/lode-runner/message"
@@ -133,7 +133,7 @@ func (r *Runner) move(dir direction, game *Game) {
 		r.state = FALLING
 	}
 
-	fmt.Println(game.level.String())
+	//fmt.Println(game.level.String())
 }
 
 // FIXME FIXME FIXME FIXME
