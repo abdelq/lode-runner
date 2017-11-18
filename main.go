@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"flag"
 	"log"
 	"net"
@@ -16,22 +15,8 @@ func main() {
 	addr := flag.String("addr", ":1337", "network address")
 	flag.Parse()
 
-	var ln net.Listener
-	var err error
-
 	// Listen on TCP
-	if _, port, _ := net.SplitHostPort(*addr); port == "443" {
-		crt, err := tls.LoadX509KeyPair("server.crt", "server.key")
-		if err != nil {
-			log.Fatal(err)
-		}
-		ln, err = tls.Listen("tcp", *addr, &tls.Config{
-			Certificates: []tls.Certificate{crt},
-		})
-	} else {
-		ln, err = net.Listen("tcp", *addr)
-	}
-
+	ln, err := net.Listen("tcp", *addr)
 	if err != nil {
 		log.Fatal(err)
 	}
