@@ -37,7 +37,7 @@ func (c *client) close() {
 			}
 		}
 
-		close(c.out)
+		//close(c.out) // XXX
 		c.conn.Close()
 
 		log.Printf("Closed connection from %s", c.conn.RemoteAddr())
@@ -62,7 +62,7 @@ func (c *client) read() {
 }
 
 func (c *client) write() {
-	//defer c.close() // XXX
+	defer c.close()
 
 	enc := json.NewEncoder(c.conn)
 	for msg := range c.out {
