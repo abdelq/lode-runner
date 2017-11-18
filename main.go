@@ -14,18 +14,19 @@ func init() {
 
 func main() {
 	// Command-line flags
-	addr := flag.String("addr", ":1337", "network address")
+	tcpAddr := flag.String("tcp", ":1337", "TCP network address")
+	httpAddr := flag.String("http", ":7331", "HTTP network address")
 	flag.Parse()
 
 	// Listen on TCP
-	ln, err := net.Listen("tcp", *addr)
+	ln, err := net.Listen("tcp", *tcpAddr)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("Listening on %s %s", ln.Addr().Network(), ln.Addr())
 
 	// Listen on HTTP
-	go web.Listen(addr)
+	go web.Listen(httpAddr, tcpAddr)
 
 	defer ln.Close()
 	for {

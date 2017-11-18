@@ -9,24 +9,26 @@ import (
 	"golang.org/x/net/websocket"
 )
 
-// XXX
-func EchoServer(ws *websocket.Conn) {
-	conn, err := net.Dial("tcp", ":1337")
+var httpAddr, tcpAddr *string
+
+func proxyServer(ws *websocket.Conn) {
+	tcp, err := net.Dial("tcp", *tcpAddr)
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 
-	defer conn.Close() // XXX
+	defer tcp.Close()
 
-	go io.Copy(ws, conn)
-	io.Copy(conn, ws)
+	go io.Copy(ws, tcp)
+	io.Copy(tcp, ws)
 }
 
-func Listen(addr *string) {
-	mux := http.NewServeMux()
+func Listen(addr, serverAddr *string) {
+	httpAddr, tcpAddr = addr, serverAddr
 
-	mux.Handle("/ws", websocket.Handler(EchoServer)) // XXX /ws and name of function
-	mux.Handle("/", http.FileServer(http.Dir("./public")))
+	http.Handle("/ws", websocket.Handler(proxyServer))
+	http.Handle("/", http.FileServer(http.Dir("public")))
 
-	log.Fatal(http.ListenAndServe(":8080", mux)) // XXX
+	log.Printf("Listening on %s %s", "http", *httpAddr)
+	log.Fatal(http.ListenAndServe(*httpAddr, nil))
 }
