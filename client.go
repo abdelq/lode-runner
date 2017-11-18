@@ -60,7 +60,7 @@ func (c *client) read() {
 }
 
 func (c *client) write() {
-	//defer c.close()
+	//defer c.close() // XXX
 
 	enc := json.NewEncoder(c.conn)
 	for msg := range c.out {

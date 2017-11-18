@@ -8,22 +8,22 @@ import (
 
 func TestRead(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
-	client := &client{conn: serverConn, out: make(chan message)}
+	client := &client{conn: serverConn, out: make(chan message, 5)} // XXX
 
 	go client.read()
 
-	/* Tests */
+	/* TODO Tests */
 	sendMsg(t, clientConn, message{})
 	sendMsg(t, clientConn, message{"test", []byte(`"TestRead"`)})
 }
 
 func TestWrite(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
-	client := &client{conn: serverConn, out: make(chan message)}
+	client := &client{conn: serverConn, out: make(chan message, 5)} // XXX
 
 	go client.write()
 
-	/* Tests */
+	/* TODO Tests */
 	client.out <- message{}
 	receiveMsg(t, clientConn, message{"", []byte(`null`)})
 
