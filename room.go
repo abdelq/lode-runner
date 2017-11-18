@@ -73,7 +73,7 @@ func (r *room) listen() {
 			}
 
 			delete(r.clients, client)
-			if player == nil /*|| r.game.Stopped()*/ {
+			if player == nil {
 				continue
 			}
 
@@ -83,7 +83,7 @@ func (r *room) listen() {
 				client.out <- message(*msg)
 			}
 
-			if msg.Event == "quit" {
+			if msg.Event == "quit" { // XXX
 				// Close clients
 				for client := range r.clients {
 					client.close()
@@ -92,7 +92,7 @@ func (r *room) listen() {
 				// Delete room
 				for name, room := range rooms {
 					if room == r {
-						delete(rooms, name) // TODO Verify garbage collection
+						delete(rooms, name)
 						return
 					}
 				}
