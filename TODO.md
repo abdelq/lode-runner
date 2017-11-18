@@ -26,6 +26,8 @@
 - [ ] Action type should be a const (MOVE DIG) used in update action
 - [ ] runner.go, guard.go
 - [ ] La sortie existe dès le début et ramasser tout le gold la fait disparaître
+- [ ] Donner plus de tics à un trou avant de se refermer (une seule == impossible de tomber dedans). 3 ou 4 tics ça serait legit
+- [ ] Impossible d'aller sur la dernière colonne dans le level de TP 001.lvl
 
 # Mid priority
 
