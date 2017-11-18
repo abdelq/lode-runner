@@ -16,7 +16,7 @@ func (m *JoinMessage) Parse(data json.RawMessage) error {
 		return err
 	}
 
-	// TODO Replace 0, '&', '0'
+	// XXX
 	if m.Role == 0 || m.Role == '&' || m.Role == '0' { // Players only
 		if m.Name = strings.TrimSpace(m.Name); m.Name == "" {
 			return errors.New("invalid name")
