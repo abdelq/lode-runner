@@ -4,6 +4,8 @@ import (
 	"flag"
 	"log"
 	"net"
+
+	"github.com/abdelq/lode-runner/web"
 )
 
 func init() {
@@ -20,8 +22,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	log.Printf("Listening on %s %s", ln.Addr().Network(), ln.Addr())
+
+	// Listen on HTTP
+	go web.Listen(addr)
 
 	defer ln.Close()
 	for {
