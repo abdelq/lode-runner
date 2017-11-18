@@ -1,10 +1,11 @@
 package main
 
 import (
-	"crypto/tls"
 	"flag"
 	"log"
 	"net"
+
+	"github.com/abdelq/lode-runner/web"
 )
 
 func init() {
@@ -17,26 +18,14 @@ func main() {
 	flag.Parse()
 
 	// Listen on TCP
-	var ln net.Listener
-	var err error
-	if _, port, _ := net.SplitHostPort(*addr); port == "443" {
-		// Load public/private key pair
-		crt, err := tls.LoadX509KeyPair("server.crt", "server.key")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		ln, err = tls.Listen("tcp", *addr, &tls.Config{
-			Certificates: []tls.Certificate{crt},
-		})
-	} else {
-		ln, err = net.Listen("tcp", *addr)
-	}
+	ln, err := net.Listen("tcp", *addr)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	log.Printf("Listening on %s %s", ln.Addr().Network(), ln.Addr())
+
+	// Listen on HTTP
+	go web.Listen(addr)
 
 	defer ln.Close()
 	for {
