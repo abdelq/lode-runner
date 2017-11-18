@@ -49,17 +49,18 @@ func (c *client) read() {
 	for {
 		msg := new(message)
 		if err := dec.Decode(msg); err != nil {
-			if err != io.EOF {
-				log.Println(err)
+			if err == io.EOF {
+				break
 			}
-			break
+			c.out <- newMessage("error", err.Error())
+			continue
 		}
 		go msg.parse(c)
 	}
 }
 
 func (c *client) write() {
-	defer c.close()
+	//defer c.close()
 
 	enc := json.NewEncoder(c.conn)
 	for msg := range c.out {
