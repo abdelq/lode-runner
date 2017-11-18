@@ -11,6 +11,7 @@ type Guard struct {
 	pos    position
 	state  state
 	action action
+	//out    chan msg.Message
 }
 
 func (g *Guard) Add(game *Game) error {

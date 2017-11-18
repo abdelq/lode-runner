@@ -14,6 +14,7 @@ type Runner struct {
 	state  state
 	action action
 	health uint8
+	//out    chan msg.Message
 }
 
 func (r *Runner) Add(game *Game) error {

@@ -1,5 +1,7 @@
 package game
 
+//import msg "github.com/abdelq/lode-runner/message"
+
 type state uint8
 type Player interface {
 	Add(*Game) error
@@ -12,8 +14,8 @@ type Player interface {
 // TODO Rename fields
 type direction = uint8 // XXX
 type action struct {
-	actionType uint8
-	direction  direction
+	Type      uint8
+	Direction direction
 }
 
 // XXX Actions
@@ -39,11 +41,14 @@ const (
 	RIGHT
 )
 
+//func NewPlayer(name string, role tile, out chan msg.Message) Player {
 func NewPlayer(name string, role tile) Player {
 	switch role {
 	case 0, RUNNER: // XXX
+		//return &Runner{name: name, action: action{}, health: 5, out: out}
 		return &Runner{name: name, action: action{}, health: 5}
 	case GUARD:
+		//return &Guard{name: name, action: action{}, out: out}
 		return &Guard{name: name, action: action{}}
 	}
 

@@ -18,7 +18,7 @@ type Game struct {
 func NewGame(broadcast chan *msg.Message) *Game {
 	game := &Game{
 		guards:    make(map[*Guard]struct{}),
-		ticker:    time.NewTicker(250 * time.Millisecond), // TODO Right duration
+		ticker:    time.NewTicker(250 * time.Millisecond), // XXX
 		broadcast: broadcast,
 	}
 
@@ -26,21 +26,22 @@ func NewGame(broadcast chan *msg.Message) *Game {
 		for range game.ticker.C {
 			if game.Started() {
 				// Runner
-				switch action := game.runner.action; action.actionType {
+				switch runner := game.runner; runner.action.Type {
 				case MOVE:
-					game.runner.move(action.direction, game)
+					runner.move(runner.action.Direction, game)
+					runner.action = action{}
 				case DIG:
-					game.runner.dig(action.direction, game)
+					runner.dig(runner.action.Direction, game)
+					runner.action = action{}
 				}
-				game.runner.action = action{} // XXX
 
 				// Guards
 				for guard := range game.guards {
-					guard.move(guard.action.direction, game)
-					guard.action = action{} // XXX
+					guard.move(guard.action.Direction, game)
+					guard.action = action{}
 				}
 
-				game.broadcast <- msg.NewMessage("next", game.level.String()) // XXX
+				game.broadcast <- msg.NewMessage("next", game.level.String()) // FIXME
 			}
 		}
 	}()
@@ -56,6 +57,7 @@ func (g *Game) filled() bool {
 	return g.runner != nil && len(g.guards) == 0 // XXX
 }
 
+// FIXME
 func (g *Game) start(lvl int) {
 	level, err := newLevel(lvl)
 	if err != nil {
@@ -89,6 +91,7 @@ PLAYERS:
 	g.level = level // XXX
 }
 
+// FIXME
 func (g *Game) stop(winner tile) {
 	g.ticker.Stop() // XXX Verify garbage collection
 
