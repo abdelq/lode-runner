@@ -26,6 +26,10 @@ wss.on('connection', function connection(ws, req) {
         }
     });
 
+    client.on('close', function() {
+        ws.close();
+    });
+
     ws.on('close', function() {
         // TODO : Kill tcp client
         client = null;
