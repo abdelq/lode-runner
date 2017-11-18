@@ -2,7 +2,7 @@ package game
 
 import (
 	"errors"
-	//"fmt"
+	"fmt"
 	"log"
 	"time"
 
@@ -83,34 +83,28 @@ func (r *Runner) move(dir direction, game *Game) {
 		newPos = position{r.pos.x + 1, r.pos.y}
 	}
 
-	var nextTile = game.level.tiles[r.pos.y][r.pos.x]
+	var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
 	var validMove = game.level.validMove(r.pos, newPos, dir)
 
 	// Stop falling
-	if r.state == FALLING && (!validMove || nextTile == LADDER || nextTile == ESCAPELADDER) {
+	if r.state == FALLING && (nextTile == LADDER || nextTile == ESCAPELADDER || nextTile == ROPE) {
 		r.state = ALIVE
 	}
 
 	if !validMove { // FIXME
-
+		//log.Println("invalid move")
 		if r.state == FALLING {
 			r.state = ALIVE
 		}
-
 		return
 	}
 
 	if newPos.y < 0 {
+		//if game.level.escape[] { // TP2
 		game.start(game.level.num + 1)
 		return
 	}
 
-	// FIXME
-	//fmt.Println("validmove")
-	//fmt.Println(r.pos)
-	//fmt.Println(r.pos)
-	//delete(game.level.gold, r.pos) // FIXME
-	//game.level.gold[i] = game.level.gold[len(a)-1]
 	r.collectGold(r.pos, game.level)
 	delete(game.level.players, r.pos)
 	r.pos.x, r.pos.y = newPos.x, newPos.y // FIXME
@@ -135,7 +129,7 @@ func (r *Runner) move(dir direction, game *Game) {
 		r.state = FALLING
 	}
 
-	//fmt.Println(game.level.String())
+	fmt.Println(game.level.String())
 }
 
 // FIXME FIXME FIXME FIXME
@@ -153,10 +147,10 @@ func (r *Runner) dig(dir direction, game *Game) {
 		//r.state = DIGGING
 		game.level.tiles[digPos.y][digPos.x] = EMPTY
 
-		digDuration, err := time.ParseDuration("320ms") // TODO Using flag ?
+		digDuration, err := time.ParseDuration("500ms") // TODO Using flag ?
 		if err != nil {
 			log.Println(err)
-			digDuration, _ = time.ParseDuration("320ms") // TODO Forced to default
+			digDuration, _ = time.ParseDuration("500ms") // TODO Forced to default
 		}
 
 		time.AfterFunc(digDuration, func() {

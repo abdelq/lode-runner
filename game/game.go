@@ -41,7 +41,8 @@ func NewGame(broadcast chan *msg.Message) *Game {
 					guard.action = action{}
 				}
 
-				game.broadcast <- msg.NewMessage("next", game.level.String()) // FIXME
+				game.runner.out <- &msg.Message{"next", []byte(`{}`)} // FIXME
+				game.broadcast <- msg.NewMessage("next", game.level.String())
 			}
 		}
 	}()
@@ -93,7 +94,7 @@ PLAYERS:
 
 // FIXME
 func (g *Game) stop(winner tile) {
-	g.ticker.Stop() // XXX Verify garbage collection
+	g.ticker.Stop() // XXX Verify GC
 
 	switch winner {
 	case RUNNER:

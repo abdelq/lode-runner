@@ -79,13 +79,16 @@ func (r *room) listen() {
 
 			player.Remove(r.game)
 		case msg := <-r.broadcast:
-			for client := range r.clients {
-				client.out <- msg
-			}
-
-			if msg.Event == "quit" { // XXX
-				// Close clients
+			switch msg.Event {
+			case "next":
+				for client, player := range r.clients {
+					if _, ok := player.(*game.Runner); !ok {
+						client.out <- msg
+					}
+				}
+			case "quit": // XXX
 				for client := range r.clients {
+					client.out <- msg
 					client.close()
 				}
 
@@ -95,6 +98,10 @@ func (r *room) listen() {
 						delete(rooms, name)
 						return
 					}
+				}
+			default:
+				for client := range r.clients {
+					client.out <- msg
 				}
 			}
 		}
