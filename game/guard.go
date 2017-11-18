@@ -3,7 +3,8 @@ package game
 import (
 	"errors"
 	"sort"
-	//msg "github.com/abdelq/lode-runner/message"
+
+	msg "github.com/abdelq/lode-runner/message"
 )
 
 type Guard struct {
@@ -11,7 +12,7 @@ type Guard struct {
 	pos    position
 	state  state
 	action action
-	//out    chan msg.Message
+	out    chan *msg.Message
 }
 
 func (g *Guard) Add(game *Game) error {

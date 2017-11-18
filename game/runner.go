@@ -5,7 +5,8 @@ import (
 	//"fmt"
 	"log"
 	"time"
-	//msg "github.com/abdelq/lode-runner/message"
+
+	msg "github.com/abdelq/lode-runner/message"
 )
 
 type Runner struct {
@@ -14,7 +15,7 @@ type Runner struct {
 	state  state
 	action action
 	health uint8
-	//out    chan msg.Message
+	out    chan *msg.Message
 }
 
 func (r *Runner) Add(game *Game) error {
