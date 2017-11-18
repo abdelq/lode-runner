@@ -24,14 +24,32 @@ process.stdin.setRawMode(true);
 process.stdin.setEncoding("utf8");
 process.stdin.on('data', (key) => {
     switch (key) {
-        case 'w': send("move", {direction: 1, room: "room"}); break;
-        case 'a': send("move", {direction: 2, room: "room"}); break;
-        case 's': send("move", {direction: 3, room: "room"}); break;
-        case 'd': send("move", {direction: 4, room: "room"}); break;
-        case 'z': send("dig",  {direction: 2, room: "room"}); break;
-        case 'c': send("dig",  {direction: 4, room: "room"}); break;
+        case 'w':
+        case '\u001B\u005B\u0041':
+            send("move", {direction: 1, room: "room"});
+            break;
+        case 'a':
+        case '\u001B\u005B\u0044':
+            send("move", {direction: 2, room: "room"});
+            break;
+        case 's':
+        case '\u001B\u005B\u0042':
+            send("move", {direction: 3, room: "room"});
+            break;
+        case 'd':
+        case '\u001B\u005B\u0043':
+            send("move", {direction: 4, room: "room"});
+            break;
+        case 'z':
+            send("dig",  {direction: 2, room: "room"});
+            break;
+        case 'c':
+            send("dig",  {direction: 4, room: "room"});
+            break;
+        case 'q':
         case '\u0003':
             process.exit();
             break;
     }
 });
+
