@@ -5,7 +5,7 @@ body {
 }
 canvas {
     border: 1px solid green;
-    background-color: #EFC;
+    background-color: #AFA;
     display: none;
 }
 input {
