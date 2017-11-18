@@ -2,50 +2,12 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>Code Runner</title>
-        <style>
-            body {
-                background-color: black;
-                color: green;
-                text-align: center;
-            }
-            canvas {
-                border: 1px solid green;
-                background-color: #EFC;
-                display: none;
-            }
-            input {
-                text-align: center;
-                margin: 15px;
-                padding: 10px;
-                border: none;
-                background-color: #ccc;
-            }
-            input:hover {
-                background-color: #ddd;
-            }
-            button {
-                background-color: #afa;
-                color: black;
-                border: none;
-                padding: 10px;
-            }
-            button:hover {
-                background-color: #cfc;
-            }
-            #loading {
-                display: none;
-            }
-            #joined-room {
-                color: lightgreen;
-            }
-        </style>
-        <script>
-            var room = 'room';
-        </script>
+        <title>Node Runner</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="base.js"></script>
     </head>
     <body>
-        <h1>Code Runner</h1>
+        <h1>Node Runner</h1>
         <form onsubmit="start(); return false">
             <input id="room" value="room" />
             <button type="submit">&check;</button>
@@ -53,67 +15,5 @@
         <br />
         <canvas id="c"></canvas>
         <p id="loading">En attente de début de partie dans la room <span id="joined-room"></span>.</p>
-        <script>
-            var images = {};
-
-            function draw(map) {
-                var canvas = document.getElementById('c');
-                var ctx = canvas.getContext('2d');
-
-                var grid = map.split('\n').map(function(x) {
-                    return x.split('');
-                });
-
-                var h = grid.length;
-                var w = grid[0].length;
-
-                canvas.width = w * 32;
-                canvas.height = h * 32;
-                canvas.style.display = 'inline';
-                document.getElementById('loading').style.display = '';
-
-                grid.forEach(function(row, y) {
-                    row.forEach(function(e, x) {
-                        if(e in images)
-                            ctx.drawImage(images[e], x * 32, y * 32);
-                    });
-                });
-            }
-
-            var ws = null;
-
-            function start() {
-                var room = document.getElementById('room').value;
-                document.getElementById('c').style.display = 'none';
-                ws = new WebSocket('ws://159.203.8.35:1338/' + room);
-
-                window.location.hash = '#' + room;
-
-                ws.onmessage = function(msg) {
-                    draw(msg.data);
-                };
-
-                ws.onclose = ws.onerror = function(msg) {
-                    alert('Impossible de se connecter au serveur');
-                }
-
-                document.getElementById('loading').style.display = 'block';
-                document.getElementById('joined-room').innerHTML = room;
-            }
-
-            document.addEventListener('DOMContentLoaded', function() {
-                ["-","@","$","&","H","S","X","#"].forEach(function(e) {
-                    var img = new Image();
-                    img.src = "img/" + e.replace('#', '%23') + ".png";
-                    images[e] = img;
-                });
-
-                if(window.location.hash != '' && window.location.hash != '#') {
-                    var room = window.location.hash.slice(1);
-                    document.getElementById('room').value = room;
-                    start();
-                }
-            });
-        </script>
     </body>
 </html>

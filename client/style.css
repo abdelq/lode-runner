@@ -1,0 +1,35 @@
+body {
+    background-color: black;
+    color: green;
+    text-align: center;
+}
+canvas {
+    border: 1px solid green;
+    background-color: #EFC;
+    display: none;
+}
+input {
+    text-align: center;
+    margin: 15px;
+    padding: 10px;
+    border: none;
+    background-color: #ccc;
+}
+input:hover {
+    background-color: #ddd;
+}
+button {
+    background-color: #afa;
+    color: black;
+    border: none;
+    padding: 10px;
+}
+button:hover {
+    background-color: #cfc;
+}
+#loading {
+    display: none;
+}
+#joined-room {
+    color: lightgreen;
+}
