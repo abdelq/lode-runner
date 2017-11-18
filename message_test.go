@@ -11,9 +11,15 @@ func TestParse(t *testing.T) {
 	client := newClient(serverConn)
 
 	// Valid events
-	for _, msg := range []message{{Event: "JOIN "}, {Event: " Move "}, {Event: " dig"}} {
+	for _, msg := range []message{
+		{Event: "JOIN "},
+		{Event: " Move "},
+		{Event: " dig"},
+	} {
 		msg.parse(client)
-		receiveMsg(t, clientConn, message{"error", []byte(`"unexpected end of JSON input"`)})
+		receiveMsg(t, clientConn, message{
+			"error", []byte(`"unexpected end of JSON input"`),
+		})
 	}
 
 	// Invalid event
@@ -21,7 +27,7 @@ func TestParse(t *testing.T) {
 	receiveMsg(t, clientConn, message{"error", []byte(`"invalid event"`)})
 }
 
-func TestParseJoin(t *testing.T) {
+func TestParseJoin(t *testing.T) { // FIXME
 	conn, _ := net.Pipe()
 	spectator, runner := newClient(conn), newClient(conn)
 
@@ -44,7 +50,7 @@ func TestParseJoin(t *testing.T) {
 }
 
 // TODO Move to game package
-func TestParseMove(t *testing.T) {
+func TestParseMove(t *testing.T) { // FIXME
 	serverConn, clientConn := net.Pipe()
 	spectator := newClient(serverConn)
 
@@ -62,7 +68,7 @@ func TestParseMove(t *testing.T) {
 }
 
 // TODO Move to game package
-func TestParseDig(t *testing.T) {
+func TestParseDig(t *testing.T) { // FIXME
 	serverConn, clientConn := net.Pipe()
 	spectator := newClient(serverConn)
 

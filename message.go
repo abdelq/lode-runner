@@ -18,11 +18,11 @@ func newMessage(event, data string) message {
 func (m *message) parse(sender *client) {
 	switch evt := strings.ToLower(strings.TrimSpace(m.Event)); evt {
 	case "join":
-		go parseJoin(m.Data, sender)
+		parseJoin(m.Data, sender)
 	case "move":
-		go parseMove(m.Data, sender)
+		parseMove(m.Data, sender)
 	case "dig":
-		go parseDig(m.Data, sender)
+		parseDig(m.Data, sender)
 	default:
 		sender.out <- newMessage("error", "invalid event")
 	}
@@ -61,14 +61,13 @@ func parseMove(data json.RawMessage, sender *client) {
 	}
 
 	if room, ok := rooms[message.Room]; ok {
-		if !room.game.Started() /*|| room.game.Stopped()*/ {
-			sender.out <- newMessage("error", "not in a game")
+		if !room.game.Started() {
+			sender.out <- newMessage("error", "game not started")
 			return
 		}
 
 		if player := room.clients[sender]; player != nil {
-			//go player.Move(message.Direction, room.game)
-			player.UpdateAction("move", message.Direction)
+			player.UpdateAction(game.MOVE, message.Direction)
 		} else {
 			sender.out <- newMessage("error", "not a player")
 		}
@@ -92,14 +91,13 @@ func parseDig(data json.RawMessage, sender *client) {
 	}
 
 	if room, ok := rooms[message.Room]; ok {
-		if !room.game.Started() /*|| room.game.Stopped()*/ {
-			sender.out <- newMessage("error", "not in a game")
+		if !room.game.Started() {
+			sender.out <- newMessage("error", "game not started")
 			return
 		}
 
 		if runner, ok := room.clients[sender].(*game.Runner); ok {
-			//go runner.Dig(message.Direction, room.game)
-			runner.UpdateAction("dig", message.Direction)
+			runner.UpdateAction(game.DIG, message.Direction)
 		} else {
 			sender.out <- newMessage("error", "not a runner")
 		}

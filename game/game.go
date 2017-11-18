@@ -27,17 +27,17 @@ func NewGame(broadcast chan *msg.Message) *Game {
 			if game.Started() {
 				// Runner
 				switch action := game.runner.action; action.actionType {
-				case "move":
+				case MOVE:
 					game.runner.move(action.direction, game)
-				case "dig":
+				case DIG:
 					game.runner.dig(action.direction, game)
 				}
-				game.runner.action = action{"move", NONE} // XXX
+				game.runner.action = action{} // XXX
 
 				// Guards
 				for guard := range game.guards {
 					guard.move(guard.action.direction, game)
-					guard.action = action{"move", NONE} // XXX
+					guard.action = action{} // XXX
 				}
 
 				game.broadcast <- msg.NewMessage("next", game.level.String()) // XXX
