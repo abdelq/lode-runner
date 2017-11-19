@@ -8,7 +8,7 @@ import (
 	msg "github.com/abdelq/lode-runner/message"
 )
 
-var tick = flag.String("tick", "200ms", "duration of game tick")
+var tick = flag.String("tick", "250ms", "duration of game tick")
 
 type Game struct {
 	level     *level
@@ -21,7 +21,7 @@ type Game struct {
 func NewGame(broadcast chan *msg.Message) *Game {
 	dur, err := time.ParseDuration(*tick)
 	if err != nil {
-		dur = 200 * time.Millisecond // XXX
+		dur = 250 * time.Millisecond // XXX
 	}
 
 	game := &Game{
@@ -102,6 +102,7 @@ PLAYERS:
 
 // FIXME
 func (g *Game) stop(winner tile) {
+	g.ticker.Stop() // XXX Verify garbage collection
 
 	if winner == RUNNER {
 		g.broadcast <- msg.NewMessage("quit", "runner wins")
@@ -117,8 +118,6 @@ func (g *Game) stop(winner tile) {
 	// default:
 	// 	g.broadcast <- msg.NewMessage("quit", "draw") // TODO
 	// }
-
-	g.ticker.Stop() // XXX Verify garbage collection
 }
 
 func (g *Game) hasPlayer(name string) bool {

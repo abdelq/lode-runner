@@ -98,11 +98,16 @@ func (r *Runner) move(dir direction, game *Game) {
 		return
 	}
 
-	if newPos.y < 0 {
-		//if game.level.escape[] { // TP2
+	if game.level.getTiles()[r.pos.y+1][r.pos.x] == ESCAPELADDER {
 		game.start(game.level.num + 1)
 		return
 	}
+
+	/*if newPos.y < 0 {
+		//if game.level.escape[] { // TP2
+		game.start(game.level.num + 1)
+		return
+	}*/
 
 	r.collectGold(r.pos, game.level)
 	delete(game.level.players, r.pos)
@@ -144,10 +149,10 @@ func (r *Runner) dig(dir direction, game *Game) {
 		//r.state = DIGGING
 		game.level.tiles[digPos.y][digPos.x] = EMPTY
 
-		digDuration, err := time.ParseDuration("500ms") // TODO Using flag ?
+		digDuration, err := time.ParseDuration("1000ms") // TODO Using flag ?
 		if err != nil {
 			log.Println(err)
-			digDuration, _ = time.ParseDuration("500ms") // TODO Forced to default
+			digDuration, _ = time.ParseDuration("1000ms") // TODO Forced to default
 		}
 
 		time.AfterFunc(digDuration, func() {

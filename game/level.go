@@ -107,11 +107,11 @@ func (l *level) getTiles() [][]tile {
 	}
 
 	// Escape ladders
-	if l.goldCollected() {
-		for _, pos := range l.escape {
-			tiles[pos.y][pos.x] = ESCAPELADDER
-		}
+	//if l.goldCollected() {
+	for _, pos := range l.escape {
+		tiles[pos.y][pos.x] = ESCAPELADDER
 	}
+	//}
 
 	// Players
 	for pos, tile := range l.players {
