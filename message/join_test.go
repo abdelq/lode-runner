@@ -2,7 +2,6 @@ package message
 
 import "testing"
 
-// TODO Try using '&' and '0' instead of 38 and 48
 func TestJoinParse(t *testing.T) {
 	t.Run("Spectator", func(t *testing.T) {
 		t.Parallel()
@@ -20,18 +19,17 @@ func TestJoinParse(t *testing.T) {
 		}
 	})
 
-	// TODO Test with 0 as role
 	t.Run("Runner", func(t *testing.T) {
 		t.Parallel()
 		msg := new(JoinMessage)
 
-		validData := []byte(`{"name": "runner", "room": "test", "role": 38}`)
+		validData := []byte(`{"name": "runner", "room": "test"}`)
 		if err := msg.Parse(validData); err != nil {
 			t.Error(err)
 			return
 		}
 
-		invalidRoomData := []byte(`{"name": "runner", "room": "", "role": 38}`)
+		invalidRoomData := []byte(`{"name": "runner", "room": "", "role": 0}`)
 		if err := msg.Parse(invalidRoomData); err.Error() != "invalid room" {
 			t.Error(err)
 		}

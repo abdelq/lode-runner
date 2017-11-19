@@ -51,7 +51,7 @@ func (r *room) listen() {
 		case join := <-r.join:
 			client, player := join.client, join.player
 			if _, ok := r.clients[client]; ok {
-				client.out <- newMessage("error", "already in room")
+				client.out <- msg.NewMessage("error", "already in room")
 				continue
 			}
 
@@ -61,40 +61,47 @@ func (r *room) listen() {
 			}
 
 			if err := player.Add(r.game); err != nil {
-				client.out <- newMessage("error", err.Error())
+				client.out <- msg.NewMessage("error", err.Error())
 				continue
 			}
 			r.clients[client] = player
 		case client := <-r.leave:
 			player := r.clients[client]
 			if _, ok := r.clients[client]; !ok {
-				client.out <- newMessage("error", "not in room")
+				client.out <- msg.NewMessage("error", "not in room")
 				continue
 			}
 
 			delete(r.clients, client)
-			if player == nil /*|| r.game.Stopped()*/ {
+			if player == nil {
 				continue
 			}
 
 			player.Remove(r.game)
 		case msg := <-r.broadcast:
-			for client := range r.clients {
-				client.out <- message(*msg)
-			}
-
-			if msg.Event == "quit" {
-				// Close clients
+			switch msg.Event {
+			case "next":
+				for client, player := range r.clients {
+					if _, ok := player.(*game.Runner); !ok {
+						client.out <- msg
+					}
+				}
+			case "quit": // XXX
 				for client := range r.clients {
+					client.out <- msg
 					client.close()
 				}
 
 				// Delete room
 				for name, room := range rooms {
 					if room == r {
-						delete(rooms, name) // TODO Verify garbage collection
+						delete(rooms, name)
 						return
 					}
+				}
+			default:
+				for client := range r.clients {
+					client.out <- msg
 				}
 			}
 		}

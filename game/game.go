@@ -1,11 +1,14 @@
 package game
 
 import (
+	"flag"
 	"log"
 	"time"
 
 	msg "github.com/abdelq/lode-runner/message"
 )
+
+var tick = flag.String("tick", "200ms", "duration of game tick")
 
 type Game struct {
 	level     *level
@@ -16,9 +19,14 @@ type Game struct {
 }
 
 func NewGame(broadcast chan *msg.Message) *Game {
+	dur, err := time.ParseDuration(*tick)
+	if err != nil {
+		dur = 200 * time.Millisecond // XXX
+	}
+
 	game := &Game{
 		guards:    make(map[*Guard]struct{}),
-		ticker:    time.NewTicker(250 * time.Millisecond), // TODO Right duration
+		ticker:    time.NewTicker(dur),
 		broadcast: broadcast,
 	}
 
@@ -26,21 +34,23 @@ func NewGame(broadcast chan *msg.Message) *Game {
 		for range game.ticker.C {
 			if game.Started() {
 				// Runner
-				switch action := game.runner.action; action.actionType {
-				case "move":
-					game.runner.move(action.direction, game)
-				case "dig":
-					game.runner.dig(action.direction, game)
+				switch runner := game.runner; runner.action.Type {
+				case MOVE:
+					runner.move(runner.action.Direction, game)
+					runner.action = action{}
+				case DIG:
+					runner.dig(runner.action.Direction, game)
+					runner.action = action{}
 				}
-				game.runner.action = action{"move", NONE} // XXX
 
 				// Guards
 				for guard := range game.guards {
-					guard.move(guard.action.direction, game)
-					guard.action = action{"move", NONE} // XXX
+					guard.move(guard.action.Direction, game)
+					guard.action = action{}
 				}
 
-				game.broadcast <- msg.NewMessage("next", game.level.String()) // XXX
+				game.runner.out <- &msg.Message{"next", []byte(`{}`)} // FIXME
+				game.broadcast <- msg.NewMessage("next", game.level.String())
 			}
 		}
 	}()
@@ -56,6 +66,7 @@ func (g *Game) filled() bool {
 	return g.runner != nil && len(g.guards) == 0 // XXX
 }
 
+// FIXME
 func (g *Game) start(lvl int) {
 	level, err := newLevel(lvl)
 	if err != nil {
@@ -89,6 +100,7 @@ PLAYERS:
 	g.level = level // XXX
 }
 
+// FIXME
 func (g *Game) stop(winner tile) {
 
 	if winner == RUNNER {

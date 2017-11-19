@@ -11,9 +11,15 @@ func TestParse(t *testing.T) {
 	client := newClient(serverConn)
 
 	// Valid events
-	for _, msg := range []message{{Event: "JOIN "}, {Event: " Move "}, {Event: " dig"}} {
+	for _, msg := range []message{
+		{Event: "JOIN "},
+		{Event: " Move "},
+		{Event: " dig"},
+	} {
 		msg.parse(client)
-		receiveMsg(t, clientConn, message{"error", []byte(`"unexpected end of JSON input"`)})
+		receiveMsg(t, clientConn, message{
+			"error", []byte(`"unexpected end of JSON input"`),
+		})
 	}
 
 	// Invalid event
@@ -31,7 +37,7 @@ func TestParseJoin(t *testing.T) {
 	}
 
 	// New room
-	parseJoin([]byte(`{"name": "spectator", "room": "test", "role": 255}`), spectator)
+	parseJoin([]byte(`{"name": "spectator", "room": "test", "role": 42}`), spectator)
 	if _, ok := rooms["test"].clients[spectator]; !ok {
 		t.Error("spectator not in room")
 	}
@@ -54,7 +60,7 @@ func TestParseMove(t *testing.T) {
 	newRoom("test").clients[spectator] = nil
 
 	parseMove([]byte(`{"direction": 0, "room": ""}`), spectator)
-	receiveMsg(t, clientConn, message{"error", []byte(`"not in a game"`)})
+	receiveMsg(t, clientConn, message{"error", []byte(`"game not started"`)})
 
 	// TODO Not a player
 
@@ -72,9 +78,9 @@ func TestParseDig(t *testing.T) {
 	newRoom("test").clients[spectator] = nil
 
 	parseDig([]byte(`{"direction": 0, "room": ""}`), spectator)
-	receiveMsg(t, clientConn, message{"error", []byte(`"not in a game"`)})
+	receiveMsg(t, clientConn, message{"error", []byte(`"game not started"`)})
 
 	// TODO Not a runner
 
-	// TODO Verify player action
+	// TODO Verify runner action
 }

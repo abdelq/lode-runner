@@ -6,16 +6,18 @@ import (
 	"log"
 	"net"
 	"sync"
+
+	msg "github.com/abdelq/lode-runner/message"
 )
 
 type client struct {
 	conn net.Conn
 	once sync.Once
-	out  chan message
+	out  chan *msg.Message
 }
 
 func newClient(conn net.Conn) *client {
-	client := &client{conn: conn, out: make(chan message, 5)} // XXX
+	client := &client{conn: conn, out: make(chan *msg.Message, 5)} // XXX
 
 	// Listeners
 	go client.read()
@@ -35,7 +37,7 @@ func (c *client) close() {
 			}
 		}
 
-		close(c.out)
+		//close(c.out) // XXX
 		c.conn.Close()
 
 		log.Printf("Closed connection from %s", c.conn.RemoteAddr())
@@ -47,14 +49,15 @@ func (c *client) read() {
 
 	dec := json.NewDecoder(c.conn)
 	for {
-		msg := new(message)
-		if err := dec.Decode(msg); err != nil {
-			if err != io.EOF {
-				log.Println(err)
+		message := new(message)
+		if err := dec.Decode(message); err != nil {
+			if err == io.EOF {
+				break
 			}
-			break
+			c.out <- msg.NewMessage("error", err.Error())
+			continue
 		}
-		go msg.parse(c)
+		go message.parse(c)
 	}
 }
 

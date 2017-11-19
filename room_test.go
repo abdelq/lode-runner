@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/abdelq/lode-runner/game"
-	msg "github.com/abdelq/lode-runner/message"
 )
 
 func TestFindRoom(t *testing.T) {
@@ -55,10 +54,7 @@ func listenSpectator(t *testing.T) {
 		return
 	}
 
-	/* Broadcast */
-	room.broadcast <- &msg.Message{"test", []byte(`"spectator"`)}
-	receiveMsg(t, clientConn, message{"test", []byte(`"spectator"`)})
-	// TODO Quit message
+	/* TODO Broadcast */
 
 	/* Leave */
 	room.leave <- spectator // First
@@ -96,10 +92,7 @@ func listenRunner(t *testing.T) {
 		return
 	}
 
-	/* Broadcast */
-	room.broadcast <- &msg.Message{"test", []byte(`"runner"`)}
-	receiveMsg(t, clientConn, message{"test", []byte(`"runner"`)})
-	// TODO Quit message
+	/* TODO Broadcast */
 
 	/* Leave */
 	room.leave <- runner // First
@@ -137,10 +130,7 @@ func listenGuard(t *testing.T) {
 		return
 	}
 
-	/* Broadcast */
-	room.broadcast <- &msg.Message{"test", []byte(`"guard"`)}
-	receiveMsg(t, clientConn, message{"test", []byte(`"guard"`)})
-	// TODO Quit message
+	/* TODO Broadcast */
 
 	/* Leave */
 	room.leave <- guard // First
