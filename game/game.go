@@ -1,11 +1,14 @@
 package game
 
 import (
+	"flag"
 	"log"
 	"time"
 
 	msg "github.com/abdelq/lode-runner/message"
 )
+
+var tick = flag.String("tick", "200ms", "duration of game tick")
 
 type Game struct {
 	level     *level
@@ -16,9 +19,14 @@ type Game struct {
 }
 
 func NewGame(broadcast chan *msg.Message) *Game {
+	dur, err := time.ParseDuration(*tick)
+	if err != nil {
+		dur = 200 * time.Millisecond // XXX
+	}
+
 	game := &Game{
 		guards:    make(map[*Guard]struct{}),
-		ticker:    time.NewTicker(250 * time.Millisecond), // XXX
+		ticker:    time.NewTicker(dur),
 		broadcast: broadcast,
 	}
 
