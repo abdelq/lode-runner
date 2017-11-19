@@ -122,10 +122,12 @@ func (l *level) getTiles() [][]tile {
 }
 
 func (l *level) validMove(orig, dest position, dir direction) bool {
-	if dest.x < 0 || dest.x >= l.width() /*|| dest.y < 0*/ || dest.y >= l.height() {
+	if dest.x < 0 || dest.x >= l.width() /*|| dest.y < 0*/ || dest.y >= l.height()-1 {
 		return false
 	}
 
+	//fmt.Println(orig)
+	//fmt.Println(dest)
 	origTile, destTile := l.tiles[orig.y][orig.x], l.tiles[dest.y][dest.x]
 	switch destTile {
 	case EMPTY, ROPE:

@@ -82,27 +82,28 @@ func (r *Runner) move(dir direction, game *Game) {
 		newPos = position{r.pos.x + 1, r.pos.y}
 	}
 
-	if r.pos.y+1 >= game.level.height()-1 {
-		return
-	}
-
-	var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
 	var validMove = game.level.validMove(r.pos, newPos, dir)
 
 	// Stop falling
-	if r.state == FALLING && (nextTile == LADDER || nextTile == ESCAPELADDER || nextTile == ROPE) {
-		r.state = ALIVE
-	}
+	if r.pos.y+1 < game.level.height()-1 {
+		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
+		if r.state == FALLING && (nextTile == LADDER || nextTile == ESCAPELADDER || nextTile == ROPE) {
+			r.state = ALIVE
+		}
+	} /* else {
+		if r.state == FALLING {
+			r.state = ALIVE
+		}
+	}*/
 
 	if !validMove { // FIXME
-		//log.Println("invalid move")
 		if r.state == FALLING {
 			r.state = ALIVE
 		}
 		return
 	}
 
-	if game.level.getTiles()[r.pos.y+1][r.pos.x] == ESCAPELADDER {
+	if game.level.goldCollected() && game.level.getTiles()[newPos.y][newPos.x] == ESCAPELADDER {
 		game.start(game.level.num + 1)
 		return
 	}
