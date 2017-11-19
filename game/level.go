@@ -94,7 +94,10 @@ func (l *level) emptyBelow(pos position) bool {
 		return false
 	}
 
-	return l.getTiles()[pos.y+1][pos.x] == EMPTY || l.tiles[pos.y+1][pos.x] == ROPE // XXX
+	// XXX
+	return l.getTiles()[pos.y+1][pos.x] == EMPTY ||
+		l.tiles[pos.y+1][pos.x] == ROPE ||
+		l.getTiles()[pos.y+1][pos.x] == GOLD
 }
 
 func (l *level) goldCollected() bool {

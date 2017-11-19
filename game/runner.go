@@ -63,15 +63,6 @@ func (r *Runner) move(dir direction, game *Game) {
 		return
 	}
 
-	// Stop falling if needed
-	if r.state == FALLING && r.pos.y+1 < game.level.height()-1 {
-		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
-
-		if nextTile == BRICK || nextTile == SOLIDBRICK || nextTile == LADDER || nextTile == ESCAPELADDER || nextTile == ROPE {
-			r.state = ALIVE
-		}
-	}
-
 	if r.state == FALLING && dir != DOWN {
 		dir = DOWN
 	}
@@ -89,6 +80,15 @@ func (r *Runner) move(dir direction, game *Game) {
 		newPos = position{r.pos.x, r.pos.y + 1}
 	case RIGHT:
 		newPos = position{r.pos.x + 1, r.pos.y}
+	}
+
+	// Stop falling if needed
+	if r.state == FALLING && r.pos.y+1 < game.level.height()-1 {
+		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
+
+		if nextTile == BRICK || nextTile == SOLIDBRICK || nextTile == LADDER || nextTile == ESCAPELADDER || nextTile == ROPE {
+			r.state = ALIVE
+		}
 	}
 
 	var validMove = game.level.validMove(r.pos, newPos, dir)
@@ -125,7 +125,7 @@ func (r *Runner) move(dir direction, game *Game) {
 
 	game.level.players[r.pos] = RUNNER
 
-	if game.level.emptyBelow(r.pos) && game.level.tiles[r.pos.y][r.pos.x] != ROPE {
+	if game.level.emptyBelow(r.pos) && game.level.tiles[r.pos.y][r.pos.x] != ROPE && game.level.tiles[r.pos.y][r.pos.x] != GOLD {
 		r.state = FALLING
 	}
 }
