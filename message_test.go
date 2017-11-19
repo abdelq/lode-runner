@@ -27,7 +27,7 @@ func TestParse(t *testing.T) {
 	receiveMsg(t, clientConn, message{"error", []byte(`"invalid event"`)})
 }
 
-func TestParseJoin(t *testing.T) { // FIXME
+func TestParseJoin(t *testing.T) {
 	conn, _ := net.Pipe()
 	spectator, runner := newClient(conn), newClient(conn)
 
@@ -37,7 +37,7 @@ func TestParseJoin(t *testing.T) { // FIXME
 	}
 
 	// New room
-	parseJoin([]byte(`{"name": "spectator", "room": "test", "role": 255}`), spectator)
+	parseJoin([]byte(`{"name": "spectator", "room": "test", "role": 42}`), spectator)
 	if _, ok := rooms["test"].clients[spectator]; !ok {
 		t.Error("spectator not in room")
 	}
@@ -50,7 +50,7 @@ func TestParseJoin(t *testing.T) { // FIXME
 }
 
 // TODO Move to game package
-func TestParseMove(t *testing.T) { // FIXME
+func TestParseMove(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	spectator := newClient(serverConn)
 
@@ -60,7 +60,7 @@ func TestParseMove(t *testing.T) { // FIXME
 	newRoom("test").clients[spectator] = nil
 
 	parseMove([]byte(`{"direction": 0, "room": ""}`), spectator)
-	receiveMsg(t, clientConn, message{"error", []byte(`"not in a game"`)})
+	receiveMsg(t, clientConn, message{"error", []byte(`"game not started"`)})
 
 	// TODO Not a player
 
@@ -68,7 +68,7 @@ func TestParseMove(t *testing.T) { // FIXME
 }
 
 // TODO Move to game package
-func TestParseDig(t *testing.T) { // FIXME
+func TestParseDig(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
 	spectator := newClient(serverConn)
 
@@ -78,9 +78,9 @@ func TestParseDig(t *testing.T) { // FIXME
 	newRoom("test").clients[spectator] = nil
 
 	parseDig([]byte(`{"direction": 0, "room": ""}`), spectator)
-	receiveMsg(t, clientConn, message{"error", []byte(`"not in a game"`)})
+	receiveMsg(t, clientConn, message{"error", []byte(`"game not started"`)})
 
 	// TODO Not a runner
 
-	// TODO Verify player action
+	// TODO Verify runner action
 }
