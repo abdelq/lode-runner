@@ -1,7 +1,9 @@
 package game
 
 import (
+	"encoding/json"
 	"flag"
+	//"fmt"
 	"log"
 	"time"
 
@@ -49,7 +51,26 @@ func NewGame(broadcast chan *msg.Message) *Game {
 					guard.action = action{}
 				}
 
-				game.runner.out <- &msg.Message{"next", []byte(`{"runner": {"position": {"x": ` + string(game.runner.pos.x) + `, "y": ` + string(game.runner.pos.y) + `}}}`)} // FIXME
+				// XXX
+				next := struct {
+					Runner struct {
+						Position struct {
+							X int `json:"x"`
+							Y int `json:"y"`
+						} `json:"position"`
+					} `json:"runner"`
+				}{}
+				next.Runner.Position.X = game.runner.pos.x
+				next.Runner.Position.Y = game.runner.pos.y
+				//next.Runner.Position = position{game.runner.pos.x, game.runner.pos.y}
+
+				stuff, _ := json.Marshal(next)
+
+				//fmt.Println(next)
+
+				game.runner.out <- &msg.Message{"next", stuff}
+
+				//game.runner.out <- &msg.Message{"next", []byte(`{"runner": {"position": {"x": ` + string(game.runner.pos.x) + `, "y": ` + string(game.runner.pos.y) + `}}}`)} // FIXME
 				game.broadcast <- msg.NewMessage("next", game.level.String())
 			}
 		}
