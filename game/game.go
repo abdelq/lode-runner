@@ -18,6 +18,7 @@ type Game struct {
 	guards    map[*Guard]struct{}
 	ticker    *time.Ticker
 	broadcast chan *msg.Message
+	tick_time time.Duration
 }
 
 func NewGame(broadcast chan *msg.Message) *Game {
@@ -30,6 +31,7 @@ func NewGame(broadcast chan *msg.Message) *Game {
 		guards:    make(map[*Guard]struct{}),
 		ticker:    time.NewTicker(dur),
 		broadcast: broadcast,
+		tick_time: dur,
 	}
 
 	go func() {

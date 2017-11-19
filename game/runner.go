@@ -2,7 +2,6 @@ package game
 
 import (
 	"errors"
-	"log"
 	"time"
 
 	msg "github.com/abdelq/lode-runner/message"
@@ -145,11 +144,7 @@ func (r *Runner) dig(dir direction, game *Game) {
 		//r.state = DIGGING
 		game.level.tiles[digPos.y][digPos.x] = EMPTY
 
-		digDuration, err := time.ParseDuration("1000ms") // TODO Using flag ?
-		if err != nil {
-			log.Println(err)
-			digDuration, _ = time.ParseDuration("1000ms") // TODO Forced to default
-		}
+		var digDuration = game.tick_time * 9
 
 		time.AfterFunc(digDuration, func() {
 			if tile, ok := game.level.players[digPos]; ok && tile == RUNNER {
