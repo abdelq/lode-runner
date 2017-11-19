@@ -49,7 +49,7 @@ func NewGame(broadcast chan *msg.Message) *Game {
 					guard.action = action{}
 				}
 
-				game.runner.out <- &msg.Message{"next", []byte(`{}`)} // FIXME
+				game.runner.out <- &msg.Message{"next", []byte(`{"runner": {"position": {"x": ` + string(game.runner.pos.x) + `, "y": ` + string(game.runner.pos.y) + `}}}`)} // FIXME
 				game.broadcast <- msg.NewMessage("next", game.level.String())
 			}
 		}
