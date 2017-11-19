@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math"
+	"math/rand"
 )
 
 type tile = byte
@@ -65,6 +66,13 @@ func newLevel(num int) (*level, error) {
 			}
 		}
 	}
+
+	// Keep only 3 random pieces of gold
+	for i := range lvl.gold {
+		j := rand.Intn(i + 1)
+		lvl.gold[i], lvl.gold[j] = lvl.gold[j], lvl.gold[i]
+	}
+	lvl.gold = lvl.gold[:3]
 
 	return lvl, nil
 }
