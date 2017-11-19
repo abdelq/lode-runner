@@ -73,12 +73,20 @@ func (l *level) String() string {
 	return string(bytes.Join(l.getTiles(), []byte("\n")))
 }
 
+func (l *level) width() int {
+	return len(l.tiles[0])
+}
+
+func (l *level) height() int {
+	return len(l.tiles)
+}
+
 func (l *level) emptyBelow(pos position) bool {
-	if pos.y >= 28 {
+	if pos.y >= l.height()-1 {
 		return false
 	}
-	return l.getTiles()[pos.y+1][pos.x] == EMPTY ||
-		l.tiles[pos.y+1][pos.x] == ROPE // XXX
+
+	return l.getTiles()[pos.y+1][pos.x] == EMPTY || l.tiles[pos.y+1][pos.x] == ROPE // XXX
 }
 
 func (l *level) goldCollected() bool {
@@ -114,19 +122,9 @@ func (l *level) getTiles() [][]tile {
 }
 
 func (l *level) validMove(orig, dest position, dir direction) bool {
-	if dest.x < 0 || dest.x >= 28 /*|| dest.y < 0*/ || dest.y >= 16 {
+	if dest.x < 0 || dest.x >= l.width() /*|| dest.y < 0*/ || dest.y >= l.height() {
 		return false
 	}
-
-	//origTile2, desTile2 := l.getTiles()[orig.y][orig.x], l.getTiles()[dest.y][dest.x] // XXX
-
-	/*if dest.y < 0 {
-		return origTile == ESCAPELADDER || origTile == LADDER
-	}*/
-
-	/*if !l.goldCollected() && destTile == ESCAPELADDER {
-		destTile = EMPTY
-	}*/
 
 	origTile, destTile := l.tiles[orig.y][orig.x], l.tiles[dest.y][dest.x]
 	switch destTile {
@@ -145,7 +143,7 @@ func (l *level) validMove(orig, dest position, dir direction) bool {
 }
 
 func (l *level) validDig(pos position) bool {
-	if pos.x < 0 || pos.x >= 28 {
+	if pos.x < 0 || pos.x >= l.width() {
 		return false
 	}
 

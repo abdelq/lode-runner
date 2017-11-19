@@ -2,7 +2,6 @@ package game
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"time"
 
@@ -128,8 +127,6 @@ func (r *Runner) move(dir direction, game *Game) {
 	if game.level.emptyBelow(r.pos) && game.level.tiles[r.pos.y][r.pos.x] != ROPE {
 		r.state = FALLING
 	}
-
-	fmt.Println(game.level.String())
 }
 
 // FIXME FIXME FIXME FIXME
