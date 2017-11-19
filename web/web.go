@@ -6,19 +6,12 @@ import (
 	"net"
 	"net/http"
 
-	//"golang.org/x/net/websocket"
-	"github.com/gorilla/websocket"
+	"golang.org/x/net/websocket"
 )
 
 var httpAddr, tcpAddr *string
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin:     func(r *http.Request) bool { return true },
-}
 
-//func proxyServer(ws *websocket.Conn) {
-func proxyServer(w http.ResponseWriter, r *http.Request) {
+func proxyServer(ws *websocket.Conn) {
 	tcp, err := net.Dial("tcp", *tcpAddr)
 	if err != nil {
 		log.Fatal(err)
@@ -26,35 +19,14 @@ func proxyServer(w http.ResponseWriter, r *http.Request) {
 
 	defer tcp.Close()
 
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	defer conn.Close()
-
-	messageType, reader, err := conn.NextReader()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	writer, err := conn.NextWriter(messageType)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	go io.Copy(writer, tcp)
-	io.Copy(tcp, reader)
+	go io.Copy(ws, tcp)
+	io.Copy(tcp, ws)
 }
 
 func Listen(addr, serverAddr *string) {
 	httpAddr, tcpAddr = addr, serverAddr
 
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		proxyServer(w, r)
-	})
+	http.Handle("/ws", websocket.Handler(proxyServer))
 	http.Handle("/", http.FileServer(http.Dir("public")))
 
 	log.Printf("Listening on %s %s", "http", *httpAddr)
