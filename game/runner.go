@@ -82,6 +82,10 @@ func (r *Runner) move(dir direction, game *Game) {
 		newPos = position{r.pos.x + 1, r.pos.y}
 	}
 
+	if r.pos.y+1 >= game.level.height()-1 {
+		return
+	}
+
 	var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
 	var validMove = game.level.validMove(r.pos, newPos, dir)
 

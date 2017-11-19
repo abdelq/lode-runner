@@ -82,7 +82,7 @@ func (l *level) height() int {
 }
 
 func (l *level) emptyBelow(pos position) bool {
-	if pos.y >= l.height()-1 {
+	if pos.y+1 >= (l.height() - 1) {
 		return false
 	}
 
