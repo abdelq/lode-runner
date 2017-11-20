@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Node Runner</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="base.js"></script>
+        <script src="tp2-graphique.js"></script>
+    </head>
+    <body>
+        <h1>Node Runner</h1>
+        <form onsubmit="start(); return false">
+            <input id="room" value="" placeholder="Clé secrète" required />
+            <button type="submit">&check;</button>
+        </form>
+        <br />
+        <div id="grid"></div>
+        <pre id="grid-ascii"></pre>
+        <p id="loading">En attente de début de partie dans la room <span id="joined-room"></span>.</p>
+    </body>
+</html>

@@ -1,0 +1,46 @@
+body {
+    background-color: black;
+    color: green;
+    text-align: center;
+}
+#grid-ascii {
+    color: green;
+    font-size: x-large;
+}
+input {
+    text-align: center;
+    margin: 15px;
+    padding: 10px;
+    border: none;
+    background-color: #ccc;
+}
+input:hover {
+    background-color: #ddd;
+}
+button {
+    background-color: #afa;
+    color: black;
+    border: none;
+    padding: 10px;
+}
+button:hover {
+    background-color: #cfc;
+}
+#loading {
+    display: none;
+}
+#joined-room {
+    color: lightgreen;
+}
+table {
+    margin: auto;
+    background-color: #CFC;
+    border-collapse: collapse;
+}
+tr {
+    height: 32px;
+}
+td {
+    width: 32px;
+    height: 32px;
+}
