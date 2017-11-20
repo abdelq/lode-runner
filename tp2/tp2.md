@@ -255,16 +255,18 @@ function findPath(start, target) {
 
 ### Affichage du jeu (`tp2-graphique.js`)
 
-Un affichage primitif (en ASCII) vous est déjà donné dans
+Un affichage primitif (ASCII) vous est déjà donné dans
 `tp2-graphique.js`. Pour le voir, vous devez lancer un client de
-joueur dans node et ouvrir la page `index.html` dans votre navigateur (voir la section *1 - Introduction*).
+joueur dans node et ouvrir la page `index.html` dans votre navigateur
+(voir la section *1 - Introduction*).
 
 Vous devrez modifier le code de la fonction `draw()` pour arriver à
 quelque chose de (discutablement) plus joli. La fonction est appelée
 automatiquement à chaque tour et reçoit en paramètre une
 représentation textuelle de la grille.
 
-Pour l'affichage graphique, vous pouvez utiliser les images fournies dans img/*.png
+Pour l'affichage graphique, vous pouvez utiliser les images fournies
+dans `img/*.png`
 
 La façon la plus simple de dessiner la grille de jeu est en créant un
 élément HTML `<table>` avec autant de cellules `<td>` que de cases
