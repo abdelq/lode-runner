@@ -44,9 +44,19 @@ func newLevel(num int) (*level, error) {
 		return nil, err
 	}
 
+	var lines = bytes.Split(content, []byte("\n"))
+
+	if rand.Intn(2) == 0 {
+		for i, line := range lines {
+			for j:= 0; j < len(line) / 2; j++ {
+				lines[i][j], lines[i][len(line) - 1 - j] = lines[i][len(line) - 1 - j], lines[i][j]
+			}
+		}
+	}
+
 	// TODO Specify right len/cap
 	lvl := &level{
-		num, bytes.Split(content, []byte("\n")),
+		num, lines,
 		make(map[position]tile), make([]position, 0), make([]position, 0),
 	}
 
