@@ -20,7 +20,7 @@ ne devez pas utiliser du code provenant d'ailleurs (du web).
 
 ## 1. Introduction
 
-Ce travail pratique consiste à développer une intelligence artificelle
+Ce travail pratique consiste à développer une intelligence artificielle
 pour un jeu inspiré de
 *[Lode Runner](https://fr.wikipedia.org/wiki/Lode_Runner_(jeu_vid%C3%A9o,_1983))*,
 un jeu de platforme datant des années 80.
@@ -46,14 +46,42 @@ Notez que *Node Runner* est une version simplifiée du jeu original :
 - La sortie est une case comme une autre, plutôt qu'une échelle vers
   le haut du niveau
 
+\newpage
+
+### Fichiers fournis
+
+
+- **tp2-ia.js** : ce fichier contient votre code pour l'intelligence
+  artificielle de votre runner
+- **tp2-graphique.js** : ce fichier contient la logique pour afficher
+  le jeu graphiquement
+- *runner.js* : ce programme est un client de jeu qui permet de jouer
+  avec les flèches du clavier (utile seulement pour tester le jeu)
+- *index.html* : c'est la page web qui est utilisée pour l'affichage
+  graphique du jeu
+- *style.css* : définition du CSS pour afficher une belle page web
+- *ia.js* : ce fichier contient la logique de base pour connecter votre
+  intelligence artificielle (`tp2-ia.js`) avec le serveur
+- *html-base.js* : ce fichier contient la logique de base pour connecter la
+  page html avec le serveur
+- *img/* : ce dossier contient les images à utiliser pour l'affichage graphique
+
+
+&nbsp;
+
+Notez que vous n'aurez qu'à modifier les fichiers **tp2-ai.js** et **tp2-graphique.js**
+
+<!-- TODO : expliquer les fichiers fournis -->
+
 ### Pour tester le jeu :
 
 1. Lancez la commande `node runner.js {mot de passe secret}` depuis un
    terminal dans le dossier de fichiers fournis
-2. Ouvrez index.html, entrez votre `{mot de passe secret}` dans la
-   boîte puis cliquez sur le crochet
+2. Ouvrez index.html dans un navigateur, entrez votre `{mot de passe
+   secret}` dans la boîte puis cliquez sur le crochet
 3. Retournez à votre terminal qui exécute node et utilisez les flèches
-   ou WASD pour déplacez votre runner et Z/C pour creuser
+   ou WASD pour déplacez votre runner et Z/C pour creuser. **Gardez
+   votre navigateur visible, c'est là que se fait l'affichage du jeu**
 
 Le `{mot de passe secret}` est ce qui identifie votre partie sur le
 serveur, assurez-vous de choisir quelque chose d'unique (et de
@@ -74,20 +102,58 @@ lors d'une partie, deux programmes interagissent :
 * Un serveur, qui attend que des joueurs se connectent puis qui
   coordonne les parties
 * Des clients qui se connectent au serveur
-    - Un client de type "runner" envoit périodiquement les
+    - Un client de type "runner" (soit `runner.js`, soit `ia.js`) envoit périodiquement les
       déplacements que le joueur souhaite faire
-    - Un client de type "spectator" reçoit toute la grille à chaque
-      tour
+    - Un client de type "affichage" (`index.html`) reçoit toute la
+      grille à chaque tour et se charge de l'afficher
 
 Le jeu se joue tour par tour, à chaque tour, le joueur envoie une
 commande au serveur : soit se déplacer dans une des quatre directions
 (haut/bas/gauche/droite), soit creuser dans une direction
 (gauche/droite).
 
+### Visuellement :
+
+Le serveur se situe quelque part dans le cloud infonuagique, plus
+précisément à l'addresse *138.197.153.140* et attends des connexions :
+
+![](/home/k/.go/src/github.com/abdelq/lode-runner/tp2/md-img/0-server.png){ width=50% }![](md-img/void.png)
+
+Lorsqu'un runner souhaite se connecter pour jouer, il envoie un
+message au serveur :
+
+![](/home/k/.go/src/github.com/abdelq/lode-runner/tp2/md-img/1-client.png){ width=50% }![](md-img/void.png)
+
+Pour afficher la partie, il faut également qu'un client de type
+"affichage" joigne le serveur :
+
+![](/home/k/.go/src/github.com/abdelq/lode-runner/tp2/md-img/2-affichage.png){ width=50% }![](md-img/void.png)
+
+Lorsque le "runner" est prêt, le serveur lance la partie et la
+fonction `start()` dans `tp2-ia.js` est appelée avec une
+représentation textuelle de la grille de jeu initiale en paramètre :
+
+![](/home/k/.go/src/github.com/abdelq/lode-runner/tp2/md-img/3-start.png){ width=50% }![](md-img/void.png)
+
+Le runner en profite pour noter l'état initial de la grille et attend le premier tour.
+
+À chaque tour, la fonction `next()` est appelée dans `tp2-ia.js` et la
+fonction `draw()` est appelée du côté de `tp2-graphique.js`.
+
+![](/home/k/.go/src/github.com/abdelq/lode-runner/tp2/md-img/4-next.png){ width=50% }![](md-img/void.png)
+
+La page web doit alors s'actualiser pour afficher le nouvel état du jeu et le runner doit envoyer au serveur dans quelle direction il doit aller. C'est le résultat (le `return`) de la fonction "next" qui est envoyé au serveur :
+
+![](/home/k/.go/src/github.com/abdelq/lode-runner/tp2/md-img/5-send-move.png){ width=50% }![](md-img/void.png)
+
+Les deux dernières étapes se répètent jusqu'à ce que le runner atteigne la sortie. Une fois la sortie atteinte, le serveur envoie un nouveau level à résoudre au runner (toujours en appelant la fonction `start()` :
+
+![](/home/k/.go/src/github.com/abdelq/lode-runner/tp2/md-img/3-start.png){ width=50% }![](md-img/void.png)
+
 
 ### Blocs
 
-La grille peut être composée est différents blocs :
+La grille peut être composée de différents blocs :
 
 - **Case vide** (espace) : rien de spécial, on peut se déplacer dedans
 - ![](img/X.png){width=16px} **Bloc de brique** (#) : on peut marcher dessus et *creuser dedans pour créer un chemin
@@ -113,8 +179,8 @@ morceau.
 
 Vous devrez :
 
-1. Programmer une intelligence artificielle pour le jeu
-2. Programmer l'affichage du jeu avec des belles images
+1. Programmer une intelligence artificielle pour le jeu (`tp2-ia.js`)
+2. Programmer l'affichage du jeu avec des belles images (`tp2-graphique.js`)
 
 ### Intelligence Artificielle (`tp2-ia.js`)
 
@@ -126,9 +192,9 @@ automatiquement. C'est dans cette fonction que vous devrez stocker la
 grille de jeu initiale reçue en paramètre
 
 À chaque tour, la fonction `next()` est appelée automatiquement. C'est
-à ce moment que vous devez décider de la direction dans laquelle vous
-voulez vous déplacer. La fonction next() doit retourner un
-enregistrement de la forme :
+cette fonction qui décide de la direction dans laquelle vous voulez
+vous déplacer. La fonction next() doit retourner un enregistrement de
+la forme :
 
 ```javascript
     {event: ..., direction: ...}
@@ -155,7 +221,7 @@ les commentaires déjà présents dans le code pour vous guider.
 
 Pour tester votre IA, vous pouvez lancer la commande :
 
-        node index.js
+        node ia.js
 
 Qui se chargera de la connexion au serveur et qui appellera vos
 fonctions `start` et `next` aux bons moments.
@@ -184,8 +250,9 @@ On part d'une position initiale, où on fixe la distance à 0 :
 
 Et pour chaque voisin accessible depuis la position, on calcule leur
 distance à la position initiale (un de plus que la position
-considérée) et on ajoute ces voisins à une liste de cases à visiter
-plus tard (cases marquées en jaune) :
+considérée) et on ajoute ces voisins à une queue
+(*first-in-first-out*) de cases à visiter plus tard (cases marquées en
+jaune) :
 
 ![](md-img/bfs-1.png)![](md-img/void.png)
 ![](md-img/bfs-2.png)![](md-img/void.png)
@@ -233,7 +300,7 @@ function findPath(start, target) {
 
     // Créer un tableau des coûts
     // Définir le coût de la position de départ à 0
-    // Initialiser la liste de cases à vérifier à : [start]
+    // Initialiser la queue de cases à vérifier à : [start]
 
     // Tant qu'on n'a pas trouvé une case visée (selon la variable target) :
         // Prendre la prochaine position à vérifier
@@ -307,13 +374,15 @@ Le résultat final de votre page web devrait ressembler à quelque chose comme :
 - **Vous aurez besoin d'une connexion internet pour faire ce TP**. Si
   jamais c'est un problème, assurez-vous de trouver une solution avec
   un démonstrateur rapidement.
+- La date de remise est le *18 décembre 2017 à 23h55*. Il y a une
+  pénalité de 33% pour chaque jour de retard.
 - Vous devez faire le travail par groupes de 2 personnes. Indiquez vos
 noms clairement dans les commentaires au début de votre code. Un
 travail fait seul engendrera une pénalité (qui ne peut pas être
 compensée par les points bonus). Les équipes de plus de deux seront
 refusées.
 - Vous devez seulement remettre deux fichiers : tp2-graphique.js et
-  tp2-ai.js
+  tp2-ia.js
 - Voici les critères d’évaluation du code :
     - l'exactitude (respect de la spécification)
     - l'élégance et la lisibilité du code
@@ -335,4 +404,3 @@ refusées.
       les noms de variables en camelCase).
     - Il ne devrait plus y avoir de code de debug (aka,
       `console.log(...)`) dans la version finale remise.
-- Il y a une pénalité de 33% pour chaque jour de retard
