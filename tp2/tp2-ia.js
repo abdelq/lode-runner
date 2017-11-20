@@ -4,7 +4,7 @@ var room = "";
 /**
  * La fonction start() est appelée au début
  * d'un niveau et reçoit en paramètre la grille
- * initiale
+ * initiale sous forme de chaîne de caractères
  *
  * Les symboles sont :
  *   # : brique
@@ -15,8 +15,8 @@ var room = "";
  *   S : sortie
  *   espace vide : rien de spécial sur cette case
  */
-function start(data) {
-    console.log(data);
+function start(map) {
+    console.log(map);
 }
 
 /**
@@ -29,8 +29,13 @@ function start(data) {
  *        se déplacer ou "dig" pour creuser
  *      - direction est une des 4 directions haut/gauche/bas/droite,
  *        représenté par un nombre : 1 pour haut, 2 pour gauche, ...
+ *
+ * Le paramètre `state` est un enregistrement contenant la position
+ * du runner au tour actuel sous la forme :
+ *
+ *     {runner: {position: {x: ..., y: ...}}}
  */
-function next(data) {
+function next(state) {
     // TODO : Modifier ici
     // Envoyer une direction au hasard
     var dir = Math.floor(Math.random() * 4) + 1;
