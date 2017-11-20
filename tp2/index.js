@@ -27,7 +27,14 @@ var client = connect("1337", ip, () => {
 });
 
 client.on('data', (data) => {
-    var json = JSON.parse(data.toString());
+
+    var json = {event: "none"};
+
+    try {
+        var json = JSON.parse(data.toString('utf8').trim());
+    } catch(e) {
+        console.error('JSON error : ', e, data.toString('utf8'));
+    }
 
     var events = {
         start: start,
