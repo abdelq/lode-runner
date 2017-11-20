@@ -120,6 +120,7 @@ PLAYERS:
 	}
 
 	g.broadcast <- msg.NewMessage("start", level.String())
+	time.Sleep(250 * time.Millisecond)
 	g.level = level // XXX
 }
 
