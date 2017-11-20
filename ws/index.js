@@ -7,6 +7,7 @@ var url = require('url');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var wss = new WebSocket.Server({ port: 1338 });
+var ip = "localhost";
 
 wss.on('connection', function connection(ws, req) {
     var location = url.parse(req.url, true);
@@ -14,13 +15,24 @@ wss.on('connection', function connection(ws, req) {
     // open tcp client
     var room = location.pathname.slice(1);
 
-    var client = connect(1337, {}, () => {
+    if(!room.length) {
+        ws.close();
+        return;
+    }
+
+    var client = connect(1337, ip, () => {
         console.log(`Connected to ${client.remoteAddress}:${client.remotePort}`);
-        send(client, "join", {name: "watch", room: room, role: 42});
+        send(client, "join", {name: "spectator", room: room, role: 42});
     });
 
     client.on('data', (data) => {
-        var grid = JSON.parse(data.toString()).data;
+        try {
+            var grid = JSON.parse(data.toString()).data;
+        } catch(e) {
+            var grid = data.toString();
+            console.log('JSON error parsing :');
+            console.log(grid);
+        }
         if (ws.readyState === WebSocket.OPEN) {
             ws.send(grid);
         }
