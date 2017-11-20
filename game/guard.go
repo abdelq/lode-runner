@@ -47,6 +47,7 @@ func (g *Guard) Remove(game *Game) {
 }
 
 func (g *Guard) init(players map[position]tile) {
+	g.action = action{}
 	var runnerPos position
 	var positions []position
 	for pos, tile := range players { // FIXME Don't loop over taken positions

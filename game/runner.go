@@ -49,6 +49,7 @@ func (r *Runner) Remove(game *Game) {
 }
 
 func (r *Runner) init(players map[position]tile) {
+	r.action = action{}
 	for pos, tile := range players {
 		if tile == RUNNER {
 			r.pos = pos
@@ -68,7 +69,7 @@ func (r *Runner) move(dir direction, game *Game) {
 		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
 
 		if nextTile == BRICK || nextTile == SOLIDBRICK ||
-			nextTile == LADDER || nextTile == ESCAPELADDER /*|| nextTile == ROPE */ {
+			nextTile == LADDER /* || nextTile == ESCAPELADDER*/ /*|| nextTile == ROPE */ {
 			r.state = ALIVE
 		}
 		//fmt.Println(r.state)

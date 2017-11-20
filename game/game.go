@@ -126,6 +126,9 @@ func (g *Game) gameTick() {
 	for range g.ticker.C {
 		//if g.Started() {
 		// Runner
+		/*if g.runner.action == nil {
+			g.runner.action = action{}
+		}*/
 		switch runner := g.runner; runner.action.Type {
 		case MOVE:
 			runner.move(runner.action.Direction, g)
@@ -137,7 +140,9 @@ func (g *Game) gameTick() {
 
 		// Guards
 		for guard := range g.guards {
+			//if guard.action != nil {
 			guard.move(guard.action.Direction, g)
+			//}
 			guard.action = action{}
 		}
 
