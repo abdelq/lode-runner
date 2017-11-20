@@ -2,6 +2,7 @@ package game
 
 import (
 	"errors"
+	//"fmt"
 	"time"
 
 	msg "github.com/abdelq/lode-runner/message"
@@ -62,6 +63,18 @@ func (r *Runner) move(dir direction, game *Game) {
 		return
 	}
 
+	// Stop falling if needed
+	if r.state == FALLING && r.pos.y+1 < game.level.height()-1 {
+		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
+
+		if nextTile == BRICK || nextTile == SOLIDBRICK ||
+			nextTile == LADDER || nextTile == ESCAPELADDER ||
+			nextTile == ROPE {
+			r.state = ALIVE
+		}
+		//fmt.Println(r.state)
+	}
+
 	if r.state == FALLING && dir != DOWN {
 		dir = DOWN
 	}
@@ -81,21 +94,13 @@ func (r *Runner) move(dir direction, game *Game) {
 		newPos = position{r.pos.x + 1, r.pos.y}
 	}
 
-	// Stop falling if needed
-	if r.state == FALLING && r.pos.y+1 < game.level.height()-1 {
-		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
-
-		if nextTile == BRICK || nextTile == SOLIDBRICK || nextTile == LADDER || nextTile == ESCAPELADDER || nextTile == ROPE {
-			r.state = ALIVE
-		}
-	}
-
 	var validMove = game.level.validMove(r.pos, newPos, dir)
+	//fmt.Println(validMove)
 
 	if !validMove {
-		/*if r.state == FALLING {
+		if r.state == FALLING {
 			r.state = ALIVE
-		}*/
+		}
 		return
 	}
 

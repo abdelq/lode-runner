@@ -80,6 +80,8 @@ PLAYERS:
 	g.broadcast <- msg.NewMessage("start", level.String())
 	g.level = level // XXX
 
+	time.Sleep(50 * time.Millisecond)
+
 	g.ticker = time.NewTicker(250 * time.Millisecond)
 	go g.gameTick()
 }
