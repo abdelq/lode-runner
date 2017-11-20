@@ -34,50 +34,6 @@ func NewGame(broadcast chan *msg.Message) *Game {
 		tick_time: dur,
 	}
 
-	go func() {
-		for range game.ticker.C {
-			if game.Started() {
-				// Runner
-				switch runner := game.runner; runner.action.Type {
-				case MOVE:
-					runner.move(runner.action.Direction, game)
-					runner.action = action{}
-				case DIG:
-					runner.dig(runner.action.Direction, game)
-					runner.action = action{}
-				}
-
-				// Guards
-				for guard := range game.guards {
-					guard.move(guard.action.Direction, game)
-					guard.action = action{}
-				}
-
-				// XXX
-				next := struct {
-					Runner struct {
-						Position struct {
-							X int `json:"x"`
-							Y int `json:"y"`
-						} `json:"position"`
-					} `json:"runner"`
-				}{}
-				next.Runner.Position.X = game.runner.pos.x
-				next.Runner.Position.Y = game.runner.pos.y
-				//next.Runner.Position = position{game.runner.pos.x, game.runner.pos.y}
-
-				stuff, _ := json.Marshal(next)
-
-				//fmt.Println(next)
-
-				game.runner.out <- &msg.Message{"next", stuff}
-
-				//game.runner.out <- &msg.Message{"next", []byte(`{"runner": {"position": {"x": ` + string(game.runner.pos.x) + `, "y": ` + string(game.runner.pos.y) + `}}}`)} // FIXME
-				game.broadcast <- msg.NewMessage("next", game.level.String())
-			}
-		}
-	}()
-
 	return game
 }
 
@@ -91,6 +47,8 @@ func (g *Game) filled() bool {
 
 // FIXME
 func (g *Game) start(lvl int) {
+	g.ticker.Stop()
+
 	level, err := newLevel(lvl)
 	if err != nil {
 		log.Println(err)
@@ -120,8 +78,10 @@ PLAYERS:
 	}
 
 	g.broadcast <- msg.NewMessage("start", level.String())
-	time.Sleep(250 * time.Millisecond)
 	g.level = level // XXX
+
+	g.ticker = time.NewTicker(250 * time.Millisecond)
+	go g.gameTick()
 }
 
 // FIXME
@@ -158,4 +118,48 @@ func (g *Game) hasPlayer(name string) bool {
 	}
 
 	return false
+}
+
+func (g *Game) gameTick() {
+	for range g.ticker.C {
+		//if g.Started() {
+		// Runner
+		switch runner := g.runner; runner.action.Type {
+		case MOVE:
+			runner.move(runner.action.Direction, g)
+			runner.action = action{}
+		case DIG:
+			runner.dig(runner.action.Direction, g)
+			runner.action = action{}
+		}
+
+		// Guards
+		for guard := range g.guards {
+			guard.move(guard.action.Direction, g)
+			guard.action = action{}
+		}
+
+		// XXX
+		next := struct {
+			Runner struct {
+				Position struct {
+					X int `json:"x"`
+					Y int `json:"y"`
+				} `json:"position"`
+			} `json:"runner"`
+		}{}
+		next.Runner.Position.X = g.runner.pos.x
+		next.Runner.Position.Y = g.runner.pos.y
+		//next.Runner.Position = position{g.runner.pos.x, g.runner.pos.y}
+
+		stuff, _ := json.Marshal(next)
+
+		//fmt.Println(next)
+
+		g.runner.out <- &msg.Message{"next", stuff}
+
+		//g.runner.out <- &msg.Message{"next", []byte(`{"runner": {"position": {"x": ` + string(g.runner.pos.x) + `, "y": ` + string(g.runner.pos.y) + `}}}`)} // FIXME
+		g.broadcast <- msg.NewMessage("next", g.level.String())
+	}
+	//}
 }
