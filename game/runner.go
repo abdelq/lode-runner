@@ -68,8 +68,7 @@ func (r *Runner) move(dir direction, game *Game) {
 		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
 
 		if nextTile == BRICK || nextTile == SOLIDBRICK ||
-			nextTile == LADDER || nextTile == ESCAPELADDER ||
-			nextTile == ROPE {
+			nextTile == LADDER || nextTile == ESCAPELADDER /*|| nextTile == ROPE */ {
 			r.state = ALIVE
 		}
 		//fmt.Println(r.state)
@@ -92,6 +91,14 @@ func (r *Runner) move(dir direction, game *Game) {
 		newPos = position{r.pos.x, r.pos.y + 1}
 	case RIGHT:
 		newPos = position{r.pos.x + 1, r.pos.y}
+	}
+
+	if r.state == FALLING && r.pos.y+1 < game.level.height()-1 {
+		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
+
+		if nextTile == ROPE {
+			r.state = ALIVE
+		}
 	}
 
 	var validMove = game.level.validMove(r.pos, newPos, dir)
