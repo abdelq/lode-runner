@@ -4,7 +4,7 @@ if(process.argv.length == 2) {
 }
 
 var room = process.argv[process.argv.length - 1];
-var ip = "159.203.8.35";
+var ip = "138.197.153.140";
 
 const { connect } = require('net');
 
