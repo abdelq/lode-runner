@@ -74,6 +74,14 @@ func (r *room) listen() {
 
 			delete(r.clients, client)
 			if player == nil {
+				if len(r.clients) == 0 {
+					for name, room := range rooms {
+						if room == r {
+							delete(rooms, name)
+							return
+						}
+					}
+				}
 				continue
 			}
 
