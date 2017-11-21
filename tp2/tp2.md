@@ -114,8 +114,8 @@ commande au serveur : soit se déplacer dans une des quatre directions
 
 ### Visuellement :
 
-Le serveur se situe quelque part dans le cloud infonuagique, plus
-précisément à l'addresse *138.197.153.140* et attends des connexions :
+Le serveur se situe quelque part dans le cloud infonuagique (plus
+précisément à l'addresse *138.197.153.140*) et attends des connexions :
 
 ![](/home/k/.go/src/github.com/abdelq/lode-runner/tp2/md-img/0-server.png){ width=50% }![](md-img/void.png)
 
