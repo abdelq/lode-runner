@@ -17,7 +17,7 @@ type client struct {
 }
 
 func newClient(conn net.Conn) *client {
-	client := &client{conn: conn, out: make(chan *msg.Message, 5)} // XXX
+	client := &client{conn: conn, out: make(chan *msg.Message, 1)}
 
 	// Listeners
 	go client.read()
@@ -37,7 +37,7 @@ func (c *client) close() {
 			}
 		}
 
-		//close(c.out) // XXX
+		close(c.out)
 		c.conn.Close()
 
 		log.Printf("Closed connection from %s", c.conn.RemoteAddr())
@@ -54,6 +54,10 @@ func (c *client) read() {
 			if err == io.EOF {
 				break
 			}
+			if err, ok := err.(net.Error); ok && !err.Temporary() {
+				break
+			}
+
 			c.out <- msg.NewMessage("error", err.Error())
 			continue
 		}
@@ -67,8 +71,10 @@ func (c *client) write() {
 	enc := json.NewEncoder(c.conn)
 	for msg := range c.out {
 		if err := enc.Encode(msg); err != nil {
+			if err, ok := err.(net.Error); ok && !err.Temporary() {
+				break
+			}
 			log.Println(err)
-			break
 		}
 	}
 }

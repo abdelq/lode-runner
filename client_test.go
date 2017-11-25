@@ -10,7 +10,7 @@ import (
 
 func TestRead(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
-	client := &client{conn: serverConn, out: make(chan *msg.Message, 5)} // XXX
+	client := &client{conn: serverConn, out: make(chan *msg.Message, 1)}
 
 	go client.read()
 
@@ -21,7 +21,7 @@ func TestRead(t *testing.T) {
 
 func TestWrite(t *testing.T) {
 	serverConn, clientConn := net.Pipe()
-	client := &client{conn: serverConn, out: make(chan *msg.Message, 5)} // XXX
+	client := &client{conn: serverConn, out: make(chan *msg.Message, 1)}
 
 	go client.write()
 
