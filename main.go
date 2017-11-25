@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net"
+	_ "net/http/pprof"
 
 	"github.com/abdelq/lode-runner/web"
 )
