@@ -3,7 +3,7 @@ package game
 import (
 	"errors"
 	//"fmt"
-	"time"
+	//"time"
 
 	msg "github.com/abdelq/lode-runner/message"
 )
@@ -148,32 +148,17 @@ func (r *Runner) dig(dir direction, game *Game) {
 	var digPos position
 	if dir == RIGHT {
 		digPos = position{r.pos.x + 1, r.pos.y + 1}
-	} else {
+	} else if dir == LEFT {
 		digPos = position{r.pos.x - 1, r.pos.y + 1}
+	} else {
+		return
 	}
 
 	// FIXME FIXME
 	if game.level.validDig(digPos) {
 		//r.state = DIGGING
+		game.level.holes[digPos] = 8
 		game.level.tiles[digPos.y][digPos.x] = EMPTY
-
-		var digDuration = game.tick_time * 9
-
-		time.AfterFunc(digDuration, func() {
-			if tile, ok := game.level.players[digPos]; ok && tile == RUNNER {
-				r.health--
-
-				if r.health == 0 {
-					game.stop(GUARD) // TODO Goroutine?
-					return
-				}
-
-				game.start(game.level.num) // TODO Goroutine or not ?
-				return
-			}
-			// FIXME For guard
-			game.level.tiles[digPos.y][digPos.x] = BRICK
-		})
 	}
 }
 

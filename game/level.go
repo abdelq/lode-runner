@@ -15,6 +15,7 @@ type level struct {
 	players map[position]tile
 	gold    []position
 	escape  []position
+	holes   map[position]uint8
 }
 
 // Tiles
@@ -48,8 +49,8 @@ func newLevel(num int) (*level, error) {
 
 	if rand.Intn(2) == 0 {
 		for i, line := range lines {
-			for j:= 0; j < len(line) / 2; j++ {
-				lines[i][j], lines[i][len(line) - 1 - j] = lines[i][len(line) - 1 - j], lines[i][j]
+			for j := 0; j < len(line)/2; j++ {
+				lines[i][j], lines[i][len(line)-1-j] = lines[i][len(line)-1-j], lines[i][j]
 			}
 		}
 	}
@@ -57,7 +58,8 @@ func newLevel(num int) (*level, error) {
 	// TODO Specify right len/cap
 	lvl := &level{
 		num, lines,
-		make(map[position]tile), make([]position, 0), make([]position, 0),
+		make(map[position]tile), make([]position, 0),
+		make([]position, 0), make(map[position]uint8),
 	}
 
 	// Collect data for players/gold

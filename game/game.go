@@ -124,11 +124,41 @@ func (g *Game) hasPlayer(name string) bool {
 
 func (g *Game) gameTick() {
 	for range g.ticker.C {
-		//if g.Started() {
-		// Runner
-		/*if g.runner.action == nil {
-			g.runner.action = action{}
-		}*/
+		// Fill up holes
+		for pos, ticksLeft := range g.level.holes {
+			if ticksLeft > 0 {
+				g.level.holes[pos] = ticksLeft - 1
+				continue
+			}
+
+			// XXX Guard
+			if tile, ok := g.level.players[pos]; ok && tile == RUNNER {
+				g.runner.health--
+				if g.runner.health == 0 {
+					g.stop(GUARD)
+					return
+				}
+
+				g.start(g.level.num)
+				return
+			}
+
+			/*if tile, ok := g.level.players[pos]; ok && tile == RUNNER {
+				r.health--
+
+				if r.health == 0 {
+					g.stop(GUARD) // TODO Goroutine?
+					continue
+				}
+
+				g.start(g.level.num) // TODO Goroutine or not ?
+				continue
+			}*/
+
+			g.level.tiles[pos.y][pos.x] = BRICK
+			delete(g.level.holes, pos)
+		}
+
 		switch runner := g.runner; runner.action.Type {
 		case MOVE:
 			runner.move(runner.action.Direction, g)
