@@ -53,10 +53,10 @@ func TestClose(t *testing.T) {
 		}
 	}
 
-	// XXX Verify output channel is closed
-	/*if _, ok := <-client.out; ok {
+	// Verify output channel is closed
+	if _, ok := <-client.out; ok {
 		t.Error("output channel not closed")
-	}*/
+	}
 
 	// Verify connection is closed
 	if _, err := conn.Read(nil); err != io.ErrClosedPipe {

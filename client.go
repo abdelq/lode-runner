@@ -51,13 +51,12 @@ func (c *client) read() {
 	for {
 		message := new(message)
 		if err := dec.Decode(message); err != nil {
-			if err == io.EOF {
+			if err == io.EOF || err == io.ErrClosedPipe {
 				break
 			}
-			if err, ok := err.(net.Error); ok && !err.Temporary() {
+			if _, ok := err.(net.Error); ok {
 				break
 			}
-
 			c.out <- msg.NewMessage("error", err.Error())
 			continue
 		}
@@ -71,7 +70,7 @@ func (c *client) write() {
 	enc := json.NewEncoder(c.conn)
 	for msg := range c.out {
 		if err := enc.Encode(msg); err != nil {
-			if err, ok := err.(net.Error); ok && !err.Temporary() {
+			if _, ok := err.(net.Error); ok {
 				break
 			}
 			log.Println(err)
