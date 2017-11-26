@@ -15,7 +15,7 @@ type Guard struct {
 	out    chan *msg.Message
 }
 
-func (g *Guard) Add(game *Game) error {
+func (g *Guard) Join(game *Game) error {
 	if len(game.guards) == 1 { // XXX
 		return errors.New("guards already joined")
 	}
@@ -35,7 +35,7 @@ func (g *Guard) Add(game *Game) error {
 	return nil
 }
 
-func (g *Guard) Remove(game *Game) {
+func (g *Guard) Leave(game *Game) {
 	delete(game.guards, g)
 	/*game.broadcast <- &msg.Message{"leave",
 		[]byte(`{"name": "", "room": "", "role": "guard"}`), // FIXME

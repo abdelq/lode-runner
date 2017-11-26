@@ -42,6 +42,15 @@ func parseJoin(data json.RawMessage, sender *client) {
 	}
 }
 
+func findRoom(client *client) string {
+	for name, room := range rooms {
+		if _, ok := room.clients[client]; ok {
+			return name
+		}
+	}
+	return ""
+}
+
 // TODO Move to game package
 func parseMove(data json.RawMessage, sender *client) {
 	message := new(msg.GameMessage)

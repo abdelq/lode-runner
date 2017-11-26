@@ -23,8 +23,8 @@ type join struct {
 
 func newRoom(name string) *room {
 	room := &room{
-		join:      make(chan *join, 5),         // XXX
-		leave:     make(chan *leave, 5),        // XXX
+		join:      make(chan *join, 7),
+		leave:     make(chan *leave, 7),
 		broadcast: make(chan *msg.Message, 10), // XXX
 		clients:   make(map[*client]game.Player),
 	}
@@ -36,13 +36,13 @@ func newRoom(name string) *room {
 	return room
 }
 
-func findRoom(client *client) string {
+func (r *room) delete() {
 	for name, room := range rooms {
-		if _, ok := room.clients[client]; ok {
-			return name
+		if room == r {
+			delete(rooms, name)
+			return
 		}
 	}
-	return ""
 }
 
 func (r *room) listen() {
@@ -60,7 +60,7 @@ func (r *room) listen() {
 				continue
 			}
 
-			if err := player.Add(r.game); err != nil {
+			if err := player.Join(r.game); err != nil {
 				client.out <- msg.NewMessage("error", err.Error())
 				continue
 			}
@@ -74,13 +74,17 @@ func (r *room) listen() {
 
 			delete(r.clients, client)
 			if player == nil {
-				continue
+				if len(r.clients) > 0 {
+					continue
+				}
+				r.delete()
+				break // XXX
 			}
 
-			player.Remove(r.game)
+			player.Leave(r.game)
 		case msg := <-r.broadcast:
 			switch msg.Event {
-			case "next":
+			case "next": // XXX
 				for client, player := range r.clients {
 					if _, ok := player.(*game.Runner); !ok {
 						client.out <- msg
@@ -91,14 +95,8 @@ func (r *room) listen() {
 					client.out <- msg
 					client.close()
 				}
-
-				// Delete room
-				for name, room := range rooms {
-					if room == r {
-						delete(rooms, name)
-						return
-					}
-				}
+				r.delete()
+				break // XXX
 			default:
 				for client := range r.clients {
 					client.out <- msg

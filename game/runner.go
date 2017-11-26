@@ -17,7 +17,7 @@ type Runner struct {
 	out    chan *msg.Message
 }
 
-func (r *Runner) Add(game *Game) error {
+func (r *Runner) Join(game *Game) error {
 	if game.runner != nil {
 		return errors.New("runner already joined")
 	}
@@ -37,7 +37,7 @@ func (r *Runner) Add(game *Game) error {
 	return nil
 }
 
-func (r *Runner) Remove(game *Game) {
+func (r *Runner) Leave(game *Game) {
 	game.runner = nil
 	/*game.broadcast <- &msg.Message{"leave",
 		[]byte(`{"name": "", "room": "", "role": "runner"}`), // FIXME

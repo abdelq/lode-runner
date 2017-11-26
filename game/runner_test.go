@@ -2,9 +2,9 @@ package game
 
 import "testing"
 
-func TestRunnerAdd(t *testing.T) {} // TODO
+func TestRunnerJoin(t *testing.T) {} // TODO
 
-func TestRunnerRemove(t *testing.T) {} // TODO
+func TestRunnerLeave(t *testing.T) {} // TODO
 
 func TestRunnerInit(t *testing.T) {} // TODO
 

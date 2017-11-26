@@ -4,8 +4,8 @@ import msg "github.com/abdelq/lode-runner/message"
 
 type state uint8
 type Player interface {
-	Add(*Game) error
-	Remove(*Game)
+	Join(*Game) error
+	Leave(*Game)
 	//init(map[position]tile)
 	//move(direction, *Game)
 	UpdateAction(uint8, direction)

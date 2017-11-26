@@ -2,9 +2,9 @@ package game
 
 import "testing"
 
-func TestGuardAdd(t *testing.T) {} // TODO
+func TestGuardJoin(t *testing.T) {} // TODO
 
-func TestGuardRemove(t *testing.T) {} // TODO
+func TestGuardLeave(t *testing.T) {} // TODO
 
 func TestGuardInit(t *testing.T) {} // TODO
 
