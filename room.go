@@ -78,7 +78,7 @@ func (r *room) listen() {
 					continue
 				}
 				r.delete()
-				break // XXX
+				return
 			}
 
 			player.Leave(r.game)
@@ -96,7 +96,7 @@ func (r *room) listen() {
 					client.close()
 				}
 				r.delete()
-				break // XXX
+				return
 			default:
 				for client := range r.clients {
 					client.out <- msg
