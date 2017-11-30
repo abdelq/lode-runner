@@ -82,7 +82,7 @@ PLAYERS:
 
 	time.Sleep(50 * time.Millisecond)
 
-	g.ticker = time.NewTicker(250 * time.Millisecond)
+	g.ticker = time.NewTicker(g.tick_time)
 	go g.gameTick()
 }
 
