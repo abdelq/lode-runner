@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 	"net"
-	//_ "net/http/pprof"
+	_ "net/http/pprof"
 
 	"github.com/abdelq/lode-runner/web"
 )
@@ -16,7 +16,6 @@ func init() {
 func main() {
 	// Command-line flags
 	tcpAddr := flag.String("tcp", ":1337", "TCP network address")
-	httpAddr := flag.String("http", ":7331", "HTTP network address")
 	flag.Parse()
 
 	// Listen on TCP
@@ -27,7 +26,8 @@ func main() {
 	log.Printf("Listening on %s %s", ln.Addr().Network(), ln.Addr())
 
 	// Listen on HTTP
-	go web.Listen(httpAddr, tcpAddr)
+	web.TCPAddr = tcpAddr
+	go web.Listen()
 
 	defer ln.Close()
 	for {
