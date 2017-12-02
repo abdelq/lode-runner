@@ -1,9 +1,26 @@
 /* Canvas */
-var canvas = document.getElementById('canvas');
-var context = canvas.getContext('2d');
+var canvas  = document.getElementById('canvas'),
+    context = canvas.getContext('2d');
 
 canvas.width  = canvas.offsetWidth;
 canvas.height = canvas.offsetHeight;
+
+function drawLevel(tiles) {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    var tileHeight = canvas.height / tiles.length; // XXX
+    var tileWidth = canvas.width / tiles[0].length; // XXX
+
+    for (var i = 0; i < tiles.length; i++) {
+        for (var j = 0; j < tiles[i].length; j++) {
+            context.drawImage(
+                document.getElementById(tiles[i][j]),
+                j * tileWidth, i * tileHeight,
+                tileWidth, tileHeight
+            );
+        }
+    }
+}
 
 /* Socket */
 var socket = new WebSocket("ws://" + location.host + "/ws");
@@ -21,26 +38,15 @@ socket.onopen = function () {
 
 socket.onmessage = function (message) {
     var msg = JSON.parse(message.data);
-    if (msg.event != "start" && msg.event != "next") {
-        console.log(msg);
-        return;
-    }
-
-    context.clearRect(0, 0, canvas.width, canvas.height);
-
-    var tiles = msg.data.split("\n");
-    var tileHeight = canvas.height / tiles.length;
-    var tileWidth = canvas.width / tiles[0].length;
-
-    for (var i = 0; i < tiles.length; i++) {
-        for (var j = 0; j < tiles[i].length; j++) {
-            context.drawImage(
-                document.getElementById(tiles[i][j]),
-                j * tileWidth,
-                i * tileHeight,
-                tileWidth,
-                tileHeight
-            );
-        }
+    switch (msg.event) {
+        case "start":
+            drawLevel(msg.data.split("\n"));
+            break;
+        case "next":
+            drawLevel(msg.data.split("\n")); // XXX
+            break;
+        default:
+            console.log(msg);
+            break;
     }
 }
