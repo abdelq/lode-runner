@@ -24,7 +24,7 @@ func (m *message) parse(sender *client) {
 		for name := range rooms {
 			names = append(names, name)
 		}
-		sender.out <- msg.NewMessage("info", strings.Join(names,","))
+		sender.out <- msg.NewMessage("info", strings.Join(names, ","))
 	default:
 		sender.out <- msg.NewMessage("error", "invalid event")
 	}
@@ -44,7 +44,7 @@ func parseJoin(data json.RawMessage, sender *client) {
 	}
 
 	room.join <- &join{sender,
-		game.NewPlayer(message.Name, message.Role, sender.out),
+		game.NewPlayer(message.Name, message.Role, sender.out, message.Level),
 	}
 }
 

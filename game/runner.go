@@ -15,6 +15,7 @@ type Runner struct {
 	action action
 	health uint8
 	out    chan *msg.Message
+	level  uint8
 }
 
 func (r *Runner) Add(game *Game) error {
@@ -31,7 +32,11 @@ func (r *Runner) Add(game *Game) error {
 	}*/
 
 	if game.filled() {
-		go game.start(1)
+		if r.level > 0 {
+			go game.start(int(r.level))
+		} else {
+			go game.start(1)
+		}
 	}
 
 	return nil

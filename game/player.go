@@ -41,10 +41,10 @@ const (
 	RIGHT
 )
 
-func NewPlayer(name string, role tile, out chan *msg.Message) Player {
+func NewPlayer(name string, role tile, out chan *msg.Message, level uint8) Player {
 	switch role {
 	case 0, RUNNER: // XXX
-		return &Runner{name: name, action: action{}, health: 5, out: out}
+		return &Runner{name: name, action: action{}, health: 5, out: out, level: level}
 		//return &Runner{name: name, action: action{}, health: 5}
 	case GUARD:
 		return &Guard{name: name, action: action{}, out: out}
