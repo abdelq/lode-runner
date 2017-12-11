@@ -43,7 +43,7 @@ func (r *Runner) Add(game *Game) error {
 }
 
 func (r *Runner) Remove(game *Game) {
-	game.runner = nil
+	// game.runner = nil
 	/*game.broadcast <- &msg.Message{"leave",
 		[]byte(`{"name": "", "room": "", "role": "runner"}`), // FIXME
 	}*/

@@ -21,6 +21,8 @@ wss.on('connection', function connection(ws, req) {
     }
 
     var client = connect(1337, ip, () => {
+	if(!client) return;
+
         console.log(`Connected to ${client.remoteAddress}:${client.remotePort}`);
         send(client, "join", {name: "spectator", room: room, role: 42});
     });
