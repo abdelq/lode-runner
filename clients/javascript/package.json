@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "start": "node client"
+  },
+  "dependencies": {
+    "JSONStream": "^1.3.2"
+  }
+}
