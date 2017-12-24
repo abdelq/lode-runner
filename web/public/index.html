@@ -7,18 +7,20 @@
                 margin: 0;
                 background-color: #000;
             }
-            canvas {
+            #canvas {
                 display: block;
                 width: 100vw;
                 height: 100vh;
+            }
+            .tiles {
+                display: none;
             }
         </style>
     </head>
 
     <body>
         <canvas id="canvas"></canvas>
-
-        <div style="display: none;">
+        <div class="tiles">
             <img id=" " src="tiles/empty.png">
             <img id="&" src="tiles/runner.png">
             <img id="0" src="tiles/guard.png">
