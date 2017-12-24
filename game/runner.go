@@ -9,12 +9,13 @@ import (
 )
 
 type Runner struct {
-	name   string
-	pos    position
-	state  state
-	action action
-	health uint8
-	out    chan *msg.Message
+	name     string
+	pos      position
+	state    state
+	action   action
+	health   uint8
+	startLvl uint8
+	out      chan *msg.Message
 }
 
 func (r *Runner) Join(game *Game) error {
@@ -31,7 +32,11 @@ func (r *Runner) Join(game *Game) error {
 	}*/
 
 	if game.filled() {
-		go game.start(1)
+		if r.startLvl < 1 {
+			go game.start(1)
+		} else {
+			go game.start(int(r.startLvl))
+		}
 	}
 
 	return nil

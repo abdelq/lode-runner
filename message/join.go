@@ -7,8 +7,8 @@ import (
 )
 
 type JoinMessage struct {
-	Name, Room string
-	Role       uint8
+	Name, Room  string
+	Role, Level uint8
 }
 
 func (m *JoinMessage) Parse(data json.RawMessage) error {
