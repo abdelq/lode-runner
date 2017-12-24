@@ -19,6 +19,12 @@ func (m *message) parse(sender *client) {
 		parseMove(m.Data, sender)
 	case "dig":
 		parseDig(m.Data, sender)
+	case "list":
+		names := make([]string, 0, len(rooms))
+		for name := range rooms {
+			names = append(names, name)
+		}
+		sender.out <- msg.NewMessage("info", strings.Join(names, ", "))
 	default:
 		sender.out <- msg.NewMessage("error", "invalid event")
 	}
