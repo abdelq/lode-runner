@@ -68,6 +68,6 @@ func (g *Guard) init(players map[position]tile) {
 func (g *Guard) move(dir direction, game *Game) {} // TODO
 
 // FIXME FIXME FIXME
-func (g *Guard) UpdateAction(actionType uint8, direction direction) {
-	g.action = action{actionType, direction}
+func (g *Guard) Move(direction direction) {
+	g.action = action{MOVE, direction}
 }

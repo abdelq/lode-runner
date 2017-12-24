@@ -166,9 +166,17 @@ func (r *Runner) dig(dir direction, game *Game) {
 }
 
 // FIXME FIXME FIXME
-func (r *Runner) UpdateAction(actionType uint8, direction direction) {
+/*func (r *Runner) UpdateAction(actionType uint8, direction direction) {
 	r.action = action{actionType, direction}
 	// FIXME Dig should only accept left/right (DO THIS HERE)
+}*/
+
+func (r *Runner) Move(direction direction) {
+	r.action = action{MOVE, direction}
+}
+
+func (r *Runner) Dig(direction direction) {
+	r.action = action{DIG, direction}
 }
 
 // FIXME FIXME FIXME

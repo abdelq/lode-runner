@@ -8,7 +8,7 @@ type Player interface {
 	Leave(*Game)
 	//init(map[position]tile)
 	//move(direction, *Game)
-	UpdateAction(uint8, direction)
+	Move(direction)
 }
 
 // TODO Rename fields

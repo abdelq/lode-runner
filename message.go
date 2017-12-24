@@ -69,7 +69,7 @@ func parseMove(data json.RawMessage, sender *client) {
 		}
 
 		if player := room.clients[sender]; player != nil {
-			player.UpdateAction(game.MOVE, message.Direction)
+			player.Move(message.Direction)
 		} else {
 			sender.out <- msg.NewMessage("error", "not a player")
 		}
@@ -99,7 +99,7 @@ func parseDig(data json.RawMessage, sender *client) {
 		}
 
 		if runner, ok := room.clients[sender].(*game.Runner); ok {
-			runner.UpdateAction(game.DIG, message.Direction)
+			runner.Dig(message.Direction)
 		} else {
 			sender.out <- msg.NewMessage("error", "not a runner")
 		}
