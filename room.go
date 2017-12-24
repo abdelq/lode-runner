@@ -36,6 +36,15 @@ func newRoom(name string) *room {
 	return room
 }
 
+func findRoom(client *client) string {
+	for name, room := range rooms {
+		if _, ok := room.clients[client]; ok {
+			return name
+		}
+	}
+	return ""
+}
+
 func (r *room) delete() {
 	for name, room := range rooms {
 		if room == r {
