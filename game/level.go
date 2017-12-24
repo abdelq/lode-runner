@@ -14,6 +14,7 @@ type level struct {
 	players map[position]tile
 	gold    []position
 	escape  []position
+	holes   map[position]uint8
 }
 
 // Tiles
@@ -46,7 +47,8 @@ func newLevel(num int) (*level, error) {
 	// TODO Specify right len/cap
 	lvl := &level{
 		num, bytes.Split(content, []byte("\n")),
-		make(map[position]tile), make([]position, 0), make([]position, 0),
+		make(map[position]tile), make([]position, 0),
+		make([]position, 0), make(map[position]uint8),
 	}
 
 	// Collect data for players/gold
@@ -82,11 +84,14 @@ func (l *level) height() int {
 }
 
 func (l *level) emptyBelow(pos position) bool {
-	if pos.y >= l.height()-1 {
+	if pos.y+1 >= l.height()-1 {
 		return false
 	}
 
-	return l.getTiles()[pos.y+1][pos.x] == EMPTY || l.tiles[pos.y+1][pos.x] == ROPE // XXX
+	// XXX
+	return l.getTiles()[pos.y+1][pos.x] == EMPTY ||
+		l.tiles[pos.y+1][pos.x] == ROPE ||
+		l.getTiles()[pos.y+1][pos.x] == GOLD
 }
 
 func (l *level) goldCollected() bool {
@@ -122,7 +127,7 @@ func (l *level) getTiles() [][]tile {
 }
 
 func (l *level) validMove(orig, dest position, dir direction) bool {
-	if dest.x < 0 || dest.x >= l.width() /*|| dest.y < 0*/ || dest.y >= l.height() {
+	if dest.x < 0 || dest.x >= l.width() /*|| dest.y < 0*/ || dest.y >= l.height()-1 {
 		return false
 	}
 

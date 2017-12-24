@@ -2,8 +2,6 @@ package game
 
 import (
 	"errors"
-	"log"
-	"time"
 
 	msg "github.com/abdelq/lode-runner/message"
 )
@@ -32,10 +30,10 @@ func (r *Runner) Join(game *Game) error {
 	}*/
 
 	if game.filled() {
-		if r.startLvl < 1 {
-			go game.start(1)
-		} else {
+		if r.startLvl > 0 {
 			go game.start(int(r.startLvl))
+		} else {
+			go game.start(1)
 		}
 	}
 
@@ -43,7 +41,7 @@ func (r *Runner) Join(game *Game) error {
 }
 
 func (r *Runner) Leave(game *Game) {
-	game.runner = nil
+	//game.runner = nil
 	/*game.broadcast <- &msg.Message{"leave",
 		[]byte(`{"name": "", "room": "", "role": "runner"}`), // FIXME
 	}*/
@@ -54,6 +52,7 @@ func (r *Runner) Leave(game *Game) {
 }
 
 func (r *Runner) init(players map[position]tile) {
+	r.action = action{}
 	for pos, tile := range players {
 		if tile == RUNNER {
 			r.pos = pos
@@ -66,6 +65,17 @@ func (r *Runner) init(players map[position]tile) {
 func (r *Runner) move(dir direction, game *Game) {
 	if r.state == DIGGING {
 		return
+	}
+
+	// Stop falling if needed
+	if r.state == FALLING && r.pos.y+1 < game.level.height()-1 {
+		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
+
+		if nextTile == BRICK || nextTile == SOLIDBRICK ||
+			nextTile == LADDER /* || nextTile == ESCAPELADDER*/ /*|| nextTile == ROPE */ {
+			r.state = ALIVE
+		}
+		//fmt.Println(r.state)
 	}
 
 	if r.state == FALLING && dir != DOWN {
@@ -87,24 +97,25 @@ func (r *Runner) move(dir direction, game *Game) {
 		newPos = position{r.pos.x + 1, r.pos.y}
 	}
 
-	var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
-	var validMove = game.level.validMove(r.pos, newPos, dir)
-
 	// Stop falling
-	if r.state == FALLING && (nextTile == LADDER || nextTile == ESCAPELADDER || nextTile == ROPE) {
-		r.state = ALIVE
+	if r.state == FALLING && r.pos.y+1 < game.level.height()-1 {
+		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
+
+		if nextTile == ROPE {
+			r.state = ALIVE
+		}
 	}
 
-	if !validMove { // FIXME
-		//log.Println("invalid move")
+	var validMove = game.level.validMove(r.pos, newPos, dir)
+
+	if !validMove {
 		if r.state == FALLING {
 			r.state = ALIVE
 		}
 		return
 	}
 
-	if newPos.y < 0 {
-		//if game.level.escape[] { // TP2
+	if game.level.goldCollected() && newPos.y < 0 {
 		game.start(game.level.num + 1)
 		return
 	}
@@ -129,7 +140,7 @@ func (r *Runner) move(dir direction, game *Game) {
 
 	game.level.players[r.pos] = RUNNER
 
-	if game.level.emptyBelow(r.pos) && game.level.tiles[r.pos.y][r.pos.x] != ROPE {
+	if game.level.emptyBelow(r.pos) && game.level.tiles[r.pos.y][r.pos.x] != ROPE && game.level.tiles[r.pos.y][r.pos.x] != GOLD {
 		r.state = FALLING
 	}
 }
@@ -140,36 +151,17 @@ func (r *Runner) dig(dir direction, game *Game) {
 	var digPos position
 	if dir == RIGHT {
 		digPos = position{r.pos.x + 1, r.pos.y + 1}
-	} else {
+	} else if dir == LEFT {
 		digPos = position{r.pos.x - 1, r.pos.y + 1}
+	} else {
+		return // XXX Should be catched b4 getting here
 	}
 
 	// FIXME FIXME
 	if game.level.validDig(digPos) {
 		//r.state = DIGGING
+		game.level.holes[digPos] = 8
 		game.level.tiles[digPos.y][digPos.x] = EMPTY
-
-		digDuration, err := time.ParseDuration("500ms") // TODO Using flag ?
-		if err != nil {
-			log.Println(err)
-			digDuration, _ = time.ParseDuration("500ms") // TODO Forced to default
-		}
-
-		time.AfterFunc(digDuration, func() {
-			if tile, ok := game.level.players[digPos]; ok && tile == RUNNER {
-				r.health--
-
-				if r.health == 0 {
-					game.stop(GUARD) // TODO Goroutine?
-					return
-				}
-
-				game.start(game.level.num) // TODO Goroutine or not ?
-				return
-			}
-			// FIXME For guard
-			game.level.tiles[digPos.y][digPos.x] = BRICK
-		})
 	}
 }
 
