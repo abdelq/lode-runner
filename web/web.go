@@ -11,10 +11,10 @@ import (
 )
 
 var httpAddr = flag.String("http", ":7331", "HTTP network address")
-var TCPAddr *string
+var tcpAddr *string
 
 func proxyServer(ws *websocket.Conn) {
-	tcp, err := net.Dial("tcp", *TCPAddr)
+	tcp, err := net.Dial("tcp", *tcpAddr)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -25,7 +25,9 @@ func proxyServer(ws *websocket.Conn) {
 	io.Copy(tcp, ws)
 }
 
-func Listen() {
+func Listen(addr *string) {
+	tcpAddr = addr
+
 	http.Handle("/ws", websocket.Handler(proxyServer))
 	http.Handle("/", http.FileServer(http.Dir("public")))
 

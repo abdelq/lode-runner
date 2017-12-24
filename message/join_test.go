@@ -2,6 +2,8 @@ package message
 
 import "testing"
 
+// TODO Add level
+
 func TestJoinParse(t *testing.T) {
 	t.Run("Spectator", func(t *testing.T) {
 		t.Parallel()

@@ -83,23 +83,23 @@ func (r *room) listen() {
 
 			delete(r.clients, client)
 			if player == nil {
-				if len(r.clients) > 0 {
-					continue
+				if len(r.clients) == 0 {
+					r.delete()
+					return
 				}
-				r.delete()
-				return
+				continue
 			}
 
 			player.Leave(r.game)
 		case msg := <-r.broadcast:
 			switch msg.Event {
-			case "next": // XXX
+			case "next":
 				for client, player := range r.clients {
-					if _, ok := player.(*game.Runner); !ok {
+					if player == nil {
 						client.out <- msg
 					}
 				}
-			case "quit": // XXX
+			case "quit":
 				for client := range r.clients {
 					client.out <- msg
 					client.close()

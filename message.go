@@ -43,9 +43,7 @@ func parseJoin(data json.RawMessage, sender *client) {
 		room = newRoom(message.Room)
 	}
 
-	room.join <- &join{sender,
-		game.NewPlayer(message.Name, message.Role, message.Level, sender.out),
-	}
+	room.join <- &join{sender, game.NewPlayer(message, sender.out)}
 }
 
 // TODO Move to game package

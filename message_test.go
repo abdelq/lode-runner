@@ -15,12 +15,15 @@ func TestParse(t *testing.T) {
 		{Event: "JOIN "},
 		{Event: " Move "},
 		{Event: " dig"},
+		{Event: "list"},
 	} {
 		msg.parse(client)
 		receiveMsg(t, clientConn, message{
 			"error", []byte(`"unexpected end of JSON input"`),
 		})
 	}
+
+	// TODO Test the list command
 
 	// Invalid event
 	new(message).parse(client)
@@ -37,13 +40,13 @@ func TestParseJoin(t *testing.T) {
 	}
 
 	// New room
-	parseJoin([]byte(`{"name": "spectator", "room": "test", "role": 42}`), spectator)
+	parseJoin([]byte(`{"room": "test", "role": 42}`), spectator)
 	if _, ok := rooms["test"].clients[spectator]; !ok {
 		t.Error("spectator not in room")
 	}
 
 	// Existing room
-	parseJoin([]byte(`{"name": "runner", "room": "test", "role": 0}`), runner)
+	parseJoin([]byte(`{"name": "runner", "room": "test", "level": 1}`), runner)
 	if _, ok := rooms["test"].clients[runner]; !ok {
 		t.Error("runner not in room")
 	}
