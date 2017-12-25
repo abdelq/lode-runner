@@ -3,7 +3,6 @@ package game
 import (
 	"encoding/json"
 	"flag"
-	"log"
 	"time"
 
 	msg "github.com/abdelq/lode-runner/message"
@@ -15,43 +14,30 @@ type Game struct {
 	level     *level
 	runner    *Runner
 	guards    map[*Guard]struct{}
-	ticker    *time.Ticker
+	ticker    chan bool
 	broadcast chan *msg.Message
 }
 
 func NewGame(broadcast chan *msg.Message) *Game {
-	dur, err := time.ParseDuration(*tick)
-	if err != nil {
-		dur = 250 * time.Millisecond // XXX
-	}
-
-	game := &Game{
-		guards:    make(map[*Guard]struct{}),
-		ticker:    time.NewTicker(dur),
-		broadcast: broadcast,
-	}
-
-	return game
+	return &Game{guards: make(map[*Guard]struct{}), broadcast: broadcast}
 }
 
 func (g *Game) Started() bool {
-	return g.level != nil // XXX
+	return g.level != nil
 }
 
 func (g *Game) filled() bool {
 	return g.runner != nil && len(g.guards) == 0 // XXX
 }
 
-// FIXME
 func (g *Game) start(lvl int) {
-	g.ticker.Stop()
-
+	/* Level */
 	level, err := newLevel(lvl)
 	if err != nil {
-		log.Println(err)
-		// TODO Broadcast error && Stop game
-		return
+		g.broadcast <- msg.NewMessage("error", err.Error())
+		return // XXX Check if client will stay open. Maybe load lvl 1
 	}
+	g.level = level
 
 	/* Runner */
 	g.runner.init(level.players)
@@ -75,32 +61,17 @@ PLAYERS:
 	}
 
 	g.broadcast <- msg.NewMessage("start", level.String())
-	g.level = level // XXX
-
-	time.Sleep(50 * time.Millisecond)
-
-	g.ticker = time.NewTicker(250 * time.Millisecond) // XXX
-	go g.gameTick()
+	g.ticker = startTicker(g.tick)
 }
 
-// FIXME
+func (g *Game) restart() {
+	close(g.ticker)
+	g.start(g.level.num)
+}
+
 func (g *Game) stop(winner tile) {
-	g.ticker.Stop() // XXX Verify GC
-
-	if winner == RUNNER {
-		g.broadcast <- msg.NewMessage("quit", "runner wins")
-	} else {
-		g.broadcast <- msg.NewMessage("quit", "runner looses")
-	}
-
-	/*switch winner {
-	case RUNNER:
-		g.broadcast <- msg.NewMessage("quit", "runner wins") // XXX
-	case GUARD:
-		g.broadcast <- msg.NewMessage("quit", "guards win") // XXX
-	default:
-		g.broadcast <- msg.NewMessage("quit", "draw") // XXX
-	}*/
+	close(g.ticker)
+	g.broadcast <- msg.NewMessage("quit", "game over")
 }
 
 func (g *Game) hasPlayer(name string) bool {
@@ -119,81 +90,82 @@ func (g *Game) hasPlayer(name string) bool {
 	return false
 }
 
-func (g *Game) gameTick() {
-	for range g.ticker.C {
-		// Fill up holes
-		for pos, ticksLeft := range g.level.holes {
-			if ticksLeft > 0 {
-				g.level.holes[pos] = ticksLeft - 1
-				continue
+// TODO Improve https://stackoverflow.com/questions/17797754/ticker-stop-behaviour-in-golang
+func startTicker(f func()) chan bool {
+	done := make(chan bool, 1)
+	go func() {
+		dur, err := time.ParseDuration(*tick)
+		if err != nil {
+			dur = 250 * time.Millisecond
+		}
+		ticker := time.NewTicker(dur)
+
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				f()
+			case <-done:
+				return
 			}
+		}
+	}()
+	return done
+}
 
-			// XXX Guard
-			if tile, ok := g.level.players[pos]; ok && tile == RUNNER {
-				g.runner.health--
-				if g.runner.health == 0 {
-					g.stop(GUARD)
-					return
-				}
+func (g *Game) tick() {
+	// Fill up holes
+	for pos, ticks := range g.level.holes {
+		if ticks > 0 {
+			g.level.holes[pos] = ticks - 1
+			continue
+		}
 
-				g.start(g.level.num)
+		// XXX Guard
+		if tile, ok := g.level.players[pos]; ok && tile == RUNNER {
+			g.runner.health--
+			if g.runner.health == 0 {
+				g.stop(GUARD)
 				return
 			}
 
-			/*if tile, ok := g.level.players[pos]; ok && tile == RUNNER {
-				r.health--
-
-				if r.health == 0 {
-					g.stop(GUARD) // TODO Goroutine?
-					continue
-				}
-
-				g.start(g.level.num) // TODO Goroutine or not ?
-				continue
-			}*/
-
-			g.level.tiles[pos.y][pos.x] = BRICK
-			delete(g.level.holes, pos)
+			g.restart()
+			return
 		}
 
-		switch runner := g.runner; runner.action.Type {
-		case MOVE:
-			runner.move(runner.action.Direction, g)
-			runner.action = action{}
-		case DIG:
-			runner.dig(runner.action.Direction, g)
-			runner.action = action{}
-		}
-
-		// Guards
-		for guard := range g.guards {
-			//if guard.action != nil {
-			guard.move(guard.action.Direction, g)
-			//}
-			guard.action = action{}
-		}
-
-		// XXX
-		next := struct {
-			Runner struct {
-				Position struct {
-					X int `json:"x"`
-					Y int `json:"y"`
-				} `json:"position"`
-			} `json:"runner"`
-		}{}
-		next.Runner.Position.X = g.runner.pos.x
-		next.Runner.Position.Y = g.runner.pos.y
-		//next.Runner.Position = position{g.runner.pos.x, g.runner.pos.y}
-
-		stuff, _ := json.Marshal(next)
-
-		//fmt.Println(next)
-
-		g.runner.out <- &msg.Message{"next", stuff}
-
-		//g.runner.out <- &msg.Message{"next", []byte(`{"runner": {"position": {"x": ` + string(g.runner.pos.x) + `, "y": ` + string(g.runner.pos.y) + `}}}`)} // FIXME
-		g.broadcast <- msg.NewMessage("next", g.level.String())
+		g.level.tiles[pos.y][pos.x] = BRICK
+		delete(g.level.holes, pos)
 	}
-	//}
+
+	switch runner := g.runner; runner.action.Type {
+	case MOVE:
+		runner.move(runner.action.Direction, g)
+		runner.action = action{}
+	case DIG:
+		runner.dig(runner.action.Direction, g)
+		runner.action = action{}
+	}
+
+	// Guards
+	for guard := range g.guards {
+		guard.move(guard.action.Direction, g)
+		guard.action = action{}
+	}
+
+	// XXX
+	next := struct {
+		Runner struct {
+			Position struct {
+				X int `json:"x"`
+				Y int `json:"y"`
+			} `json:"position"`
+		} `json:"runner"`
+	}{}
+	next.Runner.Position.X = g.runner.pos.x
+	next.Runner.Position.Y = g.runner.pos.y
+
+	stuff, _ := json.Marshal(next)
+
+	g.runner.out <- &msg.Message{"next", stuff}
+	g.broadcast <- msg.NewMessage("next", g.level.String())
 }

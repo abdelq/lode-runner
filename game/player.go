@@ -2,39 +2,31 @@ package game
 
 import msg "github.com/abdelq/lode-runner/message"
 
-type state uint8
 type Player interface {
 	Join(*Game) error
 	Leave(*Game)
-	//init(map[position]tile)
-	//move(direction, *Game)
-	Move(direction)
+	Move(uint8)
 }
 
-// TODO Rename fields
-type direction = uint8 // XXX
 type action struct {
-	Type      uint8
-	Direction direction
+	Type, Direction uint8
 }
 
-// XXX Actions
+// Actions
 const (
 	MOVE = iota
 	DIG
 )
 
-// XXX States
+// States
 const (
-	ALIVE state = iota
+	ALIVE = iota
 	FALLING
-	DIGGING
-	TRAPPED
 )
 
-// XXX Directions
+// Directions
 const (
-	NONE direction = iota
+	NONE = iota
 	UP
 	LEFT
 	DOWN
@@ -43,7 +35,7 @@ const (
 
 func NewPlayer(joinMsg *msg.JoinMessage, out chan *msg.Message) Player {
 	switch joinMsg.Role {
-	case RUNNER, 0: // XXX
+	case RUNNER, 0:
 		return &Runner{
 			name:     joinMsg.Name,
 			action:   action{},

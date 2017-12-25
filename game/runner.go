@@ -9,7 +9,7 @@ import (
 type Runner struct {
 	name     string
 	pos      position
-	state    state
+	state    uint8
 	action   action
 	health   uint8
 	startLvl uint8
@@ -62,10 +62,10 @@ func (r *Runner) init(players map[position]tile) {
 }
 
 // FIXME FIXME FIXME FIXME
-func (r *Runner) move(dir direction, game *Game) {
-	if r.state == DIGGING {
+func (r *Runner) move(dir uint8, game *Game) {
+	/*if r.state == DIGGING {
 		return
-	}
+	}*/
 
 	// Stop falling if needed
 	if r.state == FALLING && r.pos.y+1 < game.level.height()-1 {
@@ -133,7 +133,8 @@ func (r *Runner) move(dir direction, game *Game) {
 			return
 		}
 
-		game.start(game.level.num) // TODO Goroutine or not ?
+		//game.start(game.level.num) // TODO Goroutine or not ?
+		game.restart()
 		return
 		// TODO Reset
 	}
@@ -146,7 +147,7 @@ func (r *Runner) move(dir direction, game *Game) {
 }
 
 // FIXME FIXME FIXME FIXME
-func (r *Runner) dig(dir direction, game *Game) {
+func (r *Runner) dig(dir uint8, game *Game) {
 	// FIXME
 	var digPos position
 	if dir == RIGHT {
@@ -171,11 +172,11 @@ func (r *Runner) dig(dir direction, game *Game) {
 	// FIXME Dig should only accept left/right (DO THIS HERE)
 }*/
 
-func (r *Runner) Move(direction direction) {
+func (r *Runner) Move(direction uint8) {
 	r.action = action{MOVE, direction}
 }
 
-func (r *Runner) Dig(direction direction) {
+func (r *Runner) Dig(direction uint8) {
 	r.action = action{DIG, direction}
 }
 

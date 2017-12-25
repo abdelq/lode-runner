@@ -10,7 +10,7 @@ import (
 type Guard struct {
 	name   string
 	pos    position
-	state  state
+	state  uint8
 	action action
 	out    chan *msg.Message
 }
@@ -65,9 +65,9 @@ func (g *Guard) init(players map[position]tile) {
 	g.pos = positions[0]
 }
 
-func (g *Guard) move(dir direction, game *Game) {} // TODO
+func (g *Guard) move(dir uint8, game *Game) {} // TODO
 
 // FIXME FIXME FIXME
-func (g *Guard) Move(direction direction) {
+func (g *Guard) Move(direction uint8) {
 	g.action = action{MOVE, direction}
 }

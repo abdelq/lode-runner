@@ -84,7 +84,7 @@ func (l *level) height() int {
 }
 
 func (l *level) emptyBelow(pos position) bool {
-	if pos.y+1 >= l.height()-1 {
+	if pos.y+1 >= l.height() /*-1*/ {
 		return false
 	}
 
@@ -126,8 +126,8 @@ func (l *level) getTiles() [][]tile {
 	return tiles
 }
 
-func (l *level) validMove(orig, dest position, dir direction) bool {
-	if dest.x < 0 || dest.x >= l.width() /*|| dest.y < 0*/ || dest.y >= l.height()-1 {
+func (l *level) validMove(orig, dest position, dir uint8) bool {
+	if dest.x < 0 || dest.x >= l.width() /*|| dest.y < 0*/ || dest.y >= l.height() /*-1*/ {
 		return false
 	}
 
