@@ -63,10 +63,6 @@ func (r *Runner) init(players map[position]tile) {
 
 // FIXME FIXME FIXME FIXME
 func (r *Runner) move(dir uint8, game *Game) {
-	/*if r.state == DIGGING {
-		return
-	}*/
-
 	// Stop falling if needed
 	if r.state == FALLING && r.pos.y+1 < game.level.height()-1 {
 		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
@@ -165,12 +161,6 @@ func (r *Runner) dig(dir uint8, game *Game) {
 		game.level.tiles[digPos.y][digPos.x] = EMPTY
 	}
 }
-
-// FIXME FIXME FIXME
-/*func (r *Runner) UpdateAction(actionType uint8, direction direction) {
-	r.action = action{actionType, direction}
-	// FIXME Dig should only accept left/right (DO THIS HERE)
-}*/
 
 func (r *Runner) Move(direction uint8) {
 	r.action = action{MOVE, direction}

@@ -152,17 +152,15 @@ func (g *Game) tick() {
 		guard.action = action{}
 	}
 
-	// XXX
+	// XXX Need to be an array when speaking about guards?
 	next := struct {
 		Runner struct {
-			Position struct {
-				X int `json:"x"`
-				Y int `json:"y"`
-			} `json:"position"`
+			X int `json:"x"`
+			Y int `json:"y"`
 		} `json:"runner"`
 	}{}
-	next.Runner.Position.X = g.runner.pos.x
-	next.Runner.Position.Y = g.runner.pos.y
+	next.Runner.X = g.runner.pos.x
+	next.Runner.Y = g.runner.pos.y
 
 	stuff, _ := json.Marshal(next)
 

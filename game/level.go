@@ -148,7 +148,7 @@ func (l *level) validMove(orig, dest position, dir uint8) bool {
 }
 
 func (l *level) validDig(pos position) bool {
-	if pos.x < 0 || pos.x >= l.width() {
+	if pos.x < 0 || pos.x >= l.width() || pos.y >= l.height() {
 		return false
 	}
 
