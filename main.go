@@ -25,7 +25,7 @@ func main() {
 	log.Printf("Listening on %s %s", ln.Addr().Network(), ln.Addr())
 
 	// Listen on HTTP
-	go web.Listen(tcpAddr)
+	go web.Listen()
 
 	defer ln.Close()
 	for {

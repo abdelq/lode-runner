@@ -36,6 +36,12 @@ socket.onmessage = function (message) {
 }
 
 /* Game */
+var images = [" ", "&", "0", "#", "@", "X", "H", "S", "-", "$"].reduce(function(map, tile) {
+    map[tile] = new Image();
+    map[tile].src = "img/" + tile.replace('#', '%23') + ".png";
+    return map;
+}, {});
+
 var tiles, tileHeight, tileWidth;
 
 function start(data) {
@@ -48,7 +54,7 @@ function start(data) {
     for (var i = 0; i < tiles.length; i++) {
         for (var j = 0; j < tiles[i].length; j++) {
             context.drawImage(
-                document.getElementById(tiles[i][j]),
+                images[tiles[i][j]],
                 j * tileWidth, i * tileHeight,
                 tileWidth, tileHeight
             );
@@ -73,7 +79,7 @@ function next(data) {
                     tileWidth, tileHeight
                 );
                 context.drawImage(
-                    document.getElementById(tiles[i][j]),
+                    images[tiles[i][j]],
                     j * tileWidth, i * tileHeight,
                     tileWidth, tileHeight
                 );
