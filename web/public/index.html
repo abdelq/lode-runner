@@ -3,22 +3,13 @@
     <head>
         <title>Lode Runner</title>
         <meta charset="UTF-8" />
-        <style>
-            body {
-                margin: 0;
-                background-color: #000;
-            }
-            #canvas {
-                display: block;
-                width: 100vw;
-                height: 100vh;
-            }
-        </style>
+        <link rel="stylesheet" href="style.css" />
     </head>
 
     <body>
-        <canvas id="canvas"></canvas>
+        <form action="room.html">
+            <input name="name" placeholder="Name" required />
+            <input type="submit" value="Join" />
+        </form>
     </body>
-
-    <script src="index.js"></script>
 </html>

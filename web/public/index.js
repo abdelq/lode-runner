@@ -1,54 +1,37 @@
-/* Canvas */
-var canvas = document.getElementById('canvas'),
-    context = canvas.getContext('2d');
+var rooms = {};
+var images = {
+    " ": "img/empty.png",
+    "&": "img/runner.png",
+    "0": "img/guard.png",
+    "#": "img/brick.png",
+    "@": "img/block.png",
+    "X": "img/trap.png",
+    "H": "img/ladder.png",
+    "S": "img/hladder.png",
+    "-": "img/rope.png",
+    "$": "img/gold.png"
+};
 
-canvas.width = canvas.offsetWidth;
-canvas.height = canvas.offsetHeight;
+Object.keys(images).forEach(function (tile) {
+    var img = new Image();
+    img.src = images[tile];
+    images[tile] = img;
+});
 
-//context.imageSmoothingEnabled = false
-
-/* Socket */
-var socket = new WebSocket("ws://" + location.host + "/ws");
-
-socket.onopen = function () {
-    var room = location.hash.substr(1);
-
-    socket.send(JSON.stringify({
-        event: "join",
-        data: {
-            name: "spectator",
-            room: room,
-            role: 42
-        }
-    }));
-
-    document.title = room + " - " + document.title
+function createCanvas(id) {
+    var canvas = document.createElement('canvas');
+    document.body.appendChild(canvas);
+    canvas.id = id;
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
 }
 
-socket.onmessage = function (message) {
-    var msg = JSON.parse(message.data);
-    if (msg.event == "start")
-        start(msg.data);
-    else if (msg.event == "next")
-        next(msg.data);
-    else
-        console.log(msg);
-}
+function draw(tiles, room) {
+    var canvas = document.getElementById(room);
+    var context = canvas.getContext('2d');
 
-/* Game */
-var images = [" ", "&", "0", "#", "@", "X", "H", "S", "-", "$"].reduce(function(map, tile) {
-    map[tile] = new Image();
-    map[tile].src = "img/" + tile.replace('#', '%23') + ".png";
-    return map;
-}, {});
-
-var tiles, tileHeight, tileWidth;
-
-function start(data) {
-    tiles = data.split("\n");
-
-    tileHeight = canvas.height / tiles.length,
-    tileWidth = canvas.width / tiles[0].length;
+    var tileHeight = Math.floor(canvas.height / tiles.length);
+    var tileWidth = Math.floor(canvas.width / tiles[0].length);
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     for (var i = 0; i < tiles.length; i++) {
@@ -62,24 +45,27 @@ function start(data) {
     }
 }
 
-function next(data) {
-    if (tiles == null) {
-        start(data);
-        return;
-    }
+function redraw(tiles, room) {
+    var canvas = document.getElementById(room);
+    var context = canvas.getContext('2d');
 
-    var oldTiles = tiles;
-    tiles = data.split("\n");
+    var tileHeight = Math.floor(canvas.height / tiles.length);
+    var tileWidth = Math.floor(canvas.width / tiles[0].length);
 
+    var oldTiles = rooms[room];
     for (var i = 0; i < tiles.length; i++) {
         for (var j = 0; j < tiles[i].length; j++) {
-            if (tiles[i][j] != oldTiles[i][j]) {
-                context.clearRect(
-                    j * tileWidth, i * tileHeight,
-                    tileWidth, tileHeight
-                );
+            var tile = tiles[i][j];
+            var oldTile = oldTiles[i][j];
+            if (tile != oldtile) {
+                if (tile !== '&' && tile !== '0' || oldtile === '$') {
+                    context.clearRect(
+                        j * tileWidth, i * tileHeight,
+                        tileWidth, tileHeight
+                    );
+                }
                 context.drawImage(
-                    images[tiles[i][j]],
+                    images[tile],
                     j * tileWidth, i * tileHeight,
                     tileWidth, tileHeight
                 );

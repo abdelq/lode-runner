@@ -19,16 +19,16 @@ type level struct {
 
 // Tiles
 const (
-	EMPTY        = ' '
-	RUNNER       = '&'
-	GUARD        = '0'
-	BRICK        = '#'
-	SOLIDBRICK   = '@'
-	FALSEBRICK   = 'X'
-	LADDER       = 'H'
-	ESCAPELADDER = 'S'
-	ROPE         = '-'
-	GOLD         = '$'
+	EMPTY   = ' '
+	RUNNER  = '&'
+	GUARD   = '0'
+	BRICK   = '#'
+	BLOCK   = '@'
+	TRAP    = 'X'
+	LADDER  = 'H'
+	HLADDER = 'S'
+	ROPE    = '-'
+	GOLD    = '$'
 )
 
 // Position
@@ -61,7 +61,7 @@ func newLevel(num int) (*level, error) {
 			case GOLD:
 				lvl.gold = append(lvl.gold, position{j, i})
 				lvl.tiles[i][j] = EMPTY
-			case ESCAPELADDER:
+			case HLADDER:
 				lvl.escape = append(lvl.escape, position{j, i})
 				lvl.tiles[i][j] = EMPTY
 			}
@@ -73,6 +73,15 @@ func newLevel(num int) (*level, error) {
 
 func (l *level) String() string {
 	return string(bytes.Join(l.getTiles(), []byte("\n")))
+}
+
+func (l *level) stringTiles() []string {
+	getTiles := l.getTiles()
+	tiles := make([]string, len(l.tiles))
+	for i := range tiles {
+		tiles[i] = string(getTiles[i])
+	}
+	return tiles
 }
 
 func (l *level) width() int {
@@ -114,7 +123,7 @@ func (l *level) getTiles() [][]tile {
 	// Escape ladders
 	if l.goldCollected() {
 		for _, pos := range l.escape {
-			tiles[pos.y][pos.x] = ESCAPELADDER
+			tiles[pos.y][pos.x] = HLADDER
 		}
 	}
 
@@ -135,12 +144,12 @@ func (l *level) validMove(orig, dest position, dir uint8) bool {
 	switch destTile {
 	case EMPTY, ROPE:
 		if dir == UP {
-			return origTile == LADDER || origTile == ESCAPELADDER
+			return origTile == LADDER || origTile == HLADDER
 		}
 		return true
-	case BRICK, SOLIDBRICK:
+	case BRICK, BLOCK:
 		return false
-	case LADDER, ESCAPELADDER:
+	case LADDER, HLADDER:
 		return true
 	}
 
