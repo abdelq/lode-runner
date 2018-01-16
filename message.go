@@ -24,8 +24,8 @@ func (m *message) parse(sender *client) {
 		for name := range rooms {
 			names = append(names, name)
 		}
-		jsonNames, _ := json.Marshal(names)
-		sender.out <- &msg.Message{"list", jsonNames}
+		roomNames, _ := json.Marshal(names)
+		sender.out <- &msg.Message{"list", roomNames}
 	default:
 		sender.out <- msg.NewMessage("error", "invalid event")
 	}

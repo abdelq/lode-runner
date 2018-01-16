@@ -102,7 +102,7 @@ func (r *room) listen() {
 			case "quit":
 				for client := range r.clients {
 					client.out <- msg
-					client.close()
+					//client.close()
 				}
 				r.delete()
 				return

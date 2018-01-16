@@ -18,3 +18,13 @@ form input {
     margin: 1em auto;
     display: block;
 }
+
+canvas:not(.mosaic) {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.mosaic {
+    flex: 1 1 33%;
+}

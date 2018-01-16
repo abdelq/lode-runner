@@ -18,20 +18,24 @@ Object.keys(images).forEach(function (tile) {
     images[tile] = img;
 });
 
-function createCanvas(id) {
+function createCanvas(id, mosaic) {
     var canvas = document.createElement('canvas');
     document.body.appendChild(canvas);
+
     canvas.id = id;
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
+    if (mosaic) {
+        canvas.setAttribute('class', 'mosaic');
+    }
 }
 
 function draw(tiles, room) {
     var canvas = document.getElementById(room);
     var context = canvas.getContext('2d');
 
-    var tileHeight = Math.floor(canvas.height / tiles.length);
-    var tileWidth = Math.floor(canvas.width / tiles[0].length);
+    var tileHeight = Math.round(canvas.height / tiles.length);
+    var tileWidth = Math.round(canvas.width / tiles[0].length);
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     for (var i = 0; i < tiles.length; i++) {
@@ -49,16 +53,26 @@ function redraw(tiles, room) {
     var canvas = document.getElementById(room);
     var context = canvas.getContext('2d');
 
-    var tileHeight = Math.floor(canvas.height / tiles.length);
-    var tileWidth = Math.floor(canvas.width / tiles[0].length);
+    // Resize if necessary
+    if (canvas.width !== canvas.clientWidth ||
+        canvas.height !== canvas.clientHeight) {
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+
+        draw(tiles, room);
+        return;
+    }
+
+    var tileHeight = Math.round(canvas.height / tiles.length);
+    var tileWidth = Math.round(canvas.width / tiles[0].length);
 
     var oldTiles = rooms[room];
     for (var i = 0; i < tiles.length; i++) {
         for (var j = 0; j < tiles[i].length; j++) {
             var tile = tiles[i][j];
             var oldTile = oldTiles[i][j];
-            if (tile != oldtile) {
-                if (tile !== '&' && tile !== '0' || oldtile === '$') {
+            if (tile != oldTile) {
+                if (tile !== '&' && tile !== '0' || oldTile === '$') {
                     context.clearRect(
                         j * tileWidth, i * tileHeight,
                         tileWidth, tileHeight

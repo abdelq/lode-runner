@@ -82,7 +82,7 @@ func (g *Game) restart() {
 
 func (g *Game) stop(winner tile) {
 	close(g.ticker)
-	g.broadcast <- msg.NewMessage("quit", "game over")
+	g.broadcast <- msg.NewMessage("quit", g.room)
 }
 
 func (g *Game) hasPlayer(name string) bool {

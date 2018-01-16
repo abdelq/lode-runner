@@ -20,7 +20,7 @@ socket.onmessage = function (msg) {
             break;
         case "list":
             msg.data.forEach(function (room) {
-                createCanvas(room);
+                createCanvas(room, true);
 
                 socket.send(JSON.stringify({
                     event: "join", data: { room: room, role: 42 }
@@ -28,7 +28,9 @@ socket.onmessage = function (msg) {
             });
             break;
         case "quit":
-            console.log(msg.data);
+            var canvas = document.getElementById(msg.data);
+            canvas.style = "filter: grayscale(100%)";
+            setTimeout(function() { canvas.remove(); }, 5000);
             break;
         default:
             console.log(msg.event + ": " + msg.data);
