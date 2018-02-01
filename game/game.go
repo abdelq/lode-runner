@@ -96,7 +96,7 @@ func startTicker(f func()) chan bool {
 	go func() {
 		dur, err := time.ParseDuration(*tick)
 		if err != nil {
-			dur = 250 * time.Millisecond
+			dur = 250 * time.Millisecond // XXX
 		}
 		ticker := time.NewTicker(dur)
 
