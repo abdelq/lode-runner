@@ -47,22 +47,26 @@ function draw(tiles, room) {
             );
         }
     }
+    context.font = "100px Monospace";
+    context.fillStyle = "#FFFFFF66";
+    context.textAlign = "center";
+    context.fillText(room, canvas.width/2, canvas.height * 0.12);
 }
 
 function redraw(tiles, room) {
     var canvas = document.getElementById(room);
     var context = canvas.getContext('2d');
+    /* 
+       // Resize if necessary
+       if (canvas.width !== canvas.clientWidth ||
+       canvas.height !== canvas.clientHeight) {
+       canvas.width = canvas.clientWidth;
+       canvas.height = canvas.clientHeight;
 
-    // Resize if necessary
-    if (canvas.width !== canvas.clientWidth ||
-        canvas.height !== canvas.clientHeight) {
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
-
-        draw(tiles, room);
-        return;
-    }
-
+       draw(tiles, room);
+       return;
+       }
+     */
     var tileHeight = Math.round(canvas.height / tiles.length);
     var tileWidth = Math.round(canvas.width / tiles[0].length);
 
