@@ -46,3 +46,10 @@
 - [ ] TLS as option (when using 443)
 - [ ] Réactiver le guarde
     - [ ] Envoyer les déplacements du garde au runner
+
+# Pour le hackathon
+
+- [ ] Pouvoir jumper à un niveau arbitraire au commencement de la game (faciliterait les tests)
+- [ ] Pouvoir spécifier un delta_time pour les ticks (encore, faciliterait le débuggage)
+- [ ] Spécifier dans l'énoncé que le (0, 0) considéré en paramètre dans next(state) est en haut à gauche
+- [ ] Spécifier que next() est appelée même quand on tombe, et que les mouvements sont ignorés
