@@ -68,7 +68,7 @@ func (r *Runner) move(dir uint8, game *Game) {
 		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
 
 		if nextTile == BRICK ||
-			nextTile == SOLIDBRICK ||
+			nextTile == BLOCK ||
 			nextTile == LADDER {
 			r.state = ALIVE
 		}
