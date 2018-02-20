@@ -41,7 +41,7 @@ func (r *Runner) Join(game *Game) error {
 }
 
 func (r *Runner) Leave(game *Game) {
-	//game.runner = nil
+	//game.runner = nil // XXX Commented bc of generated panics
 	/*game.broadcast <- &msg.Message{"leave",
 		[]byte(`{"name": "", "room": "", "role": "runner"}`), // FIXME
 	}*/
@@ -67,11 +67,11 @@ func (r *Runner) move(dir uint8, game *Game) {
 	if r.state == FALLING && r.pos.y+1 < game.level.height()-1 {
 		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
 
-		if nextTile == BRICK || nextTile == BLOCK ||
-			nextTile == LADDER /* || nextTile == ESCAPELADDER*/ /*|| nextTile == ROPE */ {
+		if nextTile == BRICK ||
+			nextTile == SOLIDBRICK ||
+			nextTile == LADDER {
 			r.state = ALIVE
 		}
-		//fmt.Println(r.state)
 	}
 
 	if r.state == FALLING && dir != DOWN {
