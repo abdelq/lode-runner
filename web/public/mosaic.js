@@ -35,8 +35,10 @@ socket.onmessage = function (msg) {
         case "quit":
             var canvas = document.getElementById(msg.data);
             canvas.style = "filter: grayscale(100%)";
+            canvas.classList.add('dead');
             setTimeout(function() {
                 canvas.remove();
+                delete invalid[msg.data];
                 updateGrid();
             }, 5000);
             break;
@@ -46,12 +48,19 @@ socket.onmessage = function (msg) {
 }
 
 function updateGrid() {
-    var len = document.getElementsByTagName('canvas').length;
+    var deads = document.querySelectorAll('canvas.dead').length;
 
-    var cols = 5;
-    var rows = 5;
+    if(deads > 0)
+        return;
 
-    if(len > 12) {
+    var len = document.querySelectorAll('canvas:not(.dead)').length;
+
+    var cols;
+    var rows;
+
+    if(len > 16) {
+        cols = rows = 5;
+    } else if(len > 12) {
         cols = rows = 4;
     } else if(len > 9) {
         cols = 4;
