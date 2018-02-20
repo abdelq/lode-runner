@@ -11,6 +11,7 @@ import (
 var tick = flag.String("tick", "250ms", "duration of game tick")
 
 type Game struct {
+	room      string
 	level     *level
 	runner    *Runner
 	guards    map[*Guard]struct{}
@@ -18,8 +19,12 @@ type Game struct {
 	broadcast chan *msg.Message
 }
 
-func NewGame(broadcast chan *msg.Message) *Game {
-	return &Game{guards: make(map[*Guard]struct{}), broadcast: broadcast}
+func NewGame(room string, broadcast chan *msg.Message) *Game {
+	return &Game{
+		room:      room,
+		guards:    make(map[*Guard]struct{}),
+		broadcast: broadcast,
+	}
 }
 
 func (g *Game) Started() bool {
@@ -60,7 +65,13 @@ PLAYERS:
 		}
 	}
 
-	g.broadcast <- msg.NewMessage("start", level.String())
+	start := struct {
+		Tiles []string `json:"tiles"`
+		Room  string   `json:"room"`
+	}{level.stringTiles(), g.room}
+	stuff, _ := json.Marshal(start)
+
+	g.broadcast <- &msg.Message{"start", stuff}
 	g.ticker = startTicker(g.tick)
 }
 
@@ -71,7 +82,7 @@ func (g *Game) restart() {
 
 func (g *Game) stop(winner tile) {
 	close(g.ticker)
-	g.broadcast <- msg.NewMessage("quit", "game over")
+	g.broadcast <- msg.NewMessage("quit", g.room)
 }
 
 func (g *Game) hasPlayer(name string) bool {
@@ -96,7 +107,7 @@ func startTicker(f func()) chan bool {
 	go func() {
 		dur, err := time.ParseDuration(*tick)
 		if err != nil {
-			dur = 250 * time.Millisecond
+			dur = 250 * time.Millisecond // XXX DefValue of flag...
 		}
 		ticker := time.NewTicker(dur)
 
@@ -165,5 +176,12 @@ func (g *Game) tick() {
 	stuff, _ := json.Marshal(next)
 
 	g.runner.out <- &msg.Message{"next", stuff}
-	g.broadcast <- msg.NewMessage("next", g.level.String())
+
+	next2 := struct {
+		Tiles []string `json:"tiles"`
+		Room  string   `json:"room"`
+	}{g.level.stringTiles(), g.room}
+	stuff2, _ := json.Marshal(next2)
+
+	g.broadcast <- &msg.Message{"next", stuff2}
 }

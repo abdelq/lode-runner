@@ -28,7 +28,7 @@ func newRoom(name string) *room {
 		broadcast: make(chan *msg.Message, 10), // XXX
 		clients:   make(map[*client]game.Player),
 	}
-	room.game = game.NewGame(room.broadcast)
+	room.game = game.NewGame(name, room.broadcast)
 
 	go room.listen()
 	rooms[name] = room
@@ -102,7 +102,7 @@ func (r *room) listen() {
 			case "quit":
 				for client := range r.clients {
 					client.out <- msg
-					client.close()
+					//client.close()
 				}
 				r.delete()
 				return

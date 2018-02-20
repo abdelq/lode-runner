@@ -2,37 +2,14 @@
 <html>
     <head>
         <title>Lode Runner</title>
-        <style>
-            body {
-                margin: 0;
-                background-color: #000;
-            }
-            #canvas {
-                display: block;
-                width: 100vw;
-                height: 100vh;
-            }
-            .tiles {
-                display: none;
-            }
-        </style>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" href="style.css" />
     </head>
 
     <body>
-        <canvas id="canvas"></canvas>
-        <div class="tiles">
-            <img id=" " src="tiles/empty.png">
-            <img id="&" src="tiles/runner.png">
-            <img id="0" src="tiles/guard.png">
-            <img id="#" src="tiles/brick.png">
-            <img id="@" src="tiles/block.png">
-            <img id="X" src="tiles/trap.png">
-            <img id="H" src="tiles/ladder.png">
-            <img id="S" src="tiles/hladder.png">
-            <img id="-" src="tiles/rope.png">
-            <img id="$" src="tiles/gold.png">
-        </div>
+        <form action="room.html">
+            <input name="name" placeholder="Name" required />
+            <input type="submit" value="Join" />
+        </form>
     </body>
-
-    <script src="index.js"></script>
 </html>

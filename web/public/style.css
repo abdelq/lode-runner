@@ -1,0 +1,36 @@
+html {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+    background-color: #000;
+    display: block;
+    overflow: hidden;
+}
+
+form {
+    margin: auto;
+}
+
+form input {
+    margin: 1em auto;
+    display: block;
+}
+
+canvas:not(.mosaic) {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.mosaic {
+    float: left;
+}
+
+canvas.mosaic {
+    border-bottom: 1px solid grey;
+    border-right:  1px solid grey;
+    margin-right: -1px;
+}
