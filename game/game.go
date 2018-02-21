@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"time"
+	"strings"
 
 	msg "github.com/abdelq/lode-runner/message"
 )
@@ -65,11 +66,16 @@ PLAYERS:
 		}
 	}
 
+	tiles := g.level.stringTiles()
+	for i := range tiles {
+		tiles[i] = strings.Replace(tiles[i], string(TRAP), string(BRICK), -1)
+	}
+
 	start := struct {
 		Tiles []string `json:"tiles"`
 		Room  string   `json:"room"`
 		Lives uint8    `json:"lives"`
-	}{level.stringTiles(), g.room, g.runner.health}
+	}{tiles, g.room, g.runner.health}
 	stuff, _ := json.Marshal(start)
 
 	g.broadcast <- &msg.Message{"start", stuff}
@@ -178,11 +184,16 @@ func (g *Game) tick() {
 
 	g.runner.out <- &msg.Message{"next", stuff}
 
+	tiles := g.level.stringTiles()
+	for i := range tiles {
+		tiles[i] = strings.Replace(tiles[i], string(TRAP), string(BRICK), -1)
+	}
+
 	next2 := struct {
 		Tiles []string `json:"tiles"`
 		Room  string   `json:"room"`
 		Lives uint8    `json:"lives"`
-	}{g.level.stringTiles(), g.room, g.runner.health}
+	}{tiles, g.room, g.runner.health}
 	stuff2, _ := json.Marshal(next2)
 
 	g.broadcast <- &msg.Message{"next", stuff2}

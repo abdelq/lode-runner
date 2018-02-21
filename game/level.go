@@ -100,7 +100,8 @@ func (l *level) emptyBelow(pos position) bool {
 	// XXX
 	return l.getTiles()[pos.y+1][pos.x] == EMPTY ||
 		l.tiles[pos.y+1][pos.x] == ROPE ||
-		l.getTiles()[pos.y+1][pos.x] == GOLD
+		l.getTiles()[pos.y+1][pos.x] == GOLD ||
+		l.getTiles()[pos.y+1][pos.x] == TRAP
 }
 
 func (l *level) goldCollected() bool {
@@ -151,7 +152,7 @@ func (l *level) validMove(orig, dest position, dir uint8) bool {
 
 	origTile, destTile := l.tiles[orig.y][orig.x], l.tiles[dest.y][dest.x]
 	switch destTile {
-	case EMPTY, ROPE:
+	case EMPTY, ROPE, TRAP:
 		if dir == UP {
 			return origTile == LADDER || origTile2 == HLADDER
 		}
