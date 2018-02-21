@@ -136,20 +136,29 @@ func (l *level) getTiles() [][]tile {
 }
 
 func (l *level) validMove(orig, dest position, dir uint8) bool {
+	if dest.y < 0 {
+		return true
+	}
 	if dest.x < 0 || dest.x >= l.width() /*|| dest.y < 0*/ || dest.y >= l.height() /*-1*/ {
 		return false
+	}
+
+	origTile2, destTile2 := l.getTiles()[orig.y][orig.x], l.getTiles()[dest.y][dest.x]
+	switch destTile2 {
+	case HLADDER:
+		return true
 	}
 
 	origTile, destTile := l.tiles[orig.y][orig.x], l.tiles[dest.y][dest.x]
 	switch destTile {
 	case EMPTY, ROPE:
 		if dir == UP {
-			return origTile == LADDER || origTile == HLADDER
+			return origTile == LADDER || origTile2 == HLADDER
 		}
 		return true
 	case BRICK, BLOCK:
 		return false
-	case LADDER, HLADDER:
+	case LADDER:
 		return true
 	}
 

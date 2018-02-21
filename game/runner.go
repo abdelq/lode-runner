@@ -101,9 +101,7 @@ func (r *Runner) move(dir uint8, game *Game) {
 		}
 	}
 
-	var validMove = game.level.validMove(r.pos, newPos, dir)
-
-	if !validMove {
+	if !game.level.validMove(r.pos, newPos, dir) {
 		if r.state == FALLING {
 			r.state = ALIVE
 		}
