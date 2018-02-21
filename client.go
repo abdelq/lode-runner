@@ -37,7 +37,7 @@ func (c *client) close() {
 			}
 		}
 
-		close(c.out)
+		//close(c.out)
 		c.conn.Close()
 
 		log.Printf("Closed connection from %s", c.conn.RemoteAddr())
