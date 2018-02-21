@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math"
+	"math/rand"
 )
 
 type tile = byte
@@ -44,9 +45,19 @@ func newLevel(num int) (*level, error) {
 		return nil, err
 	}
 
+	// Randomly flip the level horizontally
+	lines := bytes.Split(content, []byte("\n"))
+	if rand.Intn(2) == 0 {
+		for i, line := range lines {
+			for j := 0; j < len(line)/2; j++ {
+				lines[i][j], lines[i][len(line)-1-j] = lines[i][len(line)-1-j], lines[i][j]
+			}
+		}
+	}
+
 	// TODO Specify right len/cap
 	lvl := &level{
-		num, bytes.Split(content, []byte("\n")),
+		num, lines,
 		make(map[position]tile), make([]position, 0),
 		make([]position, 0), make(map[position]uint8),
 	}
@@ -66,6 +77,15 @@ func newLevel(num int) (*level, error) {
 				lvl.tiles[i][j] = EMPTY
 			}
 		}
+	}
+
+	// Keep only 3 random pieces of gold for the first levels
+	if num < 9 {
+		for i := range lvl.gold {
+			j := rand.Intn(i + 1)
+			lvl.gold[i], lvl.gold[j] = lvl.gold[j], lvl.gold[i]
+		}
+		lvl.gold = lvl.gold[:3]
 	}
 
 	return lvl, nil
