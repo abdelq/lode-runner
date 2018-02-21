@@ -14,7 +14,7 @@ socket.onmessage = function (msg) {
         case "next":
             if (rooms[msg.data.room] === undefined ||
                 invalid[msg.data.room] === undefined ||
-                invalid[msg.data.room] === true) {
+                invalid[msg.data.room] === true || msg.event == "start") {
                     draw(msg.data.tiles, msg.data.room, msg.data.lives);
             } else {
                 redraw(msg.data.tiles, msg.data.room, msg.data.lives);
