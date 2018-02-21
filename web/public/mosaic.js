@@ -15,9 +15,9 @@ socket.onmessage = function (msg) {
             if (rooms[msg.data.room] === undefined ||
                 invalid[msg.data.room] === undefined ||
                 invalid[msg.data.room] === true) {
-                    draw(msg.data.tiles, msg.data.room);
+                    draw(msg.data.tiles, msg.data.room, msg.data.lives);
             } else {
-                redraw(msg.data.tiles, msg.data.room);
+                redraw(msg.data.tiles, msg.data.room, msg.data.lives);
             }
             invalid[msg.data.room] = false;
             rooms[msg.data.room] = msg.data.tiles;
@@ -34,10 +34,14 @@ socket.onmessage = function (msg) {
             break;
         case "quit":
             var canvas = document.getElementById(msg.data);
+            var title = canvas.parentElement.querySelector('p');
+            title.innerHTML = title.innerHTML.replace(/\(.\)/, '(dead)');
+            title.style.color = 'gray';
+
             canvas.style = "filter: grayscale(100%)";
             canvas.classList.add('dead');
             setTimeout(function() {
-                canvas.remove();
+                canvas.parentElement.remove();
                 delete invalid[msg.data];
                 updateGrid();
             }, 5000);

@@ -19,18 +19,27 @@ Object.keys(images).forEach(function (tile) {
 });
 
 function createCanvas(id, mosaic) {
+
+    var block = document.createElement('div');
+
+    var title = document.createElement('p');
+    block.appendChild(title);
+
     var canvas = document.createElement('canvas');
-    document.body.appendChild(canvas);
+    block.appendChild(canvas);
+
+    document.body.appendChild(block);
 
     canvas.id = id;
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
+    canvas.width = document.body.clientWidth;
+    canvas.height = document.body.clientHeight;
+
     if (mosaic) {
-        canvas.setAttribute('class', 'mosaic');
+        block.classList.add('mosaic');
     }
 }
 
-function draw(tiles, room) {
+function draw(tiles, room, lives) {
     var canvas = document.getElementById(room);
     var context = canvas.getContext('2d');
 
@@ -47,14 +56,12 @@ function draw(tiles, room) {
             );
         }
     }
-    context.font = "100px Monospace";
-    context.fillStyle = "#FFFFFF66";
-    context.textAlign = "center";
-    context.fillText(room, canvas.width/2, canvas.height * 0.12);
 }
 
-function redraw(tiles, room) {
+function redraw(tiles, room, lives) {
     var canvas = document.getElementById(room);
+    var title = canvas.parentElement.querySelector('p');
+
     var context = canvas.getContext('2d');
 
     var tileHeight = Math.round(canvas.height / tiles.length);
@@ -80,4 +87,5 @@ function redraw(tiles, room) {
             }
         }
     }
+    title.innerHTML = room + " (" + lives + ")";
 }

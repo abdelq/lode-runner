@@ -1,3 +1,8 @@
+@font-face {
+    font-family: PressStart2P;
+    src: url('PressStart2P.ttf');
+}
+
 html {
     height: 100%;
 }
@@ -27,10 +32,22 @@ canvas:not(.mosaic) {
 
 .mosaic {
     float: left;
-}
-
-canvas.mosaic {
+    position: relative;
     border-bottom: 1px solid grey;
     border-right:  1px solid grey;
     margin-right: -1px;
+    overflow: hidden;
+}
+
+p {
+    position: absolute;
+    top: 5%;
+    width: 100%;
+    color: #FFF;
+    opacity: 0.7;
+    text-align: center;
+    z-index: 1;
+    font-size: large;
+    font-weight: bold;
+    font-family: PressStart2P, monospace;
 }
