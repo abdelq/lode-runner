@@ -60,7 +60,8 @@ function draw(tiles, room, lives) {
 
 function redraw(tiles, room, lives) {
     var canvas = document.getElementById(room);
-    var title = canvas.parentElement.querySelector('p');
+    var block = canvas.parentElement;
+    var title = block.querySelector('p');
 
     var context = canvas.getContext('2d');
 
@@ -87,5 +88,10 @@ function redraw(tiles, room, lives) {
             }
         }
     }
-    title.innerHTML = room + " (" + lives + ")";
+
+    if(block.classList.contains('mosaic')) {
+        title.innerHTML = room + " (" + lives + ")";
+    } else {
+        title.innerHTML = lives + " live" + (lives > 1 ? 's' : '') + " left ";
+    }
 }
