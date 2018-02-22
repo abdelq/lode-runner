@@ -8,9 +8,10 @@ public class Runner extends BasicRunner {
     public Runner() {
         /* TODO : Modifier avec les valeurs de votre nom d'équipe
          * et du niveau de départ que vous souhaitez tester.
-         * Notez que le niveau de départ sera 1 pour tout le monde pendant la
-         * compétition */
-        super("waaat", 1);
+         *
+         * Notez que le niveau de départ sera 1 pour tout le monde
+         * pendant la compétition */
+        super("", 1); // Exemple : super("Ma super équipe !", 1);
     }
 
     @Override

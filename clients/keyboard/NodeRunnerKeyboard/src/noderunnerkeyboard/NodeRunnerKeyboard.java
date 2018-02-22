@@ -10,11 +10,13 @@ import javax.swing.SwingConstants;
 
 public class NodeRunnerKeyboard {
 
-    public static final String ROOM = "testkeyboard";
+    // TODO : Remplacer ceci par votre nom d'équipe
+    public static final String ROOM = "";
+
     private static TCPClient client;
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Simple GUI");
+        JFrame frame = new JFrame("Node Runner");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JLabel textLabel = new JLabel("Utilisez WASD pour contrôller le Runner", SwingConstants.CENTER);
