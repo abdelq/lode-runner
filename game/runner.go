@@ -108,7 +108,8 @@ func (r *Runner) move(dir uint8, game *Game) {
 		return
 	}
 
-	if game.level.goldCollected() && newPos.y < 0 {
+	if game.level.goldCollected() &&
+		game.level.getTiles()[newPos.y][newPos.x] == HLADDER {
 		game.start(game.level.num + 1)
 		return
 	}
@@ -134,7 +135,9 @@ func (r *Runner) move(dir uint8, game *Game) {
 
 	game.level.players[r.pos] = RUNNER
 
-	if game.level.emptyBelow(r.pos) && game.level.tiles[r.pos.y][r.pos.x] != ROPE && game.level.tiles[r.pos.y][r.pos.x] != GOLD {
+	if game.level.emptyBelow(r.pos) &&
+		game.level.tiles[r.pos.y][r.pos.x] != ROPE &&
+		game.level.tiles[r.pos.y][r.pos.x] != GOLD {
 		r.state = FALLING
 	}
 }

@@ -113,7 +113,7 @@ func (l *level) height() int {
 }
 
 func (l *level) emptyBelow(pos position) bool {
-	if pos.y+1 >= l.height() /*-1*/ {
+	if pos.y+1 >= l.height() {
 		return false
 	}
 
@@ -157,24 +157,16 @@ func (l *level) getTiles() [][]tile {
 }
 
 func (l *level) validMove(orig, dest position, dir uint8) bool {
-	if dest.y < 0 {
-		return true
-	}
-	if dest.x < 0 || dest.x >= l.width() /*|| dest.y < 0*/ || dest.y >= l.height() /*-1*/ {
+	if dest.x < 0 || dest.x >= l.width() ||
+		dest.y < 0 || dest.y >= l.height() {
 		return false
 	}
 
-	origTile2, destTile2 := l.getTiles()[orig.y][orig.x], l.getTiles()[dest.y][dest.x]
-	switch destTile2 {
-	case HLADDER:
-		return true
-	}
-
-	origTile, destTile := l.tiles[orig.y][orig.x], l.tiles[dest.y][dest.x]
-	switch destTile {
+	origTile := l.tiles[orig.y][orig.x]
+	switch l.tiles[dest.y][dest.x] {
 	case EMPTY, ROPE, TRAP:
 		if dir == UP {
-			return origTile == LADDER || origTile2 == HLADDER
+			return origTile == LADDER || origTile == HLADDER
 		}
 		return true
 	case BRICK, BLOCK:
@@ -187,9 +179,12 @@ func (l *level) validMove(orig, dest position, dir uint8) bool {
 }
 
 func (l *level) validDig(pos position) bool {
-	if pos.x < 0 || pos.x >= l.width() || pos.y >= l.height() {
+	if pos.x < 0 || pos.x >= l.width() ||
+		pos.y < 0 || pos.y >= l.height() {
 		return false
 	}
+
+	// FIXME If not falling
 
 	return l.tiles[pos.y][pos.x] == BRICK
 }
