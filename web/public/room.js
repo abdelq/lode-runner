@@ -15,6 +15,10 @@ function reconnect() {
     }
 
     socket.onmessage = function (msg) {
+        var waiting = document.getElementById('waiting');
+        if(waiting)
+            waiting.style.display = 'none';
+
         msg = JSON.parse(msg.data);
         switch (msg.event) {
             case "start":

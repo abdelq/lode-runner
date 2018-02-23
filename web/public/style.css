@@ -9,10 +9,16 @@ html {
 
 body {
     margin: 0;
+    padding: 15px;
     height: 100%;
     background-color: #000;
     display: block;
     overflow: hidden;
+}
+
+h1 {
+    color: lightgreen; /* :v) */
+    text-align: center;
 }
 
 form {
@@ -39,7 +45,7 @@ canvas:not(.mosaic) {
     overflow: hidden;
 }
 
-p {
+p, #waiting {
     position: absolute;
     top: 5%;
     width: 100%;
