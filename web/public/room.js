@@ -7,7 +7,7 @@ function reconnect() {
         var room = new URLSearchParams(location.search).get("name");
 
         createCanvas(room);
-        document.title = room + " - " + document.title;
+        document.title = room + " - Lode Runner";
 
         socket.send(JSON.stringify({
             event: "join", data: { room: room, role: 42 }
