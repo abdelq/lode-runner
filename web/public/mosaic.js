@@ -8,7 +8,7 @@ socket.onopen = function () {
 }
 
 socket.onmessage = function (msg) {
-    msg = JSON.parse(msg.data);
+    msg = parseJSON(msg.data);
     switch (msg.event) {
         case "start":
         case "next":

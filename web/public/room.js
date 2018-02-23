@@ -19,7 +19,7 @@ function reconnect() {
         if(waiting)
             waiting.style.display = 'none';
 
-        msg = JSON.parse(msg.data);
+        msg = parseJSON(msg.data);
         switch (msg.event) {
             case "start":
                 var title = document.querySelector('p');

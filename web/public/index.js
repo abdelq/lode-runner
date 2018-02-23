@@ -39,6 +39,41 @@ function createCanvas(id, mosaic) {
     }
 }
 
+function oneJSON(str) {
+    var count = 0;
+
+    var start = str.indexOf('{');
+    if(start > -1)
+        str = str.slice(start);
+
+    for(var i=0; i<str.length; i++) {
+        if (i !== 0 && count == 0)
+            break;
+
+        if(str[i] == '{') count++;
+        else if(str[i] == '}') count--;
+    }
+
+    return str.slice(0, i);
+}
+
+function parseJSON(data) {
+    var json = {event: "none"};
+
+    try {
+        json = JSON.parse(data.toString('utf8').trim());
+    } catch(e) {
+        // XXX : Count Hackula strikes again !
+        // Si on n'arrive pas à parser la string, on a possiblement
+        // reçu plusieurs objets en une seule string... FIXME
+        console.error('JSON error : ', e, data.toString('utf8'));
+
+        json = JSON.parse(oneJSON(data.toString('utf8').trim()));
+    }
+
+    return json;
+}
+
 function draw(tiles, room, lives) {
     var canvas = document.getElementById(room);
     var context = canvas.getContext('2d');
