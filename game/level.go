@@ -144,11 +144,11 @@ func (l *level) getTiles() [][]tile {
 	}
 
 	// Escape ladders
-	if l.goldCollected() {
-		for _, pos := range l.escape {
-			tiles[pos.y][pos.x] = HLADDER
-		}
+	// if l.goldCollected() {
+	for _, pos := range l.escape {
+		tiles[pos.y][pos.x] = HLADDER
 	}
+	// }
 
 	// Players
 	l.players.Range(func(pos, tile interface{}) bool {
