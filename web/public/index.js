@@ -92,6 +92,6 @@ function redraw(tiles, room, lives) {
     if(block.classList.contains('mosaic')) {
         title.innerHTML = room + " (" + lives + ")";
     } else {
-        title.innerHTML = lives + " live" + (lives > 1 ? 's' : '') + " left ";
+        title.innerHTML = lives + " li" + (lives > 1 ? 'ves' : 'fe') + " left ";
     }
 }
