@@ -88,7 +88,7 @@ func (g *Game) start(lvl int) {
 
 func (g *Game) restart() {
 	//close(g.ticker)
-	g.ticker <- true
+	//g.ticker <- true
 	g.start(g.level.num)
 }
 
@@ -147,7 +147,8 @@ func (g *Game) tick() {
 		}
 
 		// XXX Guard
-		if tile, ok := g.level.players.Load(pos); ok && tile.(uint8) == RUNNER {
+		if tile, ok := g.level.players.Load(pos); ok &&
+			tile.(uint8) == RUNNER {
 			g.runner.health--
 			if g.runner.health == 0 {
 				g.stop(GUARD)
