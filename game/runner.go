@@ -2,6 +2,7 @@ package game
 
 import (
 	"errors"
+	"sync"
 
 	msg "github.com/abdelq/lode-runner/message"
 )
@@ -51,14 +52,15 @@ func (r *Runner) Leave(game *Game) {
 	}
 }
 
-func (r *Runner) init(players map[position]tile) {
+func (r *Runner) init(players sync.Map) {
 	r.action = action{}
-	for pos, tile := range players {
-		if tile == RUNNER {
-			r.pos = pos
-			return
+	players.Range(func(pos, tile interface{}) bool {
+		if tile.(uint8) == RUNNER {
+			r.pos = pos.(position)
+			return false
 		}
-	}
+		return true
+	})
 }
 
 // FIXME FIXME FIXME FIXME
@@ -115,11 +117,11 @@ func (r *Runner) move(dir uint8, game *Game) {
 	}
 
 	r.collectGold(r.pos, game.level)
-	delete(game.level.players, r.pos)
+	game.level.players.Delete(r.pos)
 	r.pos.x, r.pos.y = newPos.x, newPos.y // FIXME
 
 	// Collision checking
-	if _, ok := game.level.players[r.pos]; ok {
+	if _, ok := game.level.players.Load(r.pos); ok {
 		r.health--
 
 		if r.health == 0 {
@@ -133,7 +135,7 @@ func (r *Runner) move(dir uint8, game *Game) {
 		// TODO Reset
 	}
 
-	game.level.players[r.pos] = RUNNER
+	game.level.players.Store(r.pos, tile(RUNNER))
 
 	if game.level.emptyBelow(r.pos) &&
 		game.level.tiles[r.pos.y][r.pos.x] != ROPE &&

@@ -3,8 +3,8 @@ package game
 import (
 	"encoding/json"
 	"flag"
-	"time"
 	"strings"
+	"time"
 
 	msg "github.com/abdelq/lode-runner/message"
 )
@@ -37,6 +37,10 @@ func (g *Game) filled() bool {
 }
 
 func (g *Game) start(lvl int) {
+	if g.ticker != nil {
+		g.ticker <- true
+	}
+
 	/* Level */
 	level, err := newLevel(lvl)
 	if err != nil {
@@ -49,12 +53,12 @@ func (g *Game) start(lvl int) {
 	g.runner.init(level.players)
 
 	/* Guards */
-	for guard := range g.guards {
+	/*for guard := range g.guards {
 		guard.init(level.players)
-	}
+	}*/
 
 	// Delete rest
-PLAYERS:
+	/*PLAYERS:
 	for pos, tile := range level.players {
 		if tile == GUARD {
 			for guard := range g.guards {
@@ -64,7 +68,7 @@ PLAYERS:
 			}
 			delete(level.players, pos)
 		}
-	}
+	}*/
 
 	tiles := g.level.stringTiles()
 	for i := range tiles {
@@ -83,12 +87,14 @@ PLAYERS:
 }
 
 func (g *Game) restart() {
-	close(g.ticker)
+	//close(g.ticker)
+	g.ticker <- true
 	g.start(g.level.num)
 }
 
 func (g *Game) stop(winner tile) {
-	close(g.ticker)
+	//close(g.ticker)
+	g.ticker <- true
 	g.broadcast <- msg.NewMessage("quit", g.room)
 }
 
@@ -118,12 +124,13 @@ func startTicker(f func()) chan bool {
 		}
 		ticker := time.NewTicker(dur)
 
-		defer ticker.Stop()
+		//defer ticker.Stop()
 		for {
 			select {
 			case <-ticker.C:
 				f()
 			case <-done:
+				ticker.Stop()
 				return
 			}
 		}
@@ -140,7 +147,7 @@ func (g *Game) tick() {
 		}
 
 		// XXX Guard
-		if tile, ok := g.level.players[pos]; ok && tile == RUNNER {
+		if tile, ok := g.level.players.Load(pos); ok && tile.(uint8) == RUNNER {
 			g.runner.health--
 			if g.runner.health == 0 {
 				g.stop(GUARD)

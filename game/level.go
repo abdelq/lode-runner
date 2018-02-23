@@ -6,13 +6,14 @@ import (
 	"io/ioutil"
 	"math"
 	"math/rand"
+	"sync"
 )
 
 type tile = byte
 type level struct {
 	num     int
 	tiles   [][]tile
-	players map[position]tile
+	players sync.Map
 	gold    []position
 	escape  []position
 	holes   map[position]uint8
@@ -57,17 +58,18 @@ func newLevel(num int) (*level, error) {
 
 	// TODO Specify right len/cap
 	lvl := &level{
-		num, lines,
-		make(map[position]tile), make([]position, 0),
-		make([]position, 0), make(map[position]uint8),
+		num: num, tiles: lines, gold: make([]position, 0),
+		escape: make([]position, 0), holes: make(map[position]uint8),
 	}
 
 	// Collect data for players/gold
 	for i, tiles := range lvl.tiles {
 		for j, tile := range tiles {
 			switch tile {
-			case RUNNER, GUARD:
-				lvl.players[position{j, i}] = tile
+			case RUNNER:
+				lvl.players.Store(position{j, i}, tile)
+				lvl.tiles[i][j] = EMPTY
+			case GUARD:
 				lvl.tiles[i][j] = EMPTY
 			case GOLD:
 				lvl.gold = append(lvl.gold, position{j, i})
@@ -149,9 +151,10 @@ func (l *level) getTiles() [][]tile {
 	}
 
 	// Players
-	for pos, tile := range l.players {
-		tiles[pos.y][pos.x] = tile
-	}
+	l.players.Range(func(pos, tile interface{}) bool {
+		tiles[pos.(position).y][pos.(position).x] = tile.(uint8)
+		return true
+	})
 
 	return tiles
 }
