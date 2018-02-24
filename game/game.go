@@ -169,11 +169,7 @@ func (g *Game) tick() {
 		runner.move(runner.action.Direction, g)
 		runner.action = action{}
 	case DIG:
-		if runner.state != FALLING {
-			runner.dig(runner.action.Direction, g)
-		} else {
-			runner.move(runner.action.Direction, g)
-		}
+		runner.dig(runner.action.Direction, g)
 		runner.action = action{}
 	}
 
