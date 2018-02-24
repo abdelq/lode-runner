@@ -131,15 +131,17 @@ du Runner en faisant :
 
 La fonction `next` est la fonction principale de votre intelligence
 artificielle : c'est là que vous devrez décider du mouvement vous
-souhaitez faire.
+souhaitez faire à chaque étape du jeu.
 
 La fonction retourne un `Move()` dont le premier paramètre est le type
 de mouvement (`Event.MOVE` pour se déplacer ou `Event.DIG` pour
 creuser) et le second paramètre est la direction (`Direction.UP`,
 `Direction.DOWN`, `Direction.LEFT` ou `Direction.RIGHT`).
 
-Notez qu'il est impossible de creuser en haut ou en bas, on peut
+Notez qu'il est impossible de creuser en haut ou en bas : on peut
 seulement creuser à gauche et à droite.
+
+&nbsp;
 
 Par exemple, une intelligence artificielle qui essaierait d'aller
 toujours à droite serait codée comme suit :
