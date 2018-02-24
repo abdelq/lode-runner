@@ -139,6 +139,8 @@ func (r *Runner) move(dir uint8, game *Game) {
 
 	if game.level.emptyBelow(r.pos) &&
 		game.level.tiles[r.pos.y][r.pos.x] != ROPE &&
+		game.level.tiles[r.pos.y][r.pos.x] != LADDER &&
+		game.level.tiles[r.pos.y][r.pos.x] != HLADDER &&
 		game.level.tiles[r.pos.y][r.pos.x] != GOLD {
 		r.state = FALLING
 	}
