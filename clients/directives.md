@@ -40,8 +40,8 @@ regarder vos parties.
 **Fichier : `NodeRunnerKeyboard.java`**
 
 
-Ouvrez le projet `NodeRunnerKeyboard` dans votre IDE préféré
-(Netbeans, Eclipse, ...) et modifiez le fichier
+Ouvrez le projet dans le dossier `NodeRunnerKeyboard` fourni dans
+votre IDE préféré (Netbeans, Eclipse, ...) et modifiez le fichier
 `NodeRunnerKeyboard.java` : ajoutez votre clé secrète à la ligne 14.
 
 Une fois la clé ajoutée, rendez-vous sur \href{\server}{\server} dans
@@ -59,11 +59,11 @@ niveaux.
 
 # Intelligence Artificielle
 
-**Projet : `NodeRunnerAI`**
+**Projet : `java`**
 
 **Fichier : `Runner.java`**
 
-Ouvrez le projet `NodeRunnerAI`. Vos modifications devront
+Ouvrez le projet dans le dossier `java` fourni. Vos modifications devront
 principalement se faire dans `Runner.java`, mais vous pouvez vous
 créer d'autres fichiers au besoin.
 
