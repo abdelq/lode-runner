@@ -9,7 +9,7 @@ header-includes:
 # Défi
 
 Cette année, vous devrez programmer une intelligence artificielle pour
-un clone maison du jeu *Lode Runner*, un jeu de platforme datant des
+un clone maison du jeu *Lode Runner*, un jeu de plateforme datant des
 années 80.
 
 Pour citer Wikipédia :
@@ -19,9 +19,9 @@ Pour citer Wikipédia :
 > murs et de passerelles de briques et de pierre.  Le but du joueur
 > est de ramasser les lingots disséminés dans le décor (sur les
 > passerelles, en haut des échelles ou suspendus dans le vide) tout en
-> évitant des gardes qui essayent de l’attraper. Une fois que tous les
+> évitant des gardes qui essayent de l'attraper. Une fois que tous les
 > lingots sont récupérés, il doit s’échapper en rejoignant le sommet
-> du décor (éventuellement une échelle apparait pour l’y aider lorsque
+> du décor (éventuellement une échelle apparait pour l'aider lorsque
 > tous les lingots sont récupérés) pour passer au tableau suivant.
 
 
@@ -83,7 +83,7 @@ Chaque case de la grille peut contenir l'un des éléments suivants :
 - Case vide (`espace`) : rien de spécial, on peut se déplacer dedans
 - Bloc de brique (`#`) : on peut marcher dessus et creuser dedans au
   besoin pour créer un chemin
-- Corde (`-`) : on peut se déplacer lattéralement dessus
+- Corde (`-`) : on peut se déplacer latéralement dessus
   (gauche/droite), ou se laisser tomber vers le bas
 - Échelle (`H`) : on peut monter, descendre, ou aller de côté pour se
   laisser tomber en bas de l’échelle. Notez qu'il est possible de
@@ -109,7 +109,7 @@ correspond au numéro de colonne. Le point $(x, y) = (0, 0)$ correspond
 donc au point en haut à gauche de la grille de jeu.
 
 On peut donc accéder à ce qui se trouve dans la grille à la position
-du runner en faisant :
+du Runner en faisant :
 
 ```java
         char element = grid[y].charAt(x);
