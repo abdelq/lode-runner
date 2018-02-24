@@ -27,6 +27,17 @@ func (m *message) parse(sender *client) {
 		})
 		roomNames, _ := json.Marshal(names)
 		sender.out <- &msg.Message{"list", roomNames}
+	case "kill":
+		var roomName string
+		if err := json.Unmarshal(m.Data, &roomName); err != nil {
+			return
+		}
+
+		if r, ok := rooms.Load(roomName); ok {
+			if r, ok := r.(*room); ok {
+				r.game.Kill()
+			}
+		}
 	default:
 		sender.out <- msg.NewMessage("error", "invalid event")
 	}
