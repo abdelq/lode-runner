@@ -8,9 +8,9 @@ header-includes:
 
 # Défi
 
-Cette année, vous devrez programmer une intelligence artificielle pour
-un clone maison du jeu *Lode Runner*, un jeu de plateforme datant des
-années 80.
+Au cours de la fin de semaine, vous devrez programmer une intelligence
+artificielle pour un clone maison du jeu *Lode Runner*, un jeu de
+plateforme datant des années 80.
 
 Pour citer Wikipédia :
 
@@ -35,9 +35,14 @@ regarder vos parties.
 
 # Tester le jeu
 
-Ouvrez le projet `clients/NodeRunnerKeyboard` dans votre IDE préféré
+**Projet : `NodeRunnerKeyboard`**
+
+**Fichier : `NodeRunnerKeyboard.java`**
+
+
+Ouvrez le projet `NodeRunnerKeyboard` dans votre IDE préféré
 (Netbeans, Eclipse, ...) et modifiez le fichier
-`NodeRunnerKeyboard.java` : ajoutez votre clé secrète à la ligne 9.
+`NodeRunnerKeyboard.java` : ajoutez votre clé secrète à la ligne 14.
 
 Une fois la clé ajoutée, rendez-vous sur \href{\server}{\server} dans
 votre navigateur web et entrez la clé secrète dans la case prévue à
@@ -54,7 +59,11 @@ niveaux.
 
 # Intelligence Artificielle
 
-Ouvrez le projet `clients/NodeRunnerAI`. Vos modifications devront
+**Projet : `NodeRunnerAI`**
+
+**Fichier : `Runner.java`**
+
+Ouvrez le projet `NodeRunnerAI`. Vos modifications devront
 principalement se faire dans `Runner.java`, mais vous pouvez vous
 créer d'autres fichiers au besoin.
 
@@ -67,10 +76,11 @@ voulez avoir une chance de gagner !
 
 **Notez**: si vous préférez coder en `JavaScript` pour la compétition,
 une base de code utilisable avec une version récente de Node.js vous
-est fournie dans `clients/javascript`. Le fichier `runner.js` contient
+est fournie dans `javascript`. Le fichier `runner.js` contient
 sensiblement la même structure de code que celle décrite dans les
 sections suivantes.
 
+# Déroulement du jeu
 
 ## Début de partie
 
@@ -81,7 +91,8 @@ grille.
 Chaque case de la grille peut contenir l'un des éléments suivants :
 
 - Case vide (`espace`) : rien de spécial, on peut se déplacer dedans
-- Bloc de brique (`#`) : on peut marcher dessus et creuser dedans au
+- Bloc de pierre (`@`) : on peut marcher dessus
+- Bloc de brique (`#`) : on peut marcher dessus et *creuser dedans* au
   besoin pour créer un chemin
 - Corde (`-`) : on peut se déplacer latéralement dessus
   (gauche/droite), ou se laisser tomber vers le bas
@@ -89,9 +100,9 @@ Chaque case de la grille peut contenir l'un des éléments suivants :
   laisser tomber en bas de l’échelle. Notez qu'il est possible de
   marcher sur le dessus d'une échelle.
 - Lingot d'or (`$`) : on doit ramasser tous les lingots d’or avant de
-  passer à la sortie
-- Runner (`&`) : la case où vous vous trouvez
-- Sortie (`S`) : la case de sortie
+  pouvoir aller au niveau suivant
+- Runner (`&`) : la case où le Runner se trouve
+- Sortie (`S`) : la porte de sortie pour aller au prochain niveau
 
 Notez qu'à partir d'un certain niveau, certains blocs de brique (`#`)
 sont en réalité des pièges... Lorsqu'on marche dessus, on tombe comme
@@ -99,10 +110,10 @@ s'il n'y avait pas de bloc.
 
 
 
-## À chaque tour de jeu
+## À chaque tour du jeu
 
 À chaque tour de jeu, la méthode `next` est appelée. Cette fonction
-reçoit en paramètre la position $(x, y)$ du Runner.
+reçoit en paramètre la position actuelle $(x, y)$ du Runner.
 
 Notez que $y$ correspond au numéro de ligne dans la grille et $x$
 correspond au numéro de colonne. Le point $(x, y) = (0, 0)$ correspond
@@ -112,7 +123,10 @@ On peut donc accéder à ce qui se trouve dans la grille à la position
 du Runner en faisant :
 
 ```java
+
         char element = grid[y].charAt(x);
+
+
 ```
 
 La fonction `next` est la fonction principale de votre intelligence
@@ -136,6 +150,11 @@ public Move next(int x, int y) {
 }
 ```
 
+## Creuser dans un bloc
+
+Lorsqu'on creuse dans un bloc, le bloc disparaît pendant *8 tours*,
+puis réapparaît.
+
 ## Fin de partie
 
 Le Runner commence avec 5 vies. La partie se termine lorsque le Runner
@@ -158,4 +177,4 @@ rapidement au dernier niveau atteint sera déclarée gagnante.
 
 &nbsp;
 
-**\centerline{Bonne compétition !}**
+**\centerline{Bonne compétition ! :v)}**

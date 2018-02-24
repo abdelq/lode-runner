@@ -6,5 +6,5 @@ bundle.zip:V: directives.pdf
 &.pdf: &.md
     pandoc $stem.md \
     -Vgeometry:margin=1.5in \
-    --variable linkcolor=blue \
+    -N --variable linkcolor=blue \
     -o $stem.pdf
