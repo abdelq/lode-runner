@@ -2,7 +2,7 @@
 title: Node Runner
 author: DIRO ~ Hackathon 2018
 header-includes:
-    - \newcommand{\server}{http://127.0.0.1:7331/}
+    - \newcommand{\server}{http://localhost:7331/}
     - \usepackage{hyperref}
 ---
 
@@ -27,10 +27,10 @@ Pour citer Wikipédia :
 
 # Directives
 
-Si ce n'est pas déjà fait, la première chose à faire est de vous
-choisir une clé secrète. Cette clé secrète sera utilisée comme nom de
-la salle dans laquelle votre partie se déroulera. N'importe qui ayant
-cette clé pourra donc regarder vos parties.
+La première chose à faire est de vous choisir une clé secrète. Cette
+clé secrète sera utilisée comme nom de la salle dans laquelle votre
+partie se déroulera. N'importe qui ayant cette clé pourra donc
+regarder vos parties.
 
 
 # Tester le jeu
@@ -65,7 +65,7 @@ direction au hasard... Vous devrez changer ce comportement si vous
 voulez avoir une chance de gagner !
 
 
-*Notez*: si vous préférez coder en `JavaScript` pour la compétition,
+**Notez**: si vous préférez coder en `JavaScript` pour la compétition,
 une base de code utilisable avec une version récente de Node.js vous
 est fournie dans `clients/javascript`. Le fichier `runner.js` contient
 sensiblement la même structure de code que celle décrite dans les
@@ -139,8 +139,9 @@ public Move next(int x, int y) {
 ## Fin de partie
 
 Le Runner commence avec 5 vies. La partie se termine lorsque le Runner
-n'a plus de vies. Vous perdez une vie si vous creusez complètement
-jusqu'en bas.
+n'a plus de vies.
+
+Le Runner perd une vie si un bloc creusé se reconstruit sur lui.
 
 # Compétition
 
@@ -151,3 +152,10 @@ remportera la compétition.
 Notez qu'en cas d'égalité, l'équipe dont l'IA se sera rendue le plus
 rapidement au dernier niveau atteint sera déclarée gagnante.
 
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+**\centerline{Bonne compétition !}**
