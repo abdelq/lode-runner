@@ -51,13 +51,14 @@ p, #waiting {
     position: absolute;
     top: 5%;
     width: 100%;
-    color: #FFF;
-    opacity: 0.7;
+    color: #FFFFFF;
+    opacity: 0.9;
     text-align: center;
     z-index: 1;
     font-size: large;
     font-weight: bold;
     font-family: PressStart2P, monospace;
+    text-shadow: 0 0 3px black;
 }
 
 ul {
