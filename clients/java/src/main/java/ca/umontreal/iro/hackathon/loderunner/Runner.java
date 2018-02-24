@@ -23,7 +23,9 @@ public class Runner extends BasicRunner {
     public void start(String[] grid) {
         System.out.println("Nouveau niveau ! Grille initiale reçue :");
 
-        for (String ligne : grid) {
+        for (int i=0; i<grid.length; i++) {
+            String ligne = grid[i];
+
             System.out.println(ligne);
         }
     }
@@ -31,7 +33,7 @@ public class Runner extends BasicRunner {
     @Override
     public Move next(int x, int y) {
         System.out.println("Position du runner : (" + x + ", " + y + ")");
-        
+
         int direction = (int) (Math.random() * 4 + 1);
 
         Direction dir = Direction.fromInt(direction);
