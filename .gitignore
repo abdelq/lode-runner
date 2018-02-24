@@ -3,3 +3,7 @@ lode-runner
 
 # Test
 *.out
+
+# Bundle
+*.pdf
+*.zip
