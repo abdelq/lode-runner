@@ -4,7 +4,7 @@ function reconnect() {
     console.log(socket);
 
     socket.onopen = function () {
-        var room = new URLSearchParams(location.search).get("name");
+        var room = location.search.substr(1).split('=')[1];
 
         createCanvas(room);
         document.title = room + " - Lode Runner";
