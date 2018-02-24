@@ -27,9 +27,9 @@ function reconnect() {
                 title.innerHTML = "";
             case "next":
                 if (rooms[msg.data.room] === undefined || msg.event == "start") {
-                    draw(msg.data.tiles, msg.data.room, msg.data.lives);
+                    draw(msg.data.tiles, msg.data.room, msg.data.lives, msg.data.level);
                 } else {
-                    redraw(msg.data.tiles, msg.data.room, msg.data.lives);
+                    redraw(msg.data.tiles, msg.data.room, msg.data.lives, msg.data.level);
                 }
                 rooms[msg.data.room] = msg.data.tiles;
                 break;

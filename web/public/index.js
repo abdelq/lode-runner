@@ -74,7 +74,7 @@ function parseJSON(data) {
     return json;
 }
 
-function draw(tiles, room, lives) {
+function draw(tiles, room, lives, level) {
     var canvas = document.getElementById(room);
     var context = canvas.getContext('2d');
 
@@ -93,7 +93,7 @@ function draw(tiles, room, lives) {
     }
 }
 
-function redraw(tiles, room, lives) {
+function redraw(tiles, room, lives, level) {
     var canvas = document.getElementById(room);
     var block = canvas.parentElement;
     var title = block.querySelector('p');
@@ -125,8 +125,8 @@ function redraw(tiles, room, lives) {
     }
 
     if(block.classList.contains('mosaic')) {
-        title.innerHTML = room + " (" + lives + ")";
+        title.innerHTML = room + " #" + level + ' ' + '♥' + lives;
     } else {
-        title.innerHTML = lives + " li" + (lives > 1 ? 'ves' : 'fe') + " left ";
+        title.innerHTML = 'Level ' + level + ' - ' + lives + " li" + (lives > 1 ? 'ves' : 'fe') + " left ";
     }
 }

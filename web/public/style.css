@@ -17,8 +17,11 @@ body {
 }
 
 h1 {
-    color: lightgreen; /* :v) */
+    color: green; /* :v) */
+    font-size: 18px;
+    font-family: PressStart2P;
     text-align: center;
+    margin-bottom: 30px;
 }
 
 form {
@@ -56,4 +59,25 @@ p, #waiting {
     font-size: large;
     font-weight: bold;
     font-family: PressStart2P, monospace;
+}
+
+ul {
+    color: white;
+    font-family: PressStart2P;
+    list-style: none;
+    max-width: 400px;
+    margin: auto;
+    line-height: 1.6;
+}
+
+li.leaderboard-0 .symbol {
+    color: yellow;
+}
+
+li.leaderboard-1 .symbol {
+    color: grey;
+}
+
+li.leaderboard-2 .symbol {
+    color: brown;
 }

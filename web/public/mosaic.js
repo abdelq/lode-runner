@@ -1,5 +1,6 @@
 var socket = new WebSocket("ws://" + location.host + "/ws");
 var invalid = {};
+var killed = [];
 
 socket.onopen = function () {
     socket.send(JSON.stringify({
@@ -15,9 +16,9 @@ socket.onmessage = function (msg) {
             if (rooms[msg.data.room] === undefined ||
                 invalid[msg.data.room] === undefined ||
                 invalid[msg.data.room] === true || msg.event == "start") {
-                    draw(msg.data.tiles, msg.data.room, msg.data.lives);
+                    draw(msg.data.tiles, msg.data.room, msg.data.lives, msg.data.level);
             } else {
-                redraw(msg.data.tiles, msg.data.room, msg.data.lives);
+                redraw(msg.data.tiles, msg.data.room, msg.data.lives, msg.data.level);
             }
             invalid[msg.data.room] = false;
             rooms[msg.data.room] = msg.data.tiles;
@@ -34,12 +35,15 @@ socket.onmessage = function (msg) {
             break;
         case "quit":
             var canvas = document.getElementById(msg.data);
+            killed.push(msg.data);
+
             var title = canvas.parentElement.querySelector('p');
             title.innerHTML = title.innerHTML.replace(/\(.\)/, '(dead)');
             title.style.color = 'gray';
 
             canvas.style = "filter: grayscale(100%)";
             canvas.classList.add('dead');
+
             setTimeout(function() {
                 canvas.parentElement.remove();
                 delete invalid[msg.data];
@@ -58,6 +62,11 @@ function updateGrid() {
         return;
 
     var len = document.querySelectorAll('canvas:not(.dead)').length;
+
+    if(len == 0) {
+        leaderboard();
+        return;
+    }
 
     var cols;
     var rows;
@@ -88,4 +97,24 @@ function updateGrid() {
     for(var room in invalid) {
         invalid[room] = true;
     }
+}
+
+function leaderboard() {
+    if (killed.length == 0)
+        return;
+
+    var block = document.createElement('div');
+
+    block.innerHTML += '<h1>Leaderboard</h1><ul>' + killed.reverse().map(function(x, i) {
+
+        var symbol = ' ';
+
+        if (i < 3)
+            symbol = '★';
+
+
+        return '<li class="leaderboard-' + i + '"><span class="symbol">' + symbol + '</span> #' + (i + 1) + ' - ' + x + '</li>';
+    }).join('') + '</ul>';
+
+    document.body.appendChild(block);
 }
