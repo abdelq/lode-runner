@@ -1,7 +1,7 @@
 all: directives.pdf bundle.zip
 
 bundle.zip:V: directives.pdf
-    zip -r bundle.zip directives.pdf clients/NodeRunnerKeyboard/ clients/NodeRunnerAI/ clients/javascript/
+    zip -r bundle.zip directives.pdf NodeRunnerKeyboard/ NodeRunnerAI/ javascript/
 
 &.pdf: &.md
     pandoc $stem.md \
