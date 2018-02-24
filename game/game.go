@@ -79,7 +79,8 @@ func (g *Game) start(lvl int) {
 		Tiles []string `json:"tiles"`
 		Room  string   `json:"room"`
 		Lives uint8    `json:"lives"`
-	}{tiles, g.room, g.runner.health}
+		Level int      `json:"level"`
+	}{tiles, g.room, g.runner.health, g.level.num}
 	stuff, _ := json.Marshal(start)
 
 	g.broadcast <- &msg.Message{"start", stuff}
@@ -205,7 +206,8 @@ func (g *Game) tick() {
 		Tiles []string `json:"tiles"`
 		Room  string   `json:"room"`
 		Lives uint8    `json:"lives"`
-	}{tiles, g.room, g.runner.health}
+		Level int      `json:"level"`
+	}{tiles, g.room, g.runner.health, g.level.num}
 	stuff2, _ := json.Marshal(next2)
 
 	g.broadcast <- &msg.Message{"next", stuff2}
