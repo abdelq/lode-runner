@@ -84,6 +84,7 @@ func (g *Game) start(lvl int) {
 	stuff, _ := json.Marshal(start)
 
 	g.broadcast <- &msg.Message{"start", stuff}
+	time.Sleep(250 * time.Millisecond)
 	g.ticker = startTicker(g.tick)
 }
 
