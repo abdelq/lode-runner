@@ -20,10 +20,11 @@ func (m *message) parse(sender *client) {
 	case "dig":
 		parseDig(m.Data, sender)
 	case "list":
-		names := make([]string, 0, len(rooms))
-		for name := range rooms {
-			names = append(names, name)
-		}
+		names := make([]string, 0, 16) // XXX
+		rooms.Range(func(name, room interface{}) bool {
+			names = append(names, name.(string))
+			return true
+		})
 		roomNames, _ := json.Marshal(names)
 		sender.out <- &msg.Message{"list", roomNames}
 	default:
@@ -39,12 +40,9 @@ func parseJoin(data json.RawMessage, sender *client) {
 	}
 
 	// Find/Create room
-	room, ok := rooms[message.Room]
-	if !ok {
-		room = newRoom(message.Room)
-	}
+	r, _ := rooms.LoadOrStore(message.Room, newRoom(message.Room))
 
-	room.join <- &join{sender, game.NewPlayer(message, sender.out)}
+	r.(*room).join <- &join{sender, game.NewPlayer(message, sender.out)}
 }
 
 // TODO Move to game package
@@ -63,16 +61,18 @@ func parseMove(data json.RawMessage, sender *client) {
 		}
 	}
 
-	if room, ok := rooms[message.Room]; ok {
-		if !room.game.Started() {
-			sender.out <- msg.NewMessage("error", "game not started")
-			return
-		}
+	if r, ok := rooms.Load(message.Room); ok {
+		if r, ok := r.(*room); ok {
+			if !r.game.Started() {
+				sender.out <- msg.NewMessage("error", "game not started")
+				return
+			}
 
-		if player := room.clients[sender]; player != nil {
-			player.Move(message.Direction)
-		} else {
-			sender.out <- msg.NewMessage("error", "not a player")
+			if player := r.clients[sender]; player != nil {
+				player.Move(message.Direction)
+			} else {
+				sender.out <- msg.NewMessage("error", "not a player")
+			}
 		}
 	}
 }
@@ -93,16 +93,18 @@ func parseDig(data json.RawMessage, sender *client) {
 		}
 	}
 
-	if room, ok := rooms[message.Room]; ok {
-		if !room.game.Started() {
-			sender.out <- msg.NewMessage("error", "game not started")
-			return
-		}
+	if r, ok := rooms.Load(message.Room); ok {
+		if r, ok := r.(*room); ok {
+			if !r.game.Started() {
+				sender.out <- msg.NewMessage("error", "game not started")
+				return
+			}
 
-		if runner, ok := room.clients[sender].(*game.Runner); ok {
-			runner.Dig(message.Direction)
-		} else {
-			sender.out <- msg.NewMessage("error", "not a runner")
+			if runner, ok := r.clients[sender].(*game.Runner); ok {
+				runner.Dig(message.Direction)
+			} else {
+				sender.out <- msg.NewMessage("error", "not a runner")
+			}
 		}
 	}
 }

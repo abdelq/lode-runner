@@ -1,11 +1,13 @@
 package main
 
 import (
+	"sync"
+
 	"github.com/abdelq/lode-runner/game"
 	msg "github.com/abdelq/lode-runner/message"
 )
 
-var rooms = make(map[string]*room)
+var rooms = sync.Map{}
 
 type room struct {
 	join      chan *join
@@ -31,27 +33,30 @@ func newRoom(name string) *room {
 	room.game = game.NewGame(name, room.broadcast)
 
 	go room.listen()
-	rooms[name] = room
 
 	return room
 }
 
 func findRoom(client *client) string {
-	for name, room := range rooms {
-		if _, ok := room.clients[client]; ok {
-			return name
+	var name string
+	rooms.Range(func(n, r interface{}) bool {
+		if _, ok := r.(*room).clients[client]; ok {
+			name = n.(string)
+			return false
 		}
-	}
-	return ""
+		return true
+	})
+	return name
 }
 
 func (r *room) delete() {
-	for name, room := range rooms {
-		if room == r {
-			delete(rooms, name)
-			return
+	rooms.Range(func(n, r2 interface{}) bool {
+		if r == r2.(*room) {
+			rooms.Delete(n)
+			return false
 		}
-	}
+		return true
+	})
 }
 
 func (r *room) listen() {

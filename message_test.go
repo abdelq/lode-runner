@@ -34,20 +34,20 @@ func TestParseJoin(t *testing.T) {
 	conn, _ := net.Pipe()
 	spectator, runner := newClient(conn), newClient(conn)
 
-	if _, ok := rooms["test"]; ok {
+	if _, ok := rooms.Load("test"); ok {
 		t.Error("room already exists")
 		return
 	}
 
 	// New room
 	parseJoin([]byte(`{"room": "test", "role": 42}`), spectator)
-	if _, ok := rooms["test"].clients[spectator]; !ok {
+	if _, ok := rooms.Load("test").(*room).clients[spectator]; !ok {
 		t.Error("spectator not in room")
 	}
 
 	// Existing room
 	parseJoin([]byte(`{"name": "runner", "room": "test", "level": 1}`), runner)
-	if _, ok := rooms["test"].clients[runner]; !ok {
+	if _, ok := rooms.Load("test").(*room).clients[runner]; !ok {
 		t.Error("runner not in room")
 	}
 }

@@ -31,11 +31,12 @@ func newClient(conn net.Conn) *client {
 func (c *client) close() {
 	c.once.Do(func() {
 		// Leave all joined rooms
-		for _, room := range rooms {
-			if _, ok := room.clients[c]; ok {
-				room.leave <- c
+		rooms.Range(func(n, r interface{}) bool {
+			if _, ok := r.(*room).clients[c]; ok {
+				r.(*room).leave <- c
 			}
-		}
+			return true
+		})
 
 		//close(c.out)
 		c.conn.Close()

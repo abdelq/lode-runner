@@ -47,7 +47,7 @@ func listenSpectator(t *testing.T) {
 		t.Error("still in room")
 	}
 
-	if _, ok := rooms["test"]; ok {
+	if _, ok := rooms.Load("test"); ok {
 		t.Error("room not deleted")
 	}
 }
@@ -88,7 +88,7 @@ func listenRunner(t *testing.T) {
 		t.Error("still in room")
 	}
 
-	if _, ok := rooms["test"]; ok {
+	if _, ok := rooms.Load("test"); ok {
 		t.Error("room not deleted")
 	}
 }
@@ -129,7 +129,7 @@ func listenGuard(t *testing.T) {
 		t.Error("still in room")
 	}
 
-	if _, ok := rooms["test"]; ok {
+	if _, ok := rooms.Load("test"); ok {
 		t.Error("room not deleted")
 	}
 }

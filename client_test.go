@@ -46,12 +46,13 @@ func TestClose(t *testing.T) {
 	client.close() // Second
 
 	// Verify rooms are left
-	for _, room := range rooms {
-		if _, ok := room.clients[client]; ok {
+	rooms.Range(func(n, r interface{}) bool {
+		if _, ok := r.(*room).clients[client]; ok {
 			t.Errorf("client still in a room")
-			break
+			return false
 		}
-	}
+		return true
+	})
 
 	// Verify output channel is closed
 	if _, ok := <-client.out; ok {
