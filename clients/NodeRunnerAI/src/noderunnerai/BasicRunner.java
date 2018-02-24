@@ -37,7 +37,7 @@ public abstract class BasicRunner {
     }
 
     public void run() {
-        this.client.join(name, room);
+        this.client.join(name, room, level);
 
         try {
             String next = client.readNext();
@@ -61,15 +61,17 @@ public abstract class BasicRunner {
                         JSONArray tiles = data.getJSONArray("tiles");
                         
                         List<Object> list = tiles.toList();
-                        
+
                         String[] arr = list.toArray(new String[list.size()]);
-                        
+
                         start(arr);
                         break;
-                        
+
                     case "next":
-                        sendNext();
-                        
+                        JSONObject runner = data.getJSONObject("runner");
+
+                        sendNext(runner.getInt("x"), runner.getInt("y"));
+
                         break;
                 }
 
@@ -80,8 +82,8 @@ public abstract class BasicRunner {
         }
     }
 
-    private void sendNext() {
-        Move m = this.next();
+    private void sendNext(int x, int y) {
+        Move m = this.next(x, y);
 
         if (m.event == Event.MOVE) {
             move(m.direction.getValue());
@@ -92,5 +94,5 @@ public abstract class BasicRunner {
 
     public abstract void start(String[] grid);
 
-    public abstract Move next();
+    public abstract Move next(int x, int y);
 }

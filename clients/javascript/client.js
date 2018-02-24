@@ -21,7 +21,7 @@ client.pipe(JSONStream.parse()).on('data', (msg) => {
     if (msg.event === 'start')
         runner.start(msg.data);
     else if (msg.event === 'next')
-        runner.next(msg.data);
+        runner.next(msg.data.runner.x, msg.data.runner.y);
     else
         console.log(msg);
 });

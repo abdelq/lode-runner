@@ -14,7 +14,9 @@ module.exports = class Runner {
         console.log(grid);
     }
 
-    next() {
+    next(x, y) {
+        console.log(`Coordonnées : ${x}, ${y}`);
+
         // Random action (move or dig)
         if (Math.random() < .5)
             this.move(Math.floor(Math.random() * 4) + 1);

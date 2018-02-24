@@ -10,8 +10,11 @@ import javax.swing.SwingConstants;
 
 public class NodeRunnerKeyboard {
 
-    // TODO : Remplacer ceci par votre nom d'équipe
+    // TODO : Remplacer ceci par votre clé secrète
     public static final String ROOM = "";
+    
+    // Utilisez cette variable pour choisir le niveau de départ
+    public static final int START_LEVEL = 1;
 
     private static TCPClient client;
 
@@ -19,16 +22,21 @@ public class NodeRunnerKeyboard {
         JFrame frame = new JFrame("Node Runner");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JLabel textLabel = new JLabel("Utilisez WASD pour contrôller le Runner", SwingConstants.CENTER);
+        JLabel textLabel = new JLabel("WASD pour bouger, Z et C pour creuser", SwingConstants.CENTER);
         textLabel.setPreferredSize(new Dimension(300, 100));
 
         frame.getContentPane().add(textLabel, BorderLayout.CENTER);
         frame.setLocationRelativeTo(null);
         frame.pack();
 
+        if(ROOM.equals("")) {
+            System.err.println("Vous devez entrer un nom de ROOM !");
+            System.exit(-1);
+        }
+        
         client = new TCPClient();
 
-        client.join(ROOM);
+        client.join(ROOM, ROOM, START_LEVEL);
 
         frame.setVisible(true);
 
