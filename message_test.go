@@ -41,13 +41,19 @@ func TestParseJoin(t *testing.T) {
 
 	// New room
 	parseJoin([]byte(`{"room": "test", "role": 42}`), spectator)
-	if _, ok := rooms.Load("test").(*room).clients[spectator]; !ok {
+	if r, ok := rooms.Load("test"); !ok {
+		t.Error("room doesn't exist")
+		return
+	} else if _, ok := r.(*room).clients[spectator]; !ok {
 		t.Error("spectator not in room")
 	}
 
 	// Existing room
 	parseJoin([]byte(`{"name": "runner", "room": "test", "level": 1}`), runner)
-	if _, ok := rooms.Load("test").(*room).clients[runner]; !ok {
+	if r, ok := rooms.Load("test"); !ok {
+		t.Error("room doesn't exist")
+		return
+	} else if _, ok := r.(*room).clients[runner]; !ok {
 		t.Error("runner not in room")
 	}
 }
