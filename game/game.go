@@ -117,13 +117,15 @@ func (g *Game) hasPlayer(name string) bool {
 }
 
 func (g *Game) Kill() {
-	g.runner.health--
-	if g.runner.health == 0 {
-		g.stop(GUARD)
-		return
-	}
+	if g.runner != nil {
+		g.runner.health--
+		if g.runner.health == 0 {
+			g.stop(GUARD)
+			return
+		}
 
-	g.restart()
+		g.restart()
+	}
 }
 
 // TODO Improve https://stackoverflow.com/questions/17797754/ticker-stop-behaviour-in-golang
