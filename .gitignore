@@ -4,6 +4,10 @@ lode-runner
 # Test
 *.out
 
+# Clients
+clients/javascript/node_modules
+clients/java/target
+
 # Bundle
 *.pdf
 *.zip

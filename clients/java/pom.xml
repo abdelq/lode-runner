@@ -17,4 +17,15 @@
             <version>20180130</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>ca.umontreal.iro.hackathon.loderunner.NodeRunnerAI</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

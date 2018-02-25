@@ -1,8 +1,26 @@
 # Lode Runner
 
-## Build
+## Build & Run
 
-## Test
+### Server
+
+```
+go build && ./lode-runner
+```
+
+### Clients
+
+#### JavaScript
+
+```
+npm install && npm start
+```
+
+#### Java
+
+```
+mvn package && mvn exec:java
+```
 
 ## License
 
