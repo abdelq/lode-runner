@@ -66,7 +66,7 @@ func (r *Runner) init(players sync.Map) {
 // FIXME FIXME FIXME FIXME
 func (r *Runner) move(dir uint8, game *Game) {
 	// Stop falling if needed
-	if r.state == FALLING && r.pos.y+1 < game.level.height()-1 {
+	if r.state == FALLING && r.pos.y+1 < game.level.height() {
 		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
 
 		if nextTile == BRICK || nextTile == BLOCK ||
@@ -95,7 +95,7 @@ func (r *Runner) move(dir uint8, game *Game) {
 	}
 
 	// Stop falling
-	if r.state == FALLING && r.pos.y+1 < game.level.height()-1 {
+	if r.state == FALLING && r.pos.y+1 < game.level.height() {
 		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
 
 		if nextTile == ROPE {
@@ -148,7 +148,7 @@ func (r *Runner) move(dir uint8, game *Game) {
 
 // FIXME FIXME FIXME FIXME
 func (r *Runner) dig(dir uint8, game *Game) {
-	if r.state == FALLING && r.pos.y+1 < game.level.height()-1 {
+	if r.state == FALLING && r.pos.y+1 < game.level.height() {
 		var nextTile = game.level.tiles[r.pos.y+1][r.pos.x]
 
 		if nextTile == BRICK || nextTile == BLOCK ||
