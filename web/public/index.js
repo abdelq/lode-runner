@@ -62,13 +62,18 @@ function parseJSON(data) {
 
     try {
         json = JSON.parse(data.toString('utf8').trim());
-    } catch(e) {
+    } catch(hackula) {
         // XXX : Count Hackula strikes again !
         // Si on n'arrive pas à parser la string, on a possiblement
         // reçu plusieurs objets en une seule string... FIXME
-        console.error('JSON error : ', e, data.toString('utf8'));
+        try {
+            console.error('JSON error : ', e, data.toString('utf8'));
+            json = JSON.parse('[' + data.toString('utf8').trim().replace('\n', ',') + ']');
+        } catch(hackToTheFuture) {
+            console.error('JSON error : ', e, data.toString('utf8'));
 
-        json = JSON.parse(oneJSON(data.toString('utf8').trim()));
+            json = JSON.parse(oneJSON(data.toString('utf8').trim()));
+        }
     }
 
     return json;

@@ -1,6 +1,9 @@
 var socket = new WebSocket("ws://" + location.host + "/ws");
 var invalid = {};
-var killed = [];
+var killed = {};
+var maxLevel = {};
+
+var startTime = window.performance.now();
 
 socket.onopen = function () {
     socket.send(JSON.stringify({
@@ -9,50 +12,64 @@ socket.onopen = function () {
 }
 
 socket.onmessage = function (msg) {
-    msg = parseJSON(msg.data);
-    switch (msg.event) {
-        case "start":
-        case "next":
-            if (rooms[msg.data.room] === undefined ||
-                invalid[msg.data.room] === undefined ||
-                invalid[msg.data.room] === true || msg.event == "start") {
-                    draw(msg.data.tiles, msg.data.room, msg.data.lives, msg.data.level);
-            } else {
-                redraw(msg.data.tiles, msg.data.room, msg.data.lives, msg.data.level);
-            }
-            invalid[msg.data.room] = false;
-            rooms[msg.data.room] = msg.data.tiles;
-            break;
-        case "list":
-            msg.data.forEach(function (room) {
-                createCanvas(room, true);
+    var messages = parseJSON(msg.data);
 
-                socket.send(JSON.stringify({
-                    event: "join", data: { room: room, role: 42 }
-                }));
-            });
-            updateGrid();
-            break;
-        case "quit":
-            var canvas = document.getElementById(msg.data);
-            killed.push(msg.data);
+    if(!Array.isArray(messages))
+        messages = [messages];
 
-            var title = canvas.parentElement.querySelector('p');
-            title.innerHTML = title.innerHTML.replace(/\(.\)/, '(dead)');
-            title.style.color = 'gray';
+    messages.forEach(function(msg) {
+        switch (msg.event) {
+            case "start":
+            case "next":
+                if (rooms[msg.data.room] === undefined ||
+                    invalid[msg.data.room] === undefined ||
+                    invalid[msg.data.room] === true || msg.event == "start") {
+                        draw(msg.data.tiles, msg.data.room, msg.data.lives, msg.data.level);
+                } else {
+                    redraw(msg.data.tiles, msg.data.room, msg.data.lives, msg.data.level);
+                }
+                invalid[msg.data.room] = false;
+                rooms[msg.data.room] = msg.data.tiles;
 
-            canvas.style = "filter: grayscale(100%)";
-            canvas.classList.add('dead');
+                maxLevel[msg.data.room] = maxLevel[msg.data.room] || [msg.data.level, window.performance.now() - startTime];
 
-            setTimeout(function() {
-                canvas.parentElement.remove();
-                delete invalid[msg.data];
+                if(msg.data.level > maxLevel[msg.data.room][0]) {
+                    console.log("aaa", msg.data);
+                    maxLevel[msg.data.room] = [msg.data.level, window.performance.now() - startTime]
+                }
+
+                break;
+            case "list":
+                msg.data.forEach(function (room) {
+                    createCanvas(room, true);
+
+                    socket.send(JSON.stringify({
+                        event: "join", data: { room: room, role: 42 }
+                    }));
+                });
                 updateGrid();
-            }, 5000);
-            break;
-        default:
-            console.log(msg.event + ": " + msg.data);
-    }
+                break;
+            case "quit":
+                var canvas = document.getElementById(msg.data);
+                killed[msg.data] = window.performance.now() - startTime;
+
+                var title = canvas.parentElement.querySelector('p');
+                title.innerHTML = title.innerHTML.replace(/\(.\)/, '(dead)');
+                title.style.color = 'gray';
+
+                canvas.style = "filter: grayscale(100%)";
+                canvas.classList.add('dead');
+
+                setTimeout(function() {
+                    canvas.parentElement.remove();
+                    delete invalid[msg.data];
+                    updateGrid();
+                }, 5000);
+                break;
+            default:
+                console.log(msg.event + ": " + msg.data);
+        }
+    });
 }
 
 function updateGrid() {
@@ -100,20 +117,40 @@ function updateGrid() {
 }
 
 function leaderboard() {
-    if (killed.length == 0)
+    if(Object.keys(killed).length == 0)
         return;
 
     var block = document.createElement('div');
 
-    block.innerHTML += '<h1>Leaderboard</h1><ul>' + killed.reverse().map(function(x, i) {
+    var ranking = [];
+    for(var team in maxLevel) {
+        ranking.push([team, maxLevel[team]]);
+    }
+
+    ranking.sort(function(a, b) {
+        if(a[1] < b[1])
+            return 1;
+        else if(a[1] > b[1])
+            return -1;
+        else {
+            var time_a = a[1];
+            var time_b = b[1];
+
+            return time_a < time_b ? 1 : -1;
+        }
+    });
+
+    block.innerHTML += '<h1>Leaderboard</h1><ul>' + ranking.map(function(x, i) {
 
         var symbol = ' ';
 
         if (i < 3)
             symbol = '★';
 
+        return '<li class="leaderboard-' + i + '"><span class="symbol">' + symbol + '</span>' +
+               ' #' + (i + 1) + ' - ' + x[0] +
+               '<br/><small>       lvl: ' + maxLevel[x[0]][0] + ' - ' + Math.round(maxLevel[x[0]][1] * 100)/100000 + 's</small></li>';
 
-        return '<li class="leaderboard-' + i + '"><span class="symbol">' + symbol + '</span> #' + (i + 1) + ' - ' + x + '</li>';
     }).join('') + '</ul>';
 
     document.body.appendChild(block);
